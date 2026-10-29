@@ -253,6 +253,7 @@ export type CourseSessionWhereInput = {
   materials?: Prisma.MaterialListRelationFilter
   materialChunks?: Prisma.MaterialChunkListRelationFilter
   aiChatSessions?: Prisma.AiChatSessionListRelationFilter
+  domainTopics?: Prisma.DomainTopicListRelationFilter
 }
 
 export type CourseSessionOrderByWithRelationInput = {
@@ -270,6 +271,7 @@ export type CourseSessionOrderByWithRelationInput = {
   materials?: Prisma.MaterialOrderByRelationAggregateInput
   materialChunks?: Prisma.MaterialChunkOrderByRelationAggregateInput
   aiChatSessions?: Prisma.AiChatSessionOrderByRelationAggregateInput
+  domainTopics?: Prisma.DomainTopicOrderByRelationAggregateInput
 }
 
 export type CourseSessionWhereUniqueInput = Prisma.AtLeast<{
@@ -291,6 +293,7 @@ export type CourseSessionWhereUniqueInput = Prisma.AtLeast<{
   materials?: Prisma.MaterialListRelationFilter
   materialChunks?: Prisma.MaterialChunkListRelationFilter
   aiChatSessions?: Prisma.AiChatSessionListRelationFilter
+  domainTopics?: Prisma.DomainTopicListRelationFilter
 }, "id" | "courseId_orderNumber">
 
 export type CourseSessionOrderByWithAggregationInput = {
@@ -338,6 +341,7 @@ export type CourseSessionCreateInput = {
   materials?: Prisma.MaterialCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUncheckedCreateInput = {
@@ -353,6 +357,7 @@ export type CourseSessionUncheckedCreateInput = {
   materials?: Prisma.MaterialUncheckedCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUpdateInput = {
@@ -368,6 +373,7 @@ export type CourseSessionUpdateInput = {
   materials?: Prisma.MaterialUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateInput = {
@@ -383,6 +389,7 @@ export type CourseSessionUncheckedUpdateInput = {
   materials?: Prisma.MaterialUncheckedUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionCreateManyInput = {
@@ -481,6 +488,11 @@ export type CourseSessionSumOrderByAggregateInput = {
 export type CourseSessionScalarRelationFilter = {
   is?: Prisma.CourseSessionWhereInput
   isNot?: Prisma.CourseSessionWhereInput
+}
+
+export type CourseSessionNullableScalarRelationFilter = {
+  is?: Prisma.CourseSessionWhereInput | null
+  isNot?: Prisma.CourseSessionWhereInput | null
 }
 
 export type CourseSessionCreateNestedManyWithoutCreatorInput = {
@@ -617,6 +629,22 @@ export type CourseSessionUpdateOneRequiredWithoutAiChatSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CourseSessionUpdateToOneWithWhereWithoutAiChatSessionsInput, Prisma.CourseSessionUpdateWithoutAiChatSessionsInput>, Prisma.CourseSessionUncheckedUpdateWithoutAiChatSessionsInput>
 }
 
+export type CourseSessionCreateNestedOneWithoutDomainTopicsInput = {
+  create?: Prisma.XOR<Prisma.CourseSessionCreateWithoutDomainTopicsInput, Prisma.CourseSessionUncheckedCreateWithoutDomainTopicsInput>
+  connectOrCreate?: Prisma.CourseSessionCreateOrConnectWithoutDomainTopicsInput
+  connect?: Prisma.CourseSessionWhereUniqueInput
+}
+
+export type CourseSessionUpdateOneWithoutDomainTopicsNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseSessionCreateWithoutDomainTopicsInput, Prisma.CourseSessionUncheckedCreateWithoutDomainTopicsInput>
+  connectOrCreate?: Prisma.CourseSessionCreateOrConnectWithoutDomainTopicsInput
+  upsert?: Prisma.CourseSessionUpsertWithoutDomainTopicsInput
+  disconnect?: Prisma.CourseSessionWhereInput | boolean
+  delete?: Prisma.CourseSessionWhereInput | boolean
+  connect?: Prisma.CourseSessionWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseSessionUpdateToOneWithWhereWithoutDomainTopicsInput, Prisma.CourseSessionUpdateWithoutDomainTopicsInput>, Prisma.CourseSessionUncheckedUpdateWithoutDomainTopicsInput>
+}
+
 export type CourseSessionCreateWithoutCreatorInput = {
   id: string
   title: string
@@ -629,6 +657,7 @@ export type CourseSessionCreateWithoutCreatorInput = {
   materials?: Prisma.MaterialCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUncheckedCreateWithoutCreatorInput = {
@@ -643,6 +672,7 @@ export type CourseSessionUncheckedCreateWithoutCreatorInput = {
   materials?: Prisma.MaterialUncheckedCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionCreateOrConnectWithoutCreatorInput = {
@@ -698,6 +728,7 @@ export type CourseSessionCreateWithoutCourseInput = {
   materials?: Prisma.MaterialCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUncheckedCreateWithoutCourseInput = {
@@ -712,6 +743,7 @@ export type CourseSessionUncheckedCreateWithoutCourseInput = {
   materials?: Prisma.MaterialUncheckedCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionCreateOrConnectWithoutCourseInput = {
@@ -752,6 +784,7 @@ export type CourseSessionCreateWithoutMaterialsInput = {
   creator: Prisma.UserCreateNestedOneWithoutCourseSessionsMadeInput
   materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUncheckedCreateWithoutMaterialsInput = {
@@ -766,6 +799,7 @@ export type CourseSessionUncheckedCreateWithoutMaterialsInput = {
   updatedAt?: Date | string
   materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionCreateOrConnectWithoutMaterialsInput = {
@@ -796,6 +830,7 @@ export type CourseSessionUpdateWithoutMaterialsInput = {
   creator?: Prisma.UserUpdateOneRequiredWithoutCourseSessionsMadeNestedInput
   materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateWithoutMaterialsInput = {
@@ -810,6 +845,7 @@ export type CourseSessionUncheckedUpdateWithoutMaterialsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionCreateWithoutMaterialChunksInput = {
@@ -824,6 +860,7 @@ export type CourseSessionCreateWithoutMaterialChunksInput = {
   creator: Prisma.UserCreateNestedOneWithoutCourseSessionsMadeInput
   materials?: Prisma.MaterialCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUncheckedCreateWithoutMaterialChunksInput = {
@@ -838,6 +875,7 @@ export type CourseSessionUncheckedCreateWithoutMaterialChunksInput = {
   updatedAt?: Date | string
   materials?: Prisma.MaterialUncheckedCreateNestedManyWithoutCourseSessionInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionCreateOrConnectWithoutMaterialChunksInput = {
@@ -868,6 +906,7 @@ export type CourseSessionUpdateWithoutMaterialChunksInput = {
   creator?: Prisma.UserUpdateOneRequiredWithoutCourseSessionsMadeNestedInput
   materials?: Prisma.MaterialUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateWithoutMaterialChunksInput = {
@@ -882,6 +921,7 @@ export type CourseSessionUncheckedUpdateWithoutMaterialChunksInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materials?: Prisma.MaterialUncheckedUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionCreateWithoutAiChatSessionsInput = {
@@ -896,6 +936,7 @@ export type CourseSessionCreateWithoutAiChatSessionsInput = {
   creator: Prisma.UserCreateNestedOneWithoutCourseSessionsMadeInput
   materials?: Prisma.MaterialCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionUncheckedCreateWithoutAiChatSessionsInput = {
@@ -910,6 +951,7 @@ export type CourseSessionUncheckedCreateWithoutAiChatSessionsInput = {
   updatedAt?: Date | string
   materials?: Prisma.MaterialUncheckedCreateNestedManyWithoutCourseSessionInput
   materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseSessionInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseSessionInput
 }
 
 export type CourseSessionCreateOrConnectWithoutAiChatSessionsInput = {
@@ -940,6 +982,7 @@ export type CourseSessionUpdateWithoutAiChatSessionsInput = {
   creator?: Prisma.UserUpdateOneRequiredWithoutCourseSessionsMadeNestedInput
   materials?: Prisma.MaterialUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateWithoutAiChatSessionsInput = {
@@ -954,6 +997,83 @@ export type CourseSessionUncheckedUpdateWithoutAiChatSessionsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   materials?: Prisma.MaterialUncheckedUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseSessionNestedInput
+}
+
+export type CourseSessionCreateWithoutDomainTopicsInput = {
+  id: string
+  title: string
+  description?: string | null
+  orderNumber?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  course: Prisma.CourseCreateNestedOneWithoutSessionsInput
+  creator: Prisma.UserCreateNestedOneWithoutCourseSessionsMadeInput
+  materials?: Prisma.MaterialCreateNestedManyWithoutCourseSessionInput
+  materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseSessionInput
+  aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseSessionInput
+}
+
+export type CourseSessionUncheckedCreateWithoutDomainTopicsInput = {
+  id: string
+  courseId: string
+  createdBy: string
+  title: string
+  description?: string | null
+  orderNumber?: number
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  materials?: Prisma.MaterialUncheckedCreateNestedManyWithoutCourseSessionInput
+  materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseSessionInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseSessionInput
+}
+
+export type CourseSessionCreateOrConnectWithoutDomainTopicsInput = {
+  where: Prisma.CourseSessionWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseSessionCreateWithoutDomainTopicsInput, Prisma.CourseSessionUncheckedCreateWithoutDomainTopicsInput>
+}
+
+export type CourseSessionUpsertWithoutDomainTopicsInput = {
+  update: Prisma.XOR<Prisma.CourseSessionUpdateWithoutDomainTopicsInput, Prisma.CourseSessionUncheckedUpdateWithoutDomainTopicsInput>
+  create: Prisma.XOR<Prisma.CourseSessionCreateWithoutDomainTopicsInput, Prisma.CourseSessionUncheckedCreateWithoutDomainTopicsInput>
+  where?: Prisma.CourseSessionWhereInput
+}
+
+export type CourseSessionUpdateToOneWithWhereWithoutDomainTopicsInput = {
+  where?: Prisma.CourseSessionWhereInput
+  data: Prisma.XOR<Prisma.CourseSessionUpdateWithoutDomainTopicsInput, Prisma.CourseSessionUncheckedUpdateWithoutDomainTopicsInput>
+}
+
+export type CourseSessionUpdateWithoutDomainTopicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  course?: Prisma.CourseUpdateOneRequiredWithoutSessionsNestedInput
+  creator?: Prisma.UserUpdateOneRequiredWithoutCourseSessionsMadeNestedInput
+  materials?: Prisma.MaterialUpdateManyWithoutCourseSessionNestedInput
+  materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseSessionNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseSessionNestedInput
+}
+
+export type CourseSessionUncheckedUpdateWithoutDomainTopicsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orderNumber?: Prisma.IntFieldUpdateOperationsInput | number
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  materials?: Prisma.MaterialUncheckedUpdateManyWithoutCourseSessionNestedInput
+  materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseSessionNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionCreateManyCreatorInput = {
@@ -979,6 +1099,7 @@ export type CourseSessionUpdateWithoutCreatorInput = {
   materials?: Prisma.MaterialUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateWithoutCreatorInput = {
@@ -993,6 +1114,7 @@ export type CourseSessionUncheckedUpdateWithoutCreatorInput = {
   materials?: Prisma.MaterialUncheckedUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateManyWithoutCreatorInput = {
@@ -1029,6 +1151,7 @@ export type CourseSessionUpdateWithoutCourseInput = {
   materials?: Prisma.MaterialUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateWithoutCourseInput = {
@@ -1043,6 +1166,7 @@ export type CourseSessionUncheckedUpdateWithoutCourseInput = {
   materials?: Prisma.MaterialUncheckedUpdateManyWithoutCourseSessionNestedInput
   materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseSessionNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseSessionNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseSessionNestedInput
 }
 
 export type CourseSessionUncheckedUpdateManyWithoutCourseInput = {
@@ -1065,12 +1189,14 @@ export type CourseSessionCountOutputType = {
   materials: number
   materialChunks: number
   aiChatSessions: number
+  domainTopics: number
 }
 
 export type CourseSessionCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   materials?: boolean | CourseSessionCountOutputTypeCountMaterialsArgs
   materialChunks?: boolean | CourseSessionCountOutputTypeCountMaterialChunksArgs
   aiChatSessions?: boolean | CourseSessionCountOutputTypeCountAiChatSessionsArgs
+  domainTopics?: boolean | CourseSessionCountOutputTypeCountDomainTopicsArgs
 }
 
 /**
@@ -1104,6 +1230,13 @@ export type CourseSessionCountOutputTypeCountAiChatSessionsArgs<ExtArgs extends 
   where?: Prisma.AiChatSessionWhereInput
 }
 
+/**
+ * CourseSessionCountOutputType without action
+ */
+export type CourseSessionCountOutputTypeCountDomainTopicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DomainTopicWhereInput
+}
+
 
 export type CourseSessionSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1120,6 +1253,7 @@ export type CourseSessionSelect<ExtArgs extends runtime.Types.Extensions.Interna
   materials?: boolean | Prisma.CourseSession$materialsArgs<ExtArgs>
   materialChunks?: boolean | Prisma.CourseSession$materialChunksArgs<ExtArgs>
   aiChatSessions?: boolean | Prisma.CourseSession$aiChatSessionsArgs<ExtArgs>
+  domainTopics?: boolean | Prisma.CourseSession$domainTopicsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseSessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseSession"]>
 
@@ -1170,6 +1304,7 @@ export type CourseSessionInclude<ExtArgs extends runtime.Types.Extensions.Intern
   materials?: boolean | Prisma.CourseSession$materialsArgs<ExtArgs>
   materialChunks?: boolean | Prisma.CourseSession$materialChunksArgs<ExtArgs>
   aiChatSessions?: boolean | Prisma.CourseSession$aiChatSessionsArgs<ExtArgs>
+  domainTopics?: boolean | Prisma.CourseSession$domainTopicsArgs<ExtArgs>
   _count?: boolean | Prisma.CourseSessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CourseSessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1189,6 +1324,7 @@ export type $CourseSessionPayload<ExtArgs extends runtime.Types.Extensions.Inter
     materials: Prisma.$MaterialPayload<ExtArgs>[]
     materialChunks: Prisma.$MaterialChunkPayload<ExtArgs>[]
     aiChatSessions: Prisma.$AiChatSessionPayload<ExtArgs>[]
+    domainTopics: Prisma.$DomainTopicPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1599,6 +1735,7 @@ export interface Prisma__CourseSessionClient<T, Null = never, ExtArgs extends ru
   materials<T extends Prisma.CourseSession$materialsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseSession$materialsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   materialChunks<T extends Prisma.CourseSession$materialChunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseSession$materialChunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiChatSessions<T extends Prisma.CourseSession$aiChatSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseSession$aiChatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  domainTopics<T extends Prisma.CourseSession$domainTopicsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseSession$domainTopicsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainTopicPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2107,6 +2244,30 @@ export type CourseSession$aiChatSessionsArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.AiChatSessionScalarFieldEnum | Prisma.AiChatSessionScalarFieldEnum[]
+}
+
+/**
+ * CourseSession.domainTopics
+ */
+export type CourseSession$domainTopicsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DomainTopic
+   */
+  select?: Prisma.DomainTopicSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DomainTopic
+   */
+  omit?: Prisma.DomainTopicOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DomainTopicInclude<ExtArgs> | null
+  where?: Prisma.DomainTopicWhereInput
+  orderBy?: Prisma.DomainTopicOrderByWithRelationInput | Prisma.DomainTopicOrderByWithRelationInput[]
+  cursor?: Prisma.DomainTopicWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DomainTopicScalarFieldEnum | Prisma.DomainTopicScalarFieldEnum[]
 }
 
 /**

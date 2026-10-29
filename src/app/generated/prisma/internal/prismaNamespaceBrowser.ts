@@ -65,7 +65,17 @@ export const ModelName = {
   MaterialProcessingLog: 'MaterialProcessingLog',
   AiChatSession: 'AiChatSession',
   AiChatMessage: 'AiChatMessage',
-  TutorPromptConfig: 'TutorPromptConfig'
+  TutorPromptConfig: 'TutorPromptConfig',
+  LearningOutcome: 'LearningOutcome',
+  DomainTopic: 'DomainTopic',
+  DomainTopicOutcome: 'DomainTopicOutcome',
+  DomainConcept: 'DomainConcept',
+  DomainIndicator: 'DomainIndicator',
+  QuestionBankItem: 'QuestionBankItem',
+  AssessmentAttempt: 'AssessmentAttempt',
+  CourseLearningConfig: 'CourseLearningConfig',
+  AssessmentItem: 'AssessmentItem',
+  StudentIndicatorProfile: 'StudentIndicatorProfile'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -320,6 +330,151 @@ export const TutorPromptConfigScalarFieldEnum = {
 export type TutorPromptConfigScalarFieldEnum = (typeof TutorPromptConfigScalarFieldEnum)[keyof typeof TutorPromptConfigScalarFieldEnum]
 
 
+export const LearningOutcomeScalarFieldEnum = {
+  id: 'id',
+  courseId: 'courseId',
+  code: 'code',
+  cpmk: 'cpmk',
+  description: 'description',
+  sourceData: 'sourceData'
+} as const
+
+export type LearningOutcomeScalarFieldEnum = (typeof LearningOutcomeScalarFieldEnum)[keyof typeof LearningOutcomeScalarFieldEnum]
+
+
+export const DomainTopicScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  courseId: 'courseId',
+  courseSessionId: 'courseSessionId',
+  title: 'title',
+  orderNumber: 'orderNumber',
+  cpmkCodes: 'cpmkCodes',
+  subCpmkCodes: 'subCpmkCodes',
+  sourcePdf: 'sourcePdf',
+  sourcePages: 'sourcePages',
+  sourceData: 'sourceData'
+} as const
+
+export type DomainTopicScalarFieldEnum = (typeof DomainTopicScalarFieldEnum)[keyof typeof DomainTopicScalarFieldEnum]
+
+
+export const DomainTopicOutcomeScalarFieldEnum = {
+  topicId: 'topicId',
+  outcomeId: 'outcomeId'
+} as const
+
+export type DomainTopicOutcomeScalarFieldEnum = (typeof DomainTopicOutcomeScalarFieldEnum)[keyof typeof DomainTopicOutcomeScalarFieldEnum]
+
+
+export const DomainConceptScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  topicId: 'topicId',
+  name: 'name'
+} as const
+
+export type DomainConceptScalarFieldEnum = (typeof DomainConceptScalarFieldEnum)[keyof typeof DomainConceptScalarFieldEnum]
+
+
+export const DomainIndicatorScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  courseId: 'courseId',
+  topicId: 'topicId',
+  conceptId: 'conceptId',
+  description: 'description',
+  cpmkCodes: 'cpmkCodes',
+  subCpmkCodes: 'subCpmkCodes',
+  sourcePdf: 'sourcePdf',
+  sourcePages: 'sourcePages',
+  sourceStatus: 'sourceStatus',
+  sourceData: 'sourceData'
+} as const
+
+export type DomainIndicatorScalarFieldEnum = (typeof DomainIndicatorScalarFieldEnum)[keyof typeof DomainIndicatorScalarFieldEnum]
+
+
+export const QuestionBankItemScalarFieldEnum = {
+  id: 'id',
+  code: 'code',
+  courseId: 'courseId',
+  topicId: 'topicId',
+  indicatorId: 'indicatorId',
+  kind: 'kind',
+  question: 'question',
+  options: 'options',
+  correctOption: 'correctOption',
+  explanation: 'explanation',
+  cognitiveLevel: 'cognitiveLevel',
+  practiceNumber: 'practiceNumber',
+  sourcePdf: 'sourcePdf',
+  sourcePages: 'sourcePages',
+  validationStatus: 'validationStatus',
+  sourceData: 'sourceData'
+} as const
+
+export type QuestionBankItemScalarFieldEnum = (typeof QuestionBankItemScalarFieldEnum)[keyof typeof QuestionBankItemScalarFieldEnum]
+
+
+export const AssessmentAttemptScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  courseId: 'courseId',
+  kind: 'kind',
+  status: 'status',
+  startedAt: 'startedAt',
+  submittedAt: 'submittedAt',
+  correctCount: 'correctCount',
+  totalQuestions: 'totalQuestions',
+  percentage: 'percentage'
+} as const
+
+export type AssessmentAttemptScalarFieldEnum = (typeof AssessmentAttemptScalarFieldEnum)[keyof typeof AssessmentAttemptScalarFieldEnum]
+
+
+export const CourseLearningConfigScalarFieldEnum = {
+  courseId: 'courseId',
+  pretestQuestionCount: 'pretestQuestionCount',
+  datasetName: 'datasetName',
+  datasetChecksum: 'datasetChecksum'
+} as const
+
+export type CourseLearningConfigScalarFieldEnum = (typeof CourseLearningConfigScalarFieldEnum)[keyof typeof CourseLearningConfigScalarFieldEnum]
+
+
+export const AssessmentItemScalarFieldEnum = {
+  id: 'id',
+  attemptId: 'attemptId',
+  questionId: 'questionId',
+  indicatorId: 'indicatorId',
+  orderNumber: 'orderNumber',
+  questionSnapshot: 'questionSnapshot',
+  selectedOption: 'selectedOption',
+  isCorrect: 'isCorrect',
+  answeredAt: 'answeredAt'
+} as const
+
+export type AssessmentItemScalarFieldEnum = (typeof AssessmentItemScalarFieldEnum)[keyof typeof AssessmentItemScalarFieldEnum]
+
+
+export const StudentIndicatorProfileScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  courseId: 'courseId',
+  indicatorId: 'indicatorId',
+  baselineItemId: 'baselineItemId',
+  initialScore: 'initialScore',
+  currentScore: 'currentScore',
+  evidenceCount: 'evidenceCount',
+  initialStatus: 'initialStatus',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type StudentIndicatorProfileScalarFieldEnum = (typeof StudentIndicatorProfileScalarFieldEnum)[keyof typeof StudentIndicatorProfileScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -334,6 +489,13 @@ export const NullableJsonNullValueInput = {
 } as const
 
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {

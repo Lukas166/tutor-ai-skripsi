@@ -3,14 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "concurrently -n next,ai -c cyan,magenta npm:dev:next npm:rag:api",
+    "dev": "concurrently -n next,ai -c cyan,magenta npm:dev:next npm:dev:ai",
     "dev:next": "next dev --turbo",
+    "dev:ai": "tsx scripts/services/start-ai.ts --reload",
     "build": "next build",
     "postinstall": "prisma generate",
     "start": "concurrently -n next,ai -c cyan,magenta npm:start:next npm:rag:api",
     "start:next": "next start",
     "lint": "eslint",
-    "rag:api": "node scripts/services/start-ai.mjs"
+    "rag:api": "tsx scripts/services/start-ai.ts",
+    "seed:domain:rpl": "uv run --project services/rag --locked python scripts/data/import-rpl.py"
   },
   "dependencies": {
     "@elevenlabs/elevenlabs-js": "^2.49.1",

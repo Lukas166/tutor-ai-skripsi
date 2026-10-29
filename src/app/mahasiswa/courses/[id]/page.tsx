@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { TutorFloatingButton } from "@/components/tutor/tutor-floating-button";
+import { CourseAssessmentCard } from "@/components/assessment/course-assessment-card";
 import { MahasiswaSessionCard } from "./session-card";
 import type { MahasiswaCourseDetail, SessionItem } from "./types";
 import { formatDate } from "./types";
@@ -192,7 +193,9 @@ export default function MahasiswaCourseDetailPage() {
         )}
       </div>
 
-      <div className="flex flex-col gap-5">
+      <CourseAssessmentCard courseId={courseId} />
+
+      <div id="materi" className="flex flex-col gap-5">
         <div>
           <h2 className="text-xl font-bold tracking-tight">Sesi Perkuliahan</h2>
           <p className="text-sm text-muted-foreground">

@@ -74,7 +74,10 @@ pnpm dev
 ```
 
 Perintah ini membuka server Next.js dan backend AI Python. Script penghubung ada di
-`scripts/services/start-ai.mjs` dan otomatis memakai `services/rag/.venv`.
+`scripts/services/start-ai.ts` dan otomatis memakai `services/rag/.venv`.
+Dalam mode development, perubahan kode Python di `services/rag/src` memicu reload
+otomatis. Perubahan `.env` tetap memerlukan restart; `pnpm start` dan `pnpm rag:api`
+menjalankan backend tanpa reload.
 Worker ingestion aktif secara default dan berjalan bersama backend AI. Untuk mencoba, buka LMS,
 login, unggah materi PDF, tunggu status ready, lalu ajukan pertanyaan pada tutor.
 

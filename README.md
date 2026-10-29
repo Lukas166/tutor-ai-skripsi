@@ -28,6 +28,10 @@ Tutor AI menyediakan antarmuka pengguna yang terintegrasi untuk memberikan penga
 
 ## Fitur Utama
 
+Fitur domain pembelajaran, pre-test, dan Student Profile awal tersedia untuk course
+yang telah dikonfigurasi. Tabelnya generik per mata kuliah; dataset RPL menjadi
+impor awal. Lihat [rancangan, seed, dan cara penggunaan](docs/domain-assessment.md).
+
 1. **Mini Learning Management System (LMS)**
    Manajemen terpadu untuk mata kuliah dan pendaftaran mandiri menggunakan kunci registrasi (Enrollment Key). Dosen dapat mengatur sesi pembelajaran secara terstruktur.
 

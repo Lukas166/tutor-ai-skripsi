@@ -40,6 +40,8 @@ model User {
   courseSessionsMade CourseSession[]    @relation("CourseSessionCreator")
   materialsUploaded  Material[]
   aiChatSessions     AiChatSession[]
+  assessments        AssessmentAttempt[]
+  indicatorProfiles  StudentIndicatorProfile[]
 
   @@map("user")
 }
@@ -112,6 +114,13 @@ model Course {
   sessions       CourseSession[]
   materialChunks MaterialChunk[]
   aiChatSessions AiChatSession[]
+  domainTopics      DomainTopic[]
+  assessments    AssessmentAttempt[]
+  indicatorProfiles StudentIndicatorProfile[]
+  learningConfig CourseLearningConfig?
+  learningOutcomes LearningOutcome[]
+  domainIndicators DomainIndicator[]
+  questionBank QuestionBankItem[]
 
   @@index([enrollmentKey])
   @@map("course")
@@ -168,6 +177,7 @@ model CourseSession {
   materials      Material[]
   materialChunks MaterialChunk[]
   aiChatSessions AiChatSession[]
+  domainTopics      DomainTopic[]
 
   @@unique([courseId, orderNumber])
   @@index([courseId])
@@ -337,4 +347,179 @@ model TutorPromptConfig {
 
   @@unique([academicLevel, responseMode])
   @@map("tutor_prompt_config")
+}
+
+// Domain pembelajaran berlaku per Course; bank soal/kunci tidak menjadi sumber RAG.
+model LearningOutcome {
+  id          String @id
+  courseId    String
+  code        String
+  cpmk        String
+  description String
+  sourceData  Json
+  topics      DomainTopicOutcome[]
+  course      Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@unique([courseId, code])
+  @@map("learning_outcome")
+}
+
+model DomainTopic {
+  id              String @id
+  code            String
+  courseId        String
+  courseSessionId String?
+  title           String
+  orderNumber     Int
+  cpmkCodes       String[]
+  subCpmkCodes    String[]
+  sourcePdf       String
+  sourcePages     String
+  sourceData      Json
+  course          Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  courseSession   CourseSession? @relation(fields: [courseSessionId], references: [id], onDelete: SetNull)
+  outcomes        DomainTopicOutcome[]
+  concepts        DomainConcept[]
+  indicators      DomainIndicator[]
+  questions       QuestionBankItem[]
+  @@unique([courseId, orderNumber])
+  @@unique([courseId, code])
+  @@map("domain_topic")
+}
+
+model DomainTopicOutcome {
+  topicId   String
+  outcomeId String
+  topic     DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  outcome   LearningOutcome @relation(fields: [outcomeId], references: [id], onDelete: Restrict)
+  @@id([topicId, outcomeId])
+  @@map("domain_topic_outcome")
+}
+
+model DomainConcept {
+  id         String @id
+  code       String
+  topicId    String
+  name       String
+  topic      DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  indicators DomainIndicator[]
+  @@unique([topicId, name])
+  @@map("domain_concept")
+}
+
+model DomainIndicator {
+  id           String @id
+  code         String
+  courseId     String
+  topicId      String
+  conceptId    String
+  description  String
+  cpmkCodes    String[]
+  subCpmkCodes String[]
+  sourcePdf    String
+  sourcePages  String
+  sourceStatus String
+  sourceData   Json
+  topic        DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  concept      DomainConcept @relation(fields: [conceptId], references: [id], onDelete: Restrict)
+  questions    QuestionBankItem[]
+  items        AssessmentItem[]
+  profiles     StudentIndicatorProfile[]
+  course       Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@unique([courseId, code])
+  @@index([topicId])
+  @@map("domain_indicator")
+}
+
+model QuestionBankItem {
+  id               String @id
+  code             String
+  courseId         String
+  topicId          String
+  indicatorId      String
+  kind             String // PRE_POST | PRACTICE; satu record dipakai kembali pada post-test.
+  question         String
+  options          Json
+  correctOption    String
+  explanation      String
+  cognitiveLevel   String
+  practiceNumber   Int?
+  sourcePdf        String
+  sourcePages      String
+  validationStatus String
+  sourceData       Json
+  topic            DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  indicator        DomainIndicator @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
+  items            AssessmentItem[]
+  course           Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@unique([courseId, code])
+  @@unique([indicatorId, kind, practiceNumber])
+  @@index([topicId, kind])
+  @@map("question_bank_item")
+}
+
+model AssessmentAttempt {
+  id             String @id
+  studentId      String
+  courseId       String
+  kind           String @default("PRE") // POST disiapkan secara struktural, belum ada endpoint-nya.
+  status         String @default("IN_PROGRESS")
+  startedAt      DateTime @default(now())
+  submittedAt    DateTime?
+  correctCount   Int?
+  totalQuestions Int
+  percentage     Float?
+  student        User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course         Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  items          AssessmentItem[]
+  @@unique([studentId, courseId, kind])
+  @@map("assessment_attempt")
+}
+
+model CourseLearningConfig {
+  courseId             String @id
+  pretestQuestionCount  Int
+  datasetName          String
+  datasetChecksum      String
+  course               Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@map("course_learning_config")
+}
+
+model AssessmentItem {
+  id               String @id
+  attemptId        String
+  questionId       String
+  indicatorId      String
+  orderNumber      Int
+  questionSnapshot Json // Snapshot privat menjaga penilaian stabil ketika dataset diimpor ulang.
+  selectedOption   String?
+  isCorrect        Boolean?
+  answeredAt       DateTime?
+  attempt          AssessmentAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  question         QuestionBankItem @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  indicator        DomainIndicator @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
+  profile          StudentIndicatorProfile?
+  @@unique([attemptId, questionId])
+  @@unique([attemptId, indicatorId])
+  @@unique([attemptId, orderNumber])
+  @@map("assessment_item")
+}
+
+model StudentIndicatorProfile {
+  id              String @id
+  studentId       String
+  courseId        String
+  indicatorId     String
+  baselineItemId  String @unique
+  initialScore    Float
+  currentScore    Float
+  evidenceCount  Int @default(1)
+  initialStatus  String // NEEDS_REINFORCEMENT | INITIAL_POSITIVE_EVIDENCE
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt @default(now())
+  student         User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course          Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  indicator       DomainIndicator @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
+  baselineItem    AssessmentItem @relation(fields: [baselineItemId], references: [id], onDelete: Restrict)
+  @@unique([studentId, courseId, indicatorId])
+  @@map("student_indicator_profile")
 }

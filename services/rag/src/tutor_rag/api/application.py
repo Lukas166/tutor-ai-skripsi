@@ -6,6 +6,7 @@ from threading import Event, Thread
 
 from fastapi import FastAPI
 
+from tutor_rag.api.assessment import router as assessment_router
 from tutor_rag.api.dependencies import get_settings
 from tutor_rag.api.routes import router
 from tutor_rag.ingestion.worker import run_worker
@@ -43,3 +44,4 @@ app = FastAPI(
     openapi_url=None,
 )
 app.include_router(router)
+app.include_router(assessment_router)

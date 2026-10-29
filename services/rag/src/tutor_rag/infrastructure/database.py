@@ -14,4 +14,7 @@ def connect_database(settings: Settings) -> psycopg.Connection[dict[str, Any]]:
 
     # Autocommit menutup transaksi query singkat sebelum proses OCR atau panggilan Gemini.
     # Repository membuka transaction() secara eksplisit untuk operasi tulis yang atomik.
-    return psycopg.connect(url, autocommit=True, row_factory=dict_row, connect_timeout=10)
+    # Pooler Supabase dapat memakai ulang koneksi server; hindari benturan prepared statement.
+    return psycopg.connect(
+        url, autocommit=True, row_factory=dict_row, connect_timeout=10, prepare_threshold=None
+    )

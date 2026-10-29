@@ -254,6 +254,8 @@ export type UserWhereInput = {
   courseSessionsMade?: Prisma.CourseSessionListRelationFilter
   materialsUploaded?: Prisma.MaterialListRelationFilter
   aiChatSessions?: Prisma.AiChatSessionListRelationFilter
+  assessments?: Prisma.AssessmentAttemptListRelationFilter
+  indicatorProfiles?: Prisma.StudentIndicatorProfileListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -278,6 +280,8 @@ export type UserOrderByWithRelationInput = {
   courseSessionsMade?: Prisma.CourseSessionOrderByRelationAggregateInput
   materialsUploaded?: Prisma.MaterialOrderByRelationAggregateInput
   aiChatSessions?: Prisma.AiChatSessionOrderByRelationAggregateInput
+  assessments?: Prisma.AssessmentAttemptOrderByRelationAggregateInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -305,6 +309,8 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   courseSessionsMade?: Prisma.CourseSessionListRelationFilter
   materialsUploaded?: Prisma.MaterialListRelationFilter
   aiChatSessions?: Prisma.AiChatSessionListRelationFilter
+  assessments?: Prisma.AssessmentAttemptListRelationFilter
+  indicatorProfiles?: Prisma.StudentIndicatorProfileListRelationFilter
 }, "id" | "email" | "npm">
 
 export type UserOrderByWithAggregationInput = {
@@ -367,6 +373,8 @@ export type UserCreateInput = {
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -391,6 +399,8 @@ export type UserUncheckedCreateInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserUpdateInput = {
@@ -415,6 +425,8 @@ export type UserUpdateInput = {
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -439,6 +451,8 @@ export type UserUncheckedUpdateInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -670,6 +684,34 @@ export type UserUpdateOneRequiredWithoutAiChatSessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAiChatSessionsInput, Prisma.UserUpdateWithoutAiChatSessionsInput>, Prisma.UserUncheckedUpdateWithoutAiChatSessionsInput>
 }
 
+export type UserCreateNestedOneWithoutAssessmentsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssessmentsInput, Prisma.UserUncheckedCreateWithoutAssessmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssessmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAssessmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAssessmentsInput, Prisma.UserUncheckedCreateWithoutAssessmentsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAssessmentsInput
+  upsert?: Prisma.UserUpsertWithoutAssessmentsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAssessmentsInput, Prisma.UserUpdateWithoutAssessmentsInput>, Prisma.UserUncheckedUpdateWithoutAssessmentsInput>
+}
+
+export type UserCreateNestedOneWithoutIndicatorProfilesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutIndicatorProfilesInput, Prisma.UserUncheckedCreateWithoutIndicatorProfilesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIndicatorProfilesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutIndicatorProfilesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutIndicatorProfilesInput, Prisma.UserUncheckedCreateWithoutIndicatorProfilesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutIndicatorProfilesInput
+  upsert?: Prisma.UserUpsertWithoutIndicatorProfilesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutIndicatorProfilesInput, Prisma.UserUpdateWithoutIndicatorProfilesInput>, Prisma.UserUncheckedUpdateWithoutIndicatorProfilesInput>
+}
+
 export type UserCreateWithoutSessionsInput = {
   id: string
   name: string
@@ -691,6 +733,8 @@ export type UserCreateWithoutSessionsInput = {
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -714,6 +758,8 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -753,6 +799,8 @@ export type UserUpdateWithoutSessionsInput = {
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -776,6 +824,8 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -799,6 +849,8 @@ export type UserCreateWithoutAccountsInput = {
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -822,6 +874,8 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -861,6 +915,8 @@ export type UserUpdateWithoutAccountsInput = {
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -884,6 +940,8 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutCoursesCreatedInput = {
@@ -907,6 +965,8 @@ export type UserCreateWithoutCoursesCreatedInput = {
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutCoursesCreatedInput = {
@@ -930,6 +990,8 @@ export type UserUncheckedCreateWithoutCoursesCreatedInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutCoursesCreatedInput = {
@@ -969,6 +1031,8 @@ export type UserUpdateWithoutCoursesCreatedInput = {
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCoursesCreatedInput = {
@@ -992,6 +1056,8 @@ export type UserUncheckedUpdateWithoutCoursesCreatedInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutCourseInstructorInput = {
@@ -1015,6 +1081,8 @@ export type UserCreateWithoutCourseInstructorInput = {
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutCourseInstructorInput = {
@@ -1038,6 +1106,8 @@ export type UserUncheckedCreateWithoutCourseInstructorInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutCourseInstructorInput = {
@@ -1077,6 +1147,8 @@ export type UserUpdateWithoutCourseInstructorInput = {
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCourseInstructorInput = {
@@ -1100,6 +1172,8 @@ export type UserUncheckedUpdateWithoutCourseInstructorInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutEnrollmentsInput = {
@@ -1123,6 +1197,8 @@ export type UserCreateWithoutEnrollmentsInput = {
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutEnrollmentsInput = {
@@ -1146,6 +1222,8 @@ export type UserUncheckedCreateWithoutEnrollmentsInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutEnrollmentsInput = {
@@ -1185,6 +1263,8 @@ export type UserUpdateWithoutEnrollmentsInput = {
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1208,6 +1288,8 @@ export type UserUncheckedUpdateWithoutEnrollmentsInput = {
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutCourseSessionsMadeInput = {
@@ -1231,6 +1313,8 @@ export type UserCreateWithoutCourseSessionsMadeInput = {
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutCourseSessionsMadeInput = {
@@ -1254,6 +1338,8 @@ export type UserUncheckedCreateWithoutCourseSessionsMadeInput = {
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutCourseSessionsMadeInput = {
@@ -1293,6 +1379,8 @@ export type UserUpdateWithoutCourseSessionsMadeInput = {
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCourseSessionsMadeInput = {
@@ -1316,6 +1404,8 @@ export type UserUncheckedUpdateWithoutCourseSessionsMadeInput = {
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutMaterialsUploadedInput = {
@@ -1339,6 +1429,8 @@ export type UserCreateWithoutMaterialsUploadedInput = {
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutMaterialsUploadedInput = {
@@ -1362,6 +1454,8 @@ export type UserUncheckedCreateWithoutMaterialsUploadedInput = {
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutMaterialsUploadedInput = {
@@ -1401,6 +1495,8 @@ export type UserUpdateWithoutMaterialsUploadedInput = {
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMaterialsUploadedInput = {
@@ -1424,6 +1520,8 @@ export type UserUncheckedUpdateWithoutMaterialsUploadedInput = {
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 export type UserCreateWithoutAiChatSessionsInput = {
@@ -1447,6 +1545,8 @@ export type UserCreateWithoutAiChatSessionsInput = {
   enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
   courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
 }
 
 export type UserUncheckedCreateWithoutAiChatSessionsInput = {
@@ -1470,6 +1570,8 @@ export type UserUncheckedCreateWithoutAiChatSessionsInput = {
   enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
   courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
   materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
 }
 
 export type UserCreateOrConnectWithoutAiChatSessionsInput = {
@@ -1509,6 +1611,8 @@ export type UserUpdateWithoutAiChatSessionsInput = {
   enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
   courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAiChatSessionsInput = {
@@ -1532,6 +1636,240 @@ export type UserUncheckedUpdateWithoutAiChatSessionsInput = {
   enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
   courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
   materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
+}
+
+export type UserCreateWithoutAssessmentsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  academicLevel?: string | null
+  npm?: string | null
+  major?: string | null
+  faculty?: string | null
+  bio?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  coursesCreated?: Prisma.CourseCreateNestedManyWithoutCreatorInput
+  courseInstructor?: Prisma.CourseInstructorCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
+  materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
+  aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutStudentInput
+}
+
+export type UserUncheckedCreateWithoutAssessmentsInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  academicLevel?: string | null
+  npm?: string | null
+  major?: string | null
+  faculty?: string | null
+  bio?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  coursesCreated?: Prisma.CourseUncheckedCreateNestedManyWithoutCreatorInput
+  courseInstructor?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
+  materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutStudentInput
+}
+
+export type UserCreateOrConnectWithoutAssessmentsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssessmentsInput, Prisma.UserUncheckedCreateWithoutAssessmentsInput>
+}
+
+export type UserUpsertWithoutAssessmentsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAssessmentsInput, Prisma.UserUncheckedUpdateWithoutAssessmentsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAssessmentsInput, Prisma.UserUncheckedCreateWithoutAssessmentsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAssessmentsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAssessmentsInput, Prisma.UserUncheckedUpdateWithoutAssessmentsInput>
+}
+
+export type UserUpdateWithoutAssessmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  academicLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  npm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  coursesCreated?: Prisma.CourseUpdateManyWithoutCreatorNestedInput
+  courseInstructor?: Prisma.CourseInstructorUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
+  materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutStudentNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAssessmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  academicLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  npm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  coursesCreated?: Prisma.CourseUncheckedUpdateManyWithoutCreatorNestedInput
+  courseInstructor?: Prisma.CourseInstructorUncheckedUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
+  materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutStudentNestedInput
+}
+
+export type UserCreateWithoutIndicatorProfilesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  academicLevel?: string | null
+  npm?: string | null
+  major?: string | null
+  faculty?: string | null
+  bio?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  coursesCreated?: Prisma.CourseCreateNestedManyWithoutCreatorInput
+  courseInstructor?: Prisma.CourseInstructorCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutUserInput
+  courseSessionsMade?: Prisma.CourseSessionCreateNestedManyWithoutCreatorInput
+  materialsUploaded?: Prisma.MaterialCreateNestedManyWithoutUploaderInput
+  aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutStudentInput
+}
+
+export type UserUncheckedCreateWithoutIndicatorProfilesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified: boolean
+  image?: string | null
+  role?: string
+  academicLevel?: string | null
+  npm?: string | null
+  major?: string | null
+  faculty?: string | null
+  bio?: string | null
+  createdAt: Date | string
+  updatedAt: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  coursesCreated?: Prisma.CourseUncheckedCreateNestedManyWithoutCreatorInput
+  courseInstructor?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutUserInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutUserInput
+  courseSessionsMade?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCreatorInput
+  materialsUploaded?: Prisma.MaterialUncheckedCreateNestedManyWithoutUploaderInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutUserInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutStudentInput
+}
+
+export type UserCreateOrConnectWithoutIndicatorProfilesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutIndicatorProfilesInput, Prisma.UserUncheckedCreateWithoutIndicatorProfilesInput>
+}
+
+export type UserUpsertWithoutIndicatorProfilesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutIndicatorProfilesInput, Prisma.UserUncheckedUpdateWithoutIndicatorProfilesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutIndicatorProfilesInput, Prisma.UserUncheckedCreateWithoutIndicatorProfilesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutIndicatorProfilesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutIndicatorProfilesInput, Prisma.UserUncheckedUpdateWithoutIndicatorProfilesInput>
+}
+
+export type UserUpdateWithoutIndicatorProfilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  academicLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  npm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  coursesCreated?: Prisma.CourseUpdateManyWithoutCreatorNestedInput
+  courseInstructor?: Prisma.CourseInstructorUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutUserNestedInput
+  courseSessionsMade?: Prisma.CourseSessionUpdateManyWithoutCreatorNestedInput
+  materialsUploaded?: Prisma.MaterialUpdateManyWithoutUploaderNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutStudentNestedInput
+}
+
+export type UserUncheckedUpdateWithoutIndicatorProfilesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  academicLevel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  npm?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  major?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  faculty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  coursesCreated?: Prisma.CourseUncheckedUpdateManyWithoutCreatorNestedInput
+  courseInstructor?: Prisma.CourseInstructorUncheckedUpdateManyWithoutUserNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutUserNestedInput
+  courseSessionsMade?: Prisma.CourseSessionUncheckedUpdateManyWithoutCreatorNestedInput
+  materialsUploaded?: Prisma.MaterialUncheckedUpdateManyWithoutUploaderNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutUserNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutStudentNestedInput
 }
 
 
@@ -1548,6 +1886,8 @@ export type UserCountOutputType = {
   courseSessionsMade: number
   materialsUploaded: number
   aiChatSessions: number
+  assessments: number
+  indicatorProfiles: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1559,6 +1899,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   courseSessionsMade?: boolean | UserCountOutputTypeCountCourseSessionsMadeArgs
   materialsUploaded?: boolean | UserCountOutputTypeCountMaterialsUploadedArgs
   aiChatSessions?: boolean | UserCountOutputTypeCountAiChatSessionsArgs
+  assessments?: boolean | UserCountOutputTypeCountAssessmentsArgs
+  indicatorProfiles?: boolean | UserCountOutputTypeCountIndicatorProfilesArgs
 }
 
 /**
@@ -1627,6 +1969,20 @@ export type UserCountOutputTypeCountAiChatSessionsArgs<ExtArgs extends runtime.T
   where?: Prisma.AiChatSessionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountAssessmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AssessmentAttemptWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountIndicatorProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentIndicatorProfileWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1650,6 +2006,8 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   courseSessionsMade?: boolean | Prisma.User$courseSessionsMadeArgs<ExtArgs>
   materialsUploaded?: boolean | Prisma.User$materialsUploadedArgs<ExtArgs>
   aiChatSessions?: boolean | Prisma.User$aiChatSessionsArgs<ExtArgs>
+  assessments?: boolean | Prisma.User$assessmentsArgs<ExtArgs>
+  indicatorProfiles?: boolean | Prisma.User$indicatorProfilesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1711,6 +2069,8 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   courseSessionsMade?: boolean | Prisma.User$courseSessionsMadeArgs<ExtArgs>
   materialsUploaded?: boolean | Prisma.User$materialsUploadedArgs<ExtArgs>
   aiChatSessions?: boolean | Prisma.User$aiChatSessionsArgs<ExtArgs>
+  assessments?: boolean | Prisma.User$assessmentsArgs<ExtArgs>
+  indicatorProfiles?: boolean | Prisma.User$indicatorProfilesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1727,6 +2087,8 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     courseSessionsMade: Prisma.$CourseSessionPayload<ExtArgs>[]
     materialsUploaded: Prisma.$MaterialPayload<ExtArgs>[]
     aiChatSessions: Prisma.$AiChatSessionPayload<ExtArgs>[]
+    assessments: Prisma.$AssessmentAttemptPayload<ExtArgs>[]
+    indicatorProfiles: Prisma.$StudentIndicatorProfilePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2144,6 +2506,8 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   courseSessionsMade<T extends Prisma.User$courseSessionsMadeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$courseSessionsMadeArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CourseSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   materialsUploaded<T extends Prisma.User$materialsUploadedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$materialsUploadedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MaterialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   aiChatSessions<T extends Prisma.User$aiChatSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$aiChatSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AiChatSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  assessments<T extends Prisma.User$assessmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$assessmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  indicatorProfiles<T extends Prisma.User$indicatorProfilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$indicatorProfilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentIndicatorProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2768,6 +3132,54 @@ export type User$aiChatSessionsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.AiChatSessionScalarFieldEnum | Prisma.AiChatSessionScalarFieldEnum[]
+}
+
+/**
+ * User.assessments
+ */
+export type User$assessmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the AssessmentAttempt
+   */
+  select?: Prisma.AssessmentAttemptSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the AssessmentAttempt
+   */
+  omit?: Prisma.AssessmentAttemptOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AssessmentAttemptInclude<ExtArgs> | null
+  where?: Prisma.AssessmentAttemptWhereInput
+  orderBy?: Prisma.AssessmentAttemptOrderByWithRelationInput | Prisma.AssessmentAttemptOrderByWithRelationInput[]
+  cursor?: Prisma.AssessmentAttemptWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AssessmentAttemptScalarFieldEnum | Prisma.AssessmentAttemptScalarFieldEnum[]
+}
+
+/**
+ * User.indicatorProfiles
+ */
+export type User$indicatorProfilesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StudentIndicatorProfile
+   */
+  select?: Prisma.StudentIndicatorProfileSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StudentIndicatorProfile
+   */
+  omit?: Prisma.StudentIndicatorProfileOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudentIndicatorProfileInclude<ExtArgs> | null
+  where?: Prisma.StudentIndicatorProfileWhereInput
+  orderBy?: Prisma.StudentIndicatorProfileOrderByWithRelationInput | Prisma.StudentIndicatorProfileOrderByWithRelationInput[]
+  cursor?: Prisma.StudentIndicatorProfileWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StudentIndicatorProfileScalarFieldEnum | Prisma.StudentIndicatorProfileScalarFieldEnum[]
 }
 
 /**
