@@ -3,6 +3,7 @@ from collections.abc import Iterator
 
 from google import genai
 from google.genai import types
+from pydantic import BaseModel
 
 from tutor_rag.contracts.rag import GenerateRequest
 from tutor_rag.core.config import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, Settings
@@ -72,6 +73,21 @@ class GeminiProvider:
                 config=self._generation_config(request),
             )
         return (response.text or "").strip() or EMPTY_ANSWER
+
+    def generate_structured(self, prompt: str, instruction: str, schema: type[BaseModel]) -> str:
+        # Output terstruktur membatasi kontrak klasifikasi; validasi ID tetap milik domain.
+        with self._client(20_000) as client:
+            response = client.models.generate_content(
+                model=self.settings.gemini_chat_model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=instruction,
+                    response_mime_type="application/json",
+                    response_schema=schema,
+                    temperature=0,
+                ),
+            )
+        return response.text or "{}"
 
     def stream(self, request: GenerateRequest) -> Iterator[str]:
         # Generator mengirim teks bertahap; instruksi gaya chat/avatar sudah ada pada prompt.

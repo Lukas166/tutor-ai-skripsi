@@ -36,6 +36,7 @@ export type TutorChatSession = {
 };
 
 export type TutorOverview = {
+  pretestRequired: boolean;
   course: {
     id: string;
     title: string;

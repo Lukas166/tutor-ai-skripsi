@@ -231,6 +231,7 @@ export type DomainIndicatorWhereInput = {
   questions?: Prisma.QuestionBankItemListRelationFilter
   items?: Prisma.AssessmentItemListRelationFilter
   profiles?: Prisma.StudentIndicatorProfileListRelationFilter
+  practiceSessions?: Prisma.PracticeSessionListRelationFilter
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }
 
@@ -252,6 +253,7 @@ export type DomainIndicatorOrderByWithRelationInput = {
   questions?: Prisma.QuestionBankItemOrderByRelationAggregateInput
   items?: Prisma.AssessmentItemOrderByRelationAggregateInput
   profiles?: Prisma.StudentIndicatorProfileOrderByRelationAggregateInput
+  practiceSessions?: Prisma.PracticeSessionOrderByRelationAggregateInput
   course?: Prisma.CourseOrderByWithRelationInput
 }
 
@@ -277,6 +279,7 @@ export type DomainIndicatorWhereUniqueInput = Prisma.AtLeast<{
   questions?: Prisma.QuestionBankItemListRelationFilter
   items?: Prisma.AssessmentItemListRelationFilter
   profiles?: Prisma.StudentIndicatorProfileListRelationFilter
+  practiceSessions?: Prisma.PracticeSessionListRelationFilter
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }, "id" | "courseId_code">
 
@@ -331,6 +334,7 @@ export type DomainIndicatorCreateInput = {
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
   course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
 }
 
@@ -350,6 +354,7 @@ export type DomainIndicatorUncheckedCreateInput = {
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorUpdateInput = {
@@ -367,6 +372,7 @@ export type DomainIndicatorUpdateInput = {
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
 }
 
@@ -386,6 +392,7 @@ export type DomainIndicatorUncheckedUpdateInput = {
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorCreateManyInput = {
@@ -675,6 +682,20 @@ export type DomainIndicatorUpdateOneRequiredWithoutProfilesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DomainIndicatorUpdateToOneWithWhereWithoutProfilesInput, Prisma.DomainIndicatorUpdateWithoutProfilesInput>, Prisma.DomainIndicatorUncheckedUpdateWithoutProfilesInput>
 }
 
+export type DomainIndicatorCreateNestedOneWithoutPracticeSessionsInput = {
+  create?: Prisma.XOR<Prisma.DomainIndicatorCreateWithoutPracticeSessionsInput, Prisma.DomainIndicatorUncheckedCreateWithoutPracticeSessionsInput>
+  connectOrCreate?: Prisma.DomainIndicatorCreateOrConnectWithoutPracticeSessionsInput
+  connect?: Prisma.DomainIndicatorWhereUniqueInput
+}
+
+export type DomainIndicatorUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DomainIndicatorCreateWithoutPracticeSessionsInput, Prisma.DomainIndicatorUncheckedCreateWithoutPracticeSessionsInput>
+  connectOrCreate?: Prisma.DomainIndicatorCreateOrConnectWithoutPracticeSessionsInput
+  upsert?: Prisma.DomainIndicatorUpsertWithoutPracticeSessionsInput
+  connect?: Prisma.DomainIndicatorWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DomainIndicatorUpdateToOneWithWhereWithoutPracticeSessionsInput, Prisma.DomainIndicatorUpdateWithoutPracticeSessionsInput>, Prisma.DomainIndicatorUncheckedUpdateWithoutPracticeSessionsInput>
+}
+
 export type DomainIndicatorCreateWithoutCourseInput = {
   id: string
   code: string
@@ -690,6 +711,7 @@ export type DomainIndicatorCreateWithoutCourseInput = {
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorUncheckedCreateWithoutCourseInput = {
@@ -707,6 +729,7 @@ export type DomainIndicatorUncheckedCreateWithoutCourseInput = {
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorCreateOrConnectWithoutCourseInput = {
@@ -767,6 +790,7 @@ export type DomainIndicatorCreateWithoutTopicInput = {
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
   course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
 }
 
@@ -785,6 +809,7 @@ export type DomainIndicatorUncheckedCreateWithoutTopicInput = {
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorCreateOrConnectWithoutTopicInput = {
@@ -827,6 +852,7 @@ export type DomainIndicatorCreateWithoutConceptInput = {
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
   course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
 }
 
@@ -845,6 +871,7 @@ export type DomainIndicatorUncheckedCreateWithoutConceptInput = {
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorCreateOrConnectWithoutConceptInput = {
@@ -887,6 +914,7 @@ export type DomainIndicatorCreateWithoutQuestionsInput = {
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
   course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
 }
 
@@ -905,6 +933,7 @@ export type DomainIndicatorUncheckedCreateWithoutQuestionsInput = {
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorCreateOrConnectWithoutQuestionsInput = {
@@ -937,6 +966,7 @@ export type DomainIndicatorUpdateWithoutQuestionsInput = {
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
 }
 
@@ -955,6 +985,7 @@ export type DomainIndicatorUncheckedUpdateWithoutQuestionsInput = {
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorCreateWithoutItemsInput = {
@@ -971,6 +1002,7 @@ export type DomainIndicatorCreateWithoutItemsInput = {
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
   course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
 }
 
@@ -989,6 +1021,7 @@ export type DomainIndicatorUncheckedCreateWithoutItemsInput = {
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorCreateOrConnectWithoutItemsInput = {
@@ -1021,6 +1054,7 @@ export type DomainIndicatorUpdateWithoutItemsInput = {
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
 }
 
@@ -1039,6 +1073,7 @@ export type DomainIndicatorUncheckedUpdateWithoutItemsInput = {
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorCreateWithoutProfilesInput = {
@@ -1055,6 +1090,7 @@ export type DomainIndicatorCreateWithoutProfilesInput = {
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutIndicatorInput
   course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
 }
 
@@ -1073,6 +1109,7 @@ export type DomainIndicatorUncheckedCreateWithoutProfilesInput = {
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
 }
 
 export type DomainIndicatorCreateOrConnectWithoutProfilesInput = {
@@ -1105,6 +1142,7 @@ export type DomainIndicatorUpdateWithoutProfilesInput = {
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
 }
 
@@ -1123,6 +1161,95 @@ export type DomainIndicatorUncheckedUpdateWithoutProfilesInput = {
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
+}
+
+export type DomainIndicatorCreateWithoutPracticeSessionsInput = {
+  id: string
+  code: string
+  description: string
+  cpmkCodes?: Prisma.DomainIndicatorCreatecpmkCodesInput | string[]
+  subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
+  sourcePdf: string
+  sourcePages: string
+  sourceStatus: string
+  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
+  concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
+  questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
+  items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
+  profiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutIndicatorInput
+  course: Prisma.CourseCreateNestedOneWithoutDomainIndicatorsInput
+}
+
+export type DomainIndicatorUncheckedCreateWithoutPracticeSessionsInput = {
+  id: string
+  code: string
+  courseId: string
+  topicId: string
+  conceptId: string
+  description: string
+  cpmkCodes?: Prisma.DomainIndicatorCreatecpmkCodesInput | string[]
+  subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
+  sourcePdf: string
+  sourcePages: string
+  sourceStatus: string
+  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
+  items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
+  profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
+}
+
+export type DomainIndicatorCreateOrConnectWithoutPracticeSessionsInput = {
+  where: Prisma.DomainIndicatorWhereUniqueInput
+  create: Prisma.XOR<Prisma.DomainIndicatorCreateWithoutPracticeSessionsInput, Prisma.DomainIndicatorUncheckedCreateWithoutPracticeSessionsInput>
+}
+
+export type DomainIndicatorUpsertWithoutPracticeSessionsInput = {
+  update: Prisma.XOR<Prisma.DomainIndicatorUpdateWithoutPracticeSessionsInput, Prisma.DomainIndicatorUncheckedUpdateWithoutPracticeSessionsInput>
+  create: Prisma.XOR<Prisma.DomainIndicatorCreateWithoutPracticeSessionsInput, Prisma.DomainIndicatorUncheckedCreateWithoutPracticeSessionsInput>
+  where?: Prisma.DomainIndicatorWhereInput
+}
+
+export type DomainIndicatorUpdateToOneWithWhereWithoutPracticeSessionsInput = {
+  where?: Prisma.DomainIndicatorWhereInput
+  data: Prisma.XOR<Prisma.DomainIndicatorUpdateWithoutPracticeSessionsInput, Prisma.DomainIndicatorUncheckedUpdateWithoutPracticeSessionsInput>
+}
+
+export type DomainIndicatorUpdateWithoutPracticeSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  cpmkCodes?: Prisma.DomainIndicatorUpdatecpmkCodesInput | string[]
+  subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
+  sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
+  sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
+  concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
+  questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
+  items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
+  profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
+}
+
+export type DomainIndicatorUncheckedUpdateWithoutPracticeSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.StringFieldUpdateOperationsInput | string
+  topicId?: Prisma.StringFieldUpdateOperationsInput | string
+  conceptId?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.StringFieldUpdateOperationsInput | string
+  cpmkCodes?: Prisma.DomainIndicatorUpdatecpmkCodesInput | string[]
+  subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
+  sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
+  sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
+  items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
+  profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorCreateManyCourseInput = {
@@ -1154,6 +1281,7 @@ export type DomainIndicatorUpdateWithoutCourseInput = {
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorUncheckedUpdateWithoutCourseInput = {
@@ -1171,6 +1299,7 @@ export type DomainIndicatorUncheckedUpdateWithoutCourseInput = {
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorUncheckedUpdateManyWithoutCourseInput = {
@@ -1215,6 +1344,7 @@ export type DomainIndicatorUpdateWithoutTopicInput = {
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
 }
 
@@ -1233,6 +1363,7 @@ export type DomainIndicatorUncheckedUpdateWithoutTopicInput = {
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorUncheckedUpdateManyWithoutTopicInput = {
@@ -1277,6 +1408,7 @@ export type DomainIndicatorUpdateWithoutConceptInput = {
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutIndicatorNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainIndicatorsNestedInput
 }
 
@@ -1295,6 +1427,7 @@ export type DomainIndicatorUncheckedUpdateWithoutConceptInput = {
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
 }
 
 export type DomainIndicatorUncheckedUpdateManyWithoutConceptInput = {
@@ -1320,12 +1453,14 @@ export type DomainIndicatorCountOutputType = {
   questions: number
   items: number
   profiles: number
+  practiceSessions: number
 }
 
 export type DomainIndicatorCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   questions?: boolean | DomainIndicatorCountOutputTypeCountQuestionsArgs
   items?: boolean | DomainIndicatorCountOutputTypeCountItemsArgs
   profiles?: boolean | DomainIndicatorCountOutputTypeCountProfilesArgs
+  practiceSessions?: boolean | DomainIndicatorCountOutputTypeCountPracticeSessionsArgs
 }
 
 /**
@@ -1359,6 +1494,13 @@ export type DomainIndicatorCountOutputTypeCountProfilesArgs<ExtArgs extends runt
   where?: Prisma.StudentIndicatorProfileWhereInput
 }
 
+/**
+ * DomainIndicatorCountOutputType without action
+ */
+export type DomainIndicatorCountOutputTypeCountPracticeSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PracticeSessionWhereInput
+}
+
 
 export type DomainIndicatorSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1378,6 +1520,7 @@ export type DomainIndicatorSelect<ExtArgs extends runtime.Types.Extensions.Inter
   questions?: boolean | Prisma.DomainIndicator$questionsArgs<ExtArgs>
   items?: boolean | Prisma.DomainIndicator$itemsArgs<ExtArgs>
   profiles?: boolean | Prisma.DomainIndicator$profilesArgs<ExtArgs>
+  practiceSessions?: boolean | Prisma.DomainIndicator$practiceSessionsArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.DomainIndicatorCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["domainIndicator"]>
@@ -1440,6 +1583,7 @@ export type DomainIndicatorInclude<ExtArgs extends runtime.Types.Extensions.Inte
   questions?: boolean | Prisma.DomainIndicator$questionsArgs<ExtArgs>
   items?: boolean | Prisma.DomainIndicator$itemsArgs<ExtArgs>
   profiles?: boolean | Prisma.DomainIndicator$profilesArgs<ExtArgs>
+  practiceSessions?: boolean | Prisma.DomainIndicator$practiceSessionsArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.DomainIndicatorCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1462,6 +1606,7 @@ export type $DomainIndicatorPayload<ExtArgs extends runtime.Types.Extensions.Int
     questions: Prisma.$QuestionBankItemPayload<ExtArgs>[]
     items: Prisma.$AssessmentItemPayload<ExtArgs>[]
     profiles: Prisma.$StudentIndicatorProfilePayload<ExtArgs>[]
+    practiceSessions: Prisma.$PracticeSessionPayload<ExtArgs>[]
     course: Prisma.$CoursePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1876,6 +2021,7 @@ export interface Prisma__DomainIndicatorClient<T, Null = never, ExtArgs extends 
   questions<T extends Prisma.DomainIndicator$questionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DomainIndicator$questionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionBankItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   items<T extends Prisma.DomainIndicator$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DomainIndicator$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   profiles<T extends Prisma.DomainIndicator$profilesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DomainIndicator$profilesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentIndicatorProfilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  practiceSessions<T extends Prisma.DomainIndicator$practiceSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DomainIndicator$practiceSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   course<T extends Prisma.CourseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseDefaultArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2388,6 +2534,30 @@ export type DomainIndicator$profilesArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.StudentIndicatorProfileScalarFieldEnum | Prisma.StudentIndicatorProfileScalarFieldEnum[]
+}
+
+/**
+ * DomainIndicator.practiceSessions
+ */
+export type DomainIndicator$practiceSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PracticeSession
+   */
+  select?: Prisma.PracticeSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PracticeSession
+   */
+  omit?: Prisma.PracticeSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PracticeSessionInclude<ExtArgs> | null
+  where?: Prisma.PracticeSessionWhereInput
+  orderBy?: Prisma.PracticeSessionOrderByWithRelationInput | Prisma.PracticeSessionOrderByWithRelationInput[]
+  cursor?: Prisma.PracticeSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PracticeSessionScalarFieldEnum | Prisma.PracticeSessionScalarFieldEnum[]
 }
 
 /**

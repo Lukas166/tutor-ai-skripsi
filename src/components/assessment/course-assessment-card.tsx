@@ -50,7 +50,7 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2">
             <ClipboardList className="size-5" />
-            Profil Belajar Awal
+            {finished ? "Pembelajaran Adaptif" : "Profil Belajar Awal"}
           </CardTitle>
           {overview?.available && (
             <Badge variant={finished ? "default" : "secondary"}>
@@ -63,7 +63,9 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
           )}
         </div>
         <CardDescription>
-          Kenali kemampuan awal sebelum melanjutkan pembelajaran.
+          {finished
+            ? "Pelajari materi, coba latihan konsep, lalu ukur hasil dengan post-test."
+            : "Kenali kemampuan awal sebelum melanjutkan pembelajaran."}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -91,11 +93,20 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
             </Button>
           </div>
         ) : (
-          <p className="text-sm text-muted-foreground">
-            {overview?.totalQuestions} soal pilihan ganda dari{" "}
-            {overview?.topicCount} materi. Hasil membentuk indikasi kemampuan
-            awal dengan bukti terbatas, bukan sertifikasi penguasaan.
-          </p>
+          <div className="flex flex-col gap-2">
+            <p className="text-sm text-muted-foreground">
+              {overview?.totalQuestions} soal pilihan ganda dari{" "}
+              {overview?.topicCount} materi. Hasil membentuk indikasi kemampuan
+              awal dengan bukti terbatas, bukan sertifikasi penguasaan.
+            </p>
+            {finished && overview?.posttest && (
+              <p className="text-sm text-muted-foreground">
+                {overview.posttest.available
+                  ? "Post-test tersedia untuk mengukur hasil belajar. Tidak ada syarat status penguasaan indikator."
+                  : overview.posttest.reason}
+              </p>
+            )}
+          </div>
         )}
       </CardContent>
       {overview?.available && (
@@ -113,11 +124,31 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
             </Link>
           </Button>
           {finished && (
-            <Button asChild variant="outline">
-              <Link href={`/mahasiswa/courses/${courseId}/pretest/result`}>
-                Hasil Pre-test
-              </Link>
-            </Button>
+            <>
+              <Button asChild variant="secondary">
+                <Link href={`/courses/${courseId}/tutor`}>
+                  Lanjut Belajar di AI Tutor
+                </Link>
+              </Button>
+              {overview?.posttest?.available && (
+                <Button asChild variant="outline">
+                  <Link
+                    href={`/mahasiswa/courses/${courseId}/posttest${overview.posttest.status === "SUBMITTED" ? "/result" : ""}`}
+                  >
+                    {overview.posttest.status === "SUBMITTED"
+                      ? "Lihat Perbandingan Hasil"
+                      : overview.posttest.status === "IN_PROGRESS"
+                        ? "Lanjutkan Post-test"
+                        : "Mulai Post-test"}
+                  </Link>
+                </Button>
+              )}
+              <Button asChild variant="outline">
+                <Link href={`/mahasiswa/courses/${courseId}/pretest/result`}>
+                  Hasil Pre-test
+                </Link>
+              </Button>
+            </>
           )}
         </CardFooter>
       )}

@@ -11,7 +11,7 @@ def truncate_text(value: str, limit: int) -> str:
 
 
 def build_system_instruction(request: PrepareRequest) -> str:
-    # Gaya akademik berasal dari konfigurasi admin LMS; tidak menambah mekanisme adaptasi.
+    # Gaya akademik berasal dari admin LMS; arahan adaptif ditambahkan oleh pipeline Python.
     level = request.user.academic_level if request.user.academic_level in ("S2", "S3") else "S1"
     replacements = {
         "{{user_name}}": request.user.name or "Mahasiswa",

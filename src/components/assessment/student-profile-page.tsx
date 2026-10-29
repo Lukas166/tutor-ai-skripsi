@@ -29,6 +29,8 @@ const statusLabels = {
   NOT_ASSESSED: "Belum dinilai",
   NEEDS_REINFORCEMENT: "Perlu penguatan",
   INITIAL_POSITIVE_EVIDENCE: "Indikasi awal baik (bukti terbatas)",
+  DEVELOPING: "Berkembang",
+  READY_TO_ADVANCE: "Siap lanjut",
 };
 
 export function StudentProfilePage({
@@ -100,7 +102,7 @@ export function StudentProfilePage({
             {profile.course.title}
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            {resultOnly ? "Hasil Pre-test" : "Student Profile Awal"}
+            {resultOnly ? "Hasil Pre-test" : "Profil Belajar"}
           </h1>
           <p className="mt-2 text-muted-foreground">
             {resultOnly && completed
@@ -218,8 +220,7 @@ export function StudentProfilePage({
           <div>
             <h2 className="text-xl font-bold">Peta indikator per materi</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Baseline tetap disimpan; performa terkini disiapkan untuk bukti
-              pembelajaran berikutnya.
+              Baseline tetap disimpan. Performa terkini berubah melalui bukti latihan mandiri; status adalah sinyal bantuan, bukan sertifikasi penguasaan.
             </p>
           </div>
           {profile.topics.map((topic) => (
@@ -257,7 +258,7 @@ export function StudentProfilePage({
                         <p className="text-xs text-muted-foreground">
                           {indicator.evidenceCount} bukti
                           {indicator.initialScore !== null
-                            ? ` · Nilai awal ${indicator.initialScore}/1 · Performa terkini ${indicator.currentScore}/1`
+                            ? ` · Nilai awal ${indicator.initialScore}/1 · EMA terkini ${indicator.currentScore?.toFixed(2)}/1`
                             : " · Belum ada hasil penilaian"}
                         </p>
                       </div>
@@ -270,7 +271,7 @@ export function StudentProfilePage({
                             : "secondary"
                         }
                       >
-                        {statusLabels[indicator.initialStatus]}
+                        {statusLabels[indicator.currentStatus]}
                       </Badge>
                     </li>
                   ))}
@@ -310,7 +311,7 @@ export function StudentProfilePage({
             </Link>
           </Button>
           <Button asChild variant="outline">
-            <Link href={`/mahasiswa/courses/${courseId}/tutor`}>
+            <Link href={`/courses/${courseId}/tutor`}>
               <MessageCircle data-icon="inline-start" />
               Buka AI Tutor
             </Link>

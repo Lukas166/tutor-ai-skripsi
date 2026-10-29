@@ -309,6 +309,10 @@ export function useTutorChat({
   }
 
   async function handleSend() {
+    if (overview?.pretestRequired) {
+      toast("Kerjakan pre-test melalui tombol di atas sebelum memulai pembelajaran.");
+      return;
+    }
     const question = input.trim();
     if (!question || sending) return;
     if (loadingSessionRef.current) {

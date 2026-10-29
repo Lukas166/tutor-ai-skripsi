@@ -50,9 +50,17 @@ import { assessmentRequest, type Attempt, type Option } from "./types";
 
 const OPTIONS: Option[] = ["A", "B", "C", "D", "E"];
 
-export function PretestPage({ courseId }: { courseId: string }) {
+export function AssessmentPage({
+  courseId,
+  kind = "pretest",
+}: {
+  courseId: string;
+  kind?: "pretest" | "posttest";
+}) {
   const router = useRouter();
-  const url = `/api/mahasiswa/courses/${courseId}/pretest`;
+  const label = kind === "posttest" ? "Post-test" : "Pre-test";
+  const resultUrl = `/mahasiswa/courses/${courseId}/${kind}/result`;
+  const url = `/api/mahasiswa/courses/${courseId}/${kind}`;
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
@@ -105,7 +113,7 @@ export function PretestPage({ courseId }: { courseId: string }) {
   const acceptAttempt = useCallback(
     (data: Attempt | null) => {
       if (data?.status === "SUBMITTED") {
-        router.replace(`/mahasiswa/courses/${courseId}/pretest/result`);
+        router.replace(resultUrl);
         return;
       }
       if (data) {
@@ -131,7 +139,7 @@ export function PretestPage({ courseId }: { courseId: string }) {
       }
       setAttempt(data);
     },
-    [courseId, router, save],
+    [resultUrl, router, save],
   );
 
   useEffect(() => {
@@ -185,7 +193,7 @@ export function PretestPage({ courseId }: { courseId: string }) {
       } catch {
         /* Hasil permanen sudah disimpan backend. */
       }
-      router.replace(`/mahasiswa/courses/${courseId}/pretest/result`);
+      router.replace(resultUrl);
     } catch (cause) {
       toast.error(
         cause instanceof Error
@@ -220,25 +228,28 @@ export function PretestPage({ courseId }: { courseId: string }) {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-muted-foreground">
-            ASESMEN DIAGNOSTIK
+            {kind === "posttest" ? "ASESMEN HASIL PEMBELAJARAN" : "ASESMEN DIAGNOSTIK"}
           </p>
           <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            Pre-test Kemampuan Awal
+            {kind === "posttest"
+              ? "Post-test Hasil Pembelajaran"
+              : "Pre-test Kemampuan Awal"}
           </h1>
           <p className="mt-2 text-muted-foreground">
-            Jawab sesuai pemahaman Anda saat ini. Hasil membantu mengenali
-            kebutuhan belajar.
+            {kind === "posttest"
+              ? "Jawab secara mandiri. Hasil dibandingkan dengan pre-test dan tidak mengubah EMA belajar."
+              : "Jawab sesuai pemahaman Anda saat ini. Hasil membantu mengenali kebutuhan belajar."}
           </p>
         </div>
         <Badge variant="secondary">
           {attempt
             ? `${attempt.totalQuestions} soal · 5 opsi`
-            : "Satu sesi pre-test final"}
+            : `Satu sesi ${label.toLowerCase()} final`}
         </Badge>
       </div>
       {error && (
         <Alert variant="destructive">
-          <AlertTitle>Pre-test belum dapat dibuka</AlertTitle>
+          <AlertTitle>{label} belum dapat dibuka</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -250,7 +261,7 @@ export function PretestPage({ courseId }: { courseId: string }) {
               Sebelum memulai
             </CardTitle>
             <CardDescription>
-              Pre-test dapat diselesaikan satu kali untuk mata kuliah ini.
+              {label} dapat diselesaikan satu kali untuk mata kuliah ini.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
@@ -263,13 +274,14 @@ export function PretestPage({ courseId }: { courseId: string }) {
               yang sama. Setelah difinalisasi, jawaban tidak dapat diubah.
             </p>
             <p>
-              Kunci dan pembahasan belum ditampilkan karena paket soal digunakan
-              kembali pada post-test.
+              {kind === "posttest"
+                ? "Kunci dan pembahasan belum ditampilkan selama post-test berlangsung."
+                : "Kunci dan pembahasan belum ditampilkan karena paket soal digunakan kembali pada post-test."}
             </p>
           </CardContent>
           <CardFooter>
             <Button onClick={start} disabled={busy}>
-              {busy && <Loader2 className="animate-spin" />}Mulai Pre-test
+              {busy && <Loader2 className="animate-spin" />}Mulai {label}
               <ArrowRight data-icon="inline-end" />
             </Button>
           </CardFooter>
@@ -462,12 +474,14 @@ export function PretestPage({ courseId }: { courseId: string }) {
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle>
-                          Finalisasi pre-test?
+                          Finalisasi {label.toLowerCase()}?
                         </AlertDialogTitle>
                         <AlertDialogDescription>
                           Seluruh {answered} jawaban sudah terisi. Setelah
-                          dikirim, jawaban tidak dapat diubah dan profil
-                          kemampuan awal akan terbentuk.
+                          dikirim, jawaban tidak dapat diubah.
+                          {kind === "posttest"
+                            ? " Hasil perbandingan pembelajaran akan tersedia."
+                            : " Profil kemampuan awal akan terbentuk."}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>

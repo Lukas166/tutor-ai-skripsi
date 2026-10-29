@@ -59,10 +59,27 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
             )
         for row in data["Materi RPL"]:
             number = int(row["Pertemuan"])
-            session = connection.execute(
-                'SELECT id FROM course_session WHERE "courseId"=%s AND "orderNumber"=%s',
-                (course["id"], number),
-            ).fetchone()
+
+            # Urutan LMS dapat berbeda dari workbook. Prioritaskan PDF yang sudah diunggah.
+            def normalized_file(value: str) -> str:
+                value = re.sub(r"^\d+[.\s]+", "", value.lower()).replace("modelling", "modeling")
+                return re.sub(r"[^a-z0-9]", "", value.replace(".pdf", ""))
+
+            expected_file = normalized_file(row["Nama File PDF"])
+            uploaded = connection.execute(
+                'SELECT m."courseSessionId" AS id,m."fileName" FROM material m '
+                'JOIN course_session s ON s.id=m."courseSessionId" WHERE s."courseId"=%s',
+                (course["id"],),
+            ).fetchall()
+            matches = {m["id"] for m in uploaded if normalized_file(m["fileName"]) == expected_file}
+            session = (
+                {"id": next(iter(matches))}
+                if len(matches) == 1
+                else connection.execute(
+                    'SELECT id FROM course_session WHERE "courseId"=%s AND "orderNumber"=%s',
+                    (course["id"], number),
+                ).fetchone()
+            )
             if session is None:
                 session = connection.execute(
                     'INSERT INTO course_session (id,"courseId","createdBy",title,"orderNumber",'

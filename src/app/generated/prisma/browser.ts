@@ -142,3 +142,18 @@ export type AssessmentItem = Prisma.AssessmentItemModel
  *
  */
 export type StudentIndicatorProfile = Prisma.StudentIndicatorProfileModel
+/**
+ * Model PracticeSession
+ *
+ */
+export type PracticeSession = Prisma.PracticeSessionModel
+/**
+ * Model PracticeEvent
+ *
+ */
+export type PracticeEvent = Prisma.PracticeEventModel
+/**
+ * Model StudentLearningProgress
+ *
+ */
+export type StudentLearningProgress = Prisma.StudentLearningProgressModel

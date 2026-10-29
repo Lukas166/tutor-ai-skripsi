@@ -42,6 +42,8 @@ model User {
   aiChatSessions     AiChatSession[]
   assessments        AssessmentAttempt[]
   indicatorProfiles  StudentIndicatorProfile[]
+  practiceSessions   PracticeSession[]
+  learningProgress   StudentLearningProgress[]
 
   @@map("user")
 }
@@ -121,6 +123,8 @@ model Course {
   learningOutcomes LearningOutcome[]
   domainIndicators DomainIndicator[]
   questionBank QuestionBankItem[]
+  practiceSessions PracticeSession[]
+  learningProgress StudentLearningProgress[]
 
   @@index([enrollmentKey])
   @@map("course")
@@ -309,6 +313,7 @@ model AiChatSession {
   course        Course          @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseSession CourseSession   @relation(fields: [courseSessionId], references: [id], onDelete: Cascade)
   messages      AiChatMessage[]
+  practiceSessions PracticeSession[]
 
   @@index([userId, courseSessionId])
   @@index([userId])
@@ -424,6 +429,7 @@ model DomainIndicator {
   questions    QuestionBankItem[]
   items        AssessmentItem[]
   profiles     StudentIndicatorProfile[]
+  practiceSessions PracticeSession[]
   course       Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   @@unique([courseId, code])
   @@index([topicId])
@@ -450,6 +456,7 @@ model QuestionBankItem {
   topic            DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   indicator        DomainIndicator @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
   items            AssessmentItem[]
+  practiceSessions PracticeSession[]
   course           Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   @@unique([courseId, code])
   @@unique([indicatorId, kind, practiceNumber])
@@ -461,7 +468,7 @@ model AssessmentAttempt {
   id             String @id
   studentId      String
   courseId       String
-  kind           String @default("PRE") // POST disiapkan secara struktural, belum ada endpoint-nya.
+  kind           String @default("PRE") // PRE dan POST memakai snapshot paket yang identik.
   status         String @default("IN_PROGRESS")
   startedAt      DateTime @default(now())
   submittedAt    DateTime?
@@ -480,6 +487,10 @@ model CourseLearningConfig {
   pretestQuestionCount  Int
   datasetName          String
   datasetChecksum      String
+  emaAlpha             Float @default(0.3)
+  developingThreshold  Float @default(0.5)
+  readyThreshold       Float @default(0.8)
+  minimumStudySeconds  Int @default(0)
   course               Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   @@map("course_learning_config")
 }
@@ -514,6 +525,7 @@ model StudentIndicatorProfile {
   currentScore    Float
   evidenceCount  Int @default(1)
   initialStatus  String // NEEDS_REINFORCEMENT | INITIAL_POSITIVE_EVIDENCE
+  currentStatus  String @default("NOT_ASSESSED")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt @default(now())
   student         User @relation(fields: [studentId], references: [id], onDelete: Cascade)
@@ -522,4 +534,62 @@ model StudentIndicatorProfile {
   baselineItem    AssessmentItem @relation(fields: [baselineItemId], references: [id], onDelete: Restrict)
   @@unique([studentId, courseId, indicatorId])
   @@map("student_indicator_profile")
+}
+
+// Satu soal latihan berbeda hanya dapat menyumbang satu bukti mandiri per mahasiswa/course.
+model PracticeSession {
+  id               String @id
+  studentId        String
+  courseId         String
+  chatSessionId    String?
+  indicatorId      String
+  questionId       String
+  status           String @default("OFFERED")
+  questionSnapshot Json
+  hintCount        Int @default(0)
+  answerCount      Int @default(0)
+  firstAnsweredAt  DateTime?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @default(now()) @updatedAt
+  student          User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course           Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  chatSession      AiChatSession? @relation(fields: [chatSessionId], references: [id], onDelete: SetNull)
+  indicator        DomainIndicator @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
+  question         QuestionBankItem @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  events           PracticeEvent[]
+  @@unique([studentId, courseId, questionId])
+  @@index([chatSessionId])
+  @@map("practice_session")
+}
+
+// Idempotency key, kondisi bantuan, dan EMA sebelum/sesudah menjadi audit penilaian server.
+model PracticeEvent {
+  id               String @id
+  practiceSessionId String
+  requestId        String
+  kind             String
+  selectedOption   String?
+  isCorrect        Boolean?
+  independent      Boolean @default(false)
+  hintCount        Int
+  scoreBefore      Float?
+  scoreAfter       Float?
+  emaAlpha         Float?
+  feedback         String
+  sources          Json
+  createdAt        DateTime @default(now())
+  practiceSession  PracticeSession @relation(fields: [practiceSessionId], references: [id], onDelete: Cascade)
+  @@unique([practiceSessionId, requestId])
+  @@map("practice_event")
+}
+
+model StudentLearningProgress {
+  studentId     String
+  courseId      String
+  startedAt     DateTime @default(now())
+  lastStudiedAt DateTime @default(now())
+  student       User @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  course        Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  @@id([studentId, courseId])
+  @@map("student_learning_progress")
 }

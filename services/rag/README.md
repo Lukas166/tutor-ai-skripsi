@@ -81,8 +81,9 @@ menjalankan backend tanpa reload.
 Worker ingestion aktif secara default dan berjalan bersama backend AI. Untuk mencoba, buka LMS,
 login, unggah materi PDF, tunggu status ready, lalu ajukan pertanyaan pada tutor.
 
-OCR memerlukan executable Tesseract 5 yang tersedia di PATH. Data bahasa Inggris dan
-Indonesia otomatis dibaca dari root proyek.
+OCR memerlukan Tesseract 5. Selain PATH dan instalasi Windows standar, backend
+mengenali `.tools/tesseract/tesseract.exe` bila runtime lokal disediakan. Binary
+diabaikan Git; data bahasa Inggris dan Indonesia dibaca dari root proyek.
 PDF dengan teks bawaan masih bisa diproses ketika OCR gagal; PDF scan tanpa lapisan
 teks membutuhkan Tesseract agar dapat diindeks.
 

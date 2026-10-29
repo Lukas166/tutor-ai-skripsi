@@ -51,6 +51,9 @@ import {
 import type { TutorAiChatPageProps } from "./tutor-chat-types";
 import { useTutorChat } from "./hooks/use-tutor-chat";
 import { useTutorSpeech } from "./hooks/use-tutor-speech";
+import Link from "next/link";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { TutorPracticeCard, practiceIdFrom } from "./tutor-practice-card";
 
 const CHAT_INPUT_MIN_HEIGHT = 44;
 const CHAT_LANDING_MESSAGES = [
@@ -123,6 +126,7 @@ export function TutorAiChatPage({
     useState(false);
   const [avatarCustomizationOpen, setAvatarCustomizationOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [practiceOpen, setPracticeOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -191,6 +195,7 @@ export function TutorAiChatPage({
     setInput,
     panelMode,
   });
+  const latestPracticeId = activeSession?.messages.map((message) => practiceIdFrom(message.ragSources)).filter(Boolean).at(-1);
 
   const {
     recording,
@@ -438,6 +443,11 @@ export function TutorAiChatPage({
             </TooltipContent>
           </Tooltip>
         </header>
+        {overview?.pretestRequired && <Alert><AlertTitle>Mulai dengan pre-test</AlertTitle><AlertDescription>
+          Profil awal diperlukan agar tutor menyesuaikan bantuan.
+          <Button asChild size="sm"><Link href={`/mahasiswa/courses/${courseId}/pretest`}>Kerjakan Pre-test</Link></Button>
+        </AlertDescription></Alert>}
+        {panelMode === "avatar" && latestPracticeId && <Button variant="outline" className="mx-5 self-start" onClick={() => setPracticeOpen(true)}>Buka Latihan Konsep</Button>}
 
         {/* Messages area */}
         {loadingOverview ? (
@@ -515,6 +525,7 @@ export function TutorAiChatPage({
       </main>
 
       {/* ==================== SEARCH DIALOG ==================== */}
+      <Dialog open={practiceOpen} onOpenChange={setPracticeOpen}><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Latihan di Tutor</DialogTitle><DialogDescription>Gunakan bank soal untuk mencoba pemahaman konsep.</DialogDescription></DialogHeader>{latestPracticeId && <TutorPracticeCard courseId={courseId} practiceId={latestPracticeId} />}</DialogContent></Dialog>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>

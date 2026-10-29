@@ -3,17 +3,19 @@ import { requireMahasiswa } from "@/lib/api-utils";
 import prisma from "@/lib/prisma";
 
 type Operation =
-  | "overview"
-  | "current"
-  | "start"
-  | "save"
-  | "submit"
-  | "profile";
+  "overview" | "current" | "start" | "save" | "submit" | "profile";
+type LearningOperation =
+  | "comparison"
+  | "practice-current"
+  | "practice-accept"
+  | "practice-dismiss"
+  | "practice-answer"
+  | "practice-hint";
 
 export async function assessmentProxy(
   request: NextRequest,
   courseId: string,
-  operation: Operation,
+  operation: Operation | LearningOperation,
   body: Record<string, string> = {},
 ) {
   const { error, session } = await requireMahasiswa(request);
@@ -51,7 +53,12 @@ export async function assessmentProxy(
       },
       // Identitas selalu dari sesi server; body browser tidak dapat menentukan mahasiswa lain.
       body: JSON.stringify({ ...body, studentId, courseId }),
-      signal: AbortSignal.any([request.signal, AbortSignal.timeout(30_000)]),
+      signal: AbortSignal.any([
+        request.signal,
+        AbortSignal.timeout(
+          operation.startsWith("practice-") ? 120_000 : 30_000,
+        ),
+      ]),
     });
     const data = await response.json();
     if (response.status === 404 && data.detail === "Not Found") {

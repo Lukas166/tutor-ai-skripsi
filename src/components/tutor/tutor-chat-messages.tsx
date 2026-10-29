@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import type { RagSource, TutorChatSession, TutorMessage } from "./tutor-chat-types";
+import { TutorPracticeCard, practiceIdFrom } from "./tutor-practice-card";
 
 function getMessageSources(message: TutorMessage): RagSource[] {
   if (!message.ragSources || typeof message.ragSources !== "object") return [];
@@ -66,10 +67,6 @@ function getUniqueSources(sources: RagSource[]) {
 
 const TUTOR_SPEECH_RATE = 1.2;
 const TUTOR_SPEECH_PITCH = 1;
-
-function isEdgeBrowser() {
-  return /EdgA|EdgiOS|Edg\//i.test(navigator.userAgent);
-}
 
 function looksLikeMarkdownTableRow(line: string) {
   const trimmedLine = line.trim();
@@ -573,10 +570,13 @@ export const TutorChatMessages = memo(function TutorChatMessages({
         ) : activeSession.messages.length === 0 ? (
           <div className="min-h-[60vh]" aria-hidden="true" />
         ) : (
-          activeSession.messages.map((message) => {
+          activeSession.messages.map((message, messageIndex) => {
             const isUser = message.senderType === "user";
             const sources = getUniqueSources(getMessageSources(message));
             const isStreaming = sending && message.id.startsWith("streaming-");
+            const practiceId = practiceIdFrom(message.ragSources);
+            const showPractice = practiceId && !activeSession.messages.slice(messageIndex + 1)
+              .some((later) => practiceIdFrom(later.ragSources) === practiceId);
 
             // Skip rendering empty streaming messages — show spinner below instead
             if (isStreaming && !message.content) return null;
@@ -679,6 +679,7 @@ export const TutorChatMessages = memo(function TutorChatMessages({
                   )}
 
                   {!isUser && !isStreaming && <MessageSources sources={sources} />}
+                  {!isUser && !isStreaming && showPractice && <TutorPracticeCard courseId={activeSession.courseId} practiceId={practiceId} />}
                 </div>
               </div>
             );

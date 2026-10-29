@@ -21,6 +21,9 @@ WHERE id = (
     SELECT id FROM material
     WHERE "materialType" = 'file' AND "storagePath" IS NOT NULL
       AND "storagePath" NOT LIKE '/%%' AND LOWER("fileName") LIKE '%%.pdf'
+      AND (%s::text IS NULL OR "courseSessionId" IN (
+          SELECT id FROM course_session WHERE "courseId"=%s
+      ))
       AND ("processingStatus" IN ('queued', 'uploaded') OR (
         "processingStatus" IN ('processing','extracting','ocr','chunking','embedding','indexing')
         AND "updatedAt" < NOW() - INTERVAL '2 hours'
@@ -40,9 +43,12 @@ class MaterialRepository:
     def __init__(self, connection: psycopg.Connection[dict[str, Any]]):
         self.connection = connection
 
-    def claim(self) -> MaterialJob | None:
+    def claim(self, course_id: str | None = None) -> MaterialJob | None:
         # Token unik per pengambilan mencegah worker lama menimpa hasil job yang diambil ulang.
-        row = self.connection.execute(CLAIM_SQL, (f"python-worker:{uuid4()}",)).fetchone()
+        # Scope opsional membatasi pemrosesan ulang dataset tertentu tanpa menyentuh course lain.
+        row = self.connection.execute(
+            CLAIM_SQL, (f"python-worker:{uuid4()}", course_id, course_id)
+        ).fetchone()
         return MaterialJob(**row) if row else None
 
     def set_state(

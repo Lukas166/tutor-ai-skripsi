@@ -1,17 +1,14 @@
-import { TutorAiChatPage } from "@/components/tutor/tutor-ai-chat-page";
+import { redirect } from "next/navigation";
 
 type MahasiswaTutorPageProps = {
   params: Promise<{ id: string }>;
 };
 
-export default async function MahasiswaTutorPage({ params }: MahasiswaTutorPageProps) {
+export default async function MahasiswaTutorPage({
+  params,
+}: MahasiswaTutorPageProps) {
   const { id } = await params;
 
-  return (
-    <TutorAiChatPage 
-      courseId={id} 
-      backHref={`/mahasiswa/courses/${id}`} 
-      tutorHref={`/mahasiswa/courses/${id}/tutor`}
-    />
-  );
+  // Tutor memiliki layout layar penuh sendiri; alias tidak merender ulang panel LMS.
+  redirect(`/courses/${id}/tutor`);
 }

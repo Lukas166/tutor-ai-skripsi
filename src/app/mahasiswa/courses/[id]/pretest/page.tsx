@@ -1,9 +1,9 @@
-import { PretestPage } from "@/components/assessment/pretest-page";
+import { AssessmentPage } from "@/components/assessment/assessment-page";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  return <PretestPage courseId={(await params).id} />;
+  return <AssessmentPage courseId={(await params).id} />;
 }

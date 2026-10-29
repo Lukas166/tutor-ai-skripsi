@@ -6,13 +6,21 @@ from psycopg import Connection
 from psycopg.types.json import Jsonb
 
 from tutor_rag.assessment.scoring import POSITIVE, REINFORCEMENT, grade_responses
+from tutor_rag.learning.profile import operational_status
 
 
 class AssessmentService:
-    def __init__(self, connection: Connection[dict[str, Any]], student_id: str, course_id: str):
+    def __init__(
+        self,
+        connection: Connection[dict[str, Any]],
+        student_id: str,
+        course_id: str,
+        kind: str = "PRE",
+    ):
         self.connection = connection
         self.student_id = student_id
         self.course_id = course_id
+        self.kind = kind
 
     def require_access(self) -> None:
         # Identitas diteruskan server LMS dari sesi Better Auth, lalu diverifikasi lagi di sini.
@@ -34,8 +42,8 @@ class AssessmentService:
     def attempt(self, *, locked: bool = False) -> dict | None:
         return self.connection.execute(
             'SELECT * FROM assessment_attempt WHERE "studentId"=%s AND "courseId"=%s '
-            "AND kind='PRE'" + (" FOR UPDATE" if locked else ""),
-            (self.student_id, self.course_id),
+            "AND kind=%s" + (" FOR UPDATE" if locked else ""),
+            (self.student_id, self.course_id, self.kind),
         ).fetchone()
 
     def overview(self) -> dict:
@@ -55,6 +63,45 @@ class AssessmentService:
             "attemptId": attempt["id"] if attempt else None,
             "topicCount": count,
             "totalQuestions": (configuration or {}).get("pretestQuestionCount", 0),
+            "posttest": self.posttest_availability(),
+        }
+
+    def posttest_availability(self) -> dict:
+        config = self.configuration()
+        post = self.connection.execute(
+            'SELECT id,status FROM assessment_attempt WHERE "studentId"=%s '
+            "AND \"courseId\"=%s AND kind='POST'",
+            (self.student_id, self.course_id),
+        ).fetchone()
+        pre = self.connection.execute(
+            'SELECT id FROM assessment_attempt WHERE "studentId"=%s AND "courseId"=%s '
+            "AND kind='PRE' AND status='SUBMITTED'",
+            (self.student_id, self.course_id),
+        ).fetchone()
+        progress = self.connection.execute(
+            'SELECT EXTRACT(EPOCH FROM (NOW()-"startedAt")) AS elapsed '
+            'FROM student_learning_progress WHERE "studentId"=%s AND "courseId"=%s',
+            (self.student_id, self.course_id),
+        ).fetchone()
+        remaining = max(
+            0,
+            (config or {}).get("minimumStudySeconds", 0)
+            - int(progress["elapsed"] if progress else 0),
+        )
+        allowed = bool(pre and progress and remaining == 0)
+        return {
+            "available": allowed or bool(post),
+            "status": post["status"] if post else "NOT_STARTED",
+            "remainingStudySeconds": remaining,
+            "reason": None
+            if allowed or post
+            else (
+                "Selesaikan pre-test dahulu."
+                if not pre
+                else "Lakukan pembelajaran dengan AI Tutor atau latihan terlebih dahulu."
+                if not progress
+                else "Durasi belajar minimal belum tercapai."
+            ),
         }
 
     def current(self) -> dict | None:
@@ -193,10 +240,12 @@ class AssessmentService:
                     (bool(score), item["id"]),
                 )
                 # Satu bukti per indikator adalah baseline terbatas, bukan penguasaan penuh.
+                if self.kind == "POST":
+                    continue  # Post-test adalah pengukuran hasil, tidak memperbarui baseline/EMA.
                 self.connection.execute(
                     'INSERT INTO student_indicator_profile (id,"studentId","courseId",'
-                    '"indicatorId","baselineItemId","initialScore","currentScore","initialStatus") '
-                    "VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+                    '"indicatorId","baselineItemId","initialScore","currentScore","initialStatus",'
+                    '"currentStatus") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                     (
                         str(uuid4()),
                         self.student_id,
@@ -205,6 +254,7 @@ class AssessmentService:
                         item["id"],
                         score,
                         score,
+                        POSITIVE if score else REINFORCEMENT,
                         POSITIVE if score else REINFORCEMENT,
                     ),
                 )
@@ -219,6 +269,7 @@ class AssessmentService:
 
     def profile(self) -> dict:
         self.require_access()
+        config = self.configuration()
         attempt = self.attempt()
         course = self.connection.execute(
             "SELECT id,title FROM course WHERE id=%s", (self.course_id,)
@@ -229,7 +280,7 @@ class AssessmentService:
             'ORDER BY "orderNumber"',
             (self.course_id,),
         ).fetchall()
-        if self.configuration() is None:
+        if config is None:
             raise HTTPException(404, "Domain pembelajaran belum tersedia untuk mata kuliah ini.")
         rows = self.connection.execute(
             'SELECT i.id,i.code,i."topicId",i.description,c.name AS concept,i."subCpmkCodes",'
@@ -247,6 +298,7 @@ class AssessmentService:
                     **row,
                     "initialStatus": row["initialStatus"] or "NOT_ASSESSED",
                     "evidenceCount": row["evidenceCount"] or 0,
+                    "currentStatus": operational_status(row, config),
                 }
                 for row in rows
                 if row["topicId"] == topic["id"]
@@ -254,6 +306,10 @@ class AssessmentService:
             topic["initialPositiveCount"] = sum(
                 int(i["initialScore"] or 0) for i in topic["indicators"]
             )
+            scored = [
+                i["currentScore"] for i in topic["indicators"] if i["currentScore"] is not None
+            ]
+            topic["currentScore"] = sum(scored) / len(scored) if scored else None
         return {
             "course": course,
             "attempt": self.public_attempt(attempt) if attempt else None,

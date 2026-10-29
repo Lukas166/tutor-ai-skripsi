@@ -13,6 +13,7 @@ class ContractModel(BaseModel):
 
 
 class TutorUser(ContractModel):
+    id: str | None = None
     name: str | None = None
     role: str
     academic_level: str | None = None
@@ -45,6 +46,7 @@ class PrepareRequest(ContractModel):
     history: list[HistoryMessage] = Field(default_factory=list, max_length=8)
     response_mode: Literal["chat", "avatar"] = "chat"
     academic_style: str
+    chat_session_id: str | None = None
 
 
 class RetrievedChunk(ContractModel):
@@ -66,6 +68,8 @@ class PreparedAnswer(ContractModel):
     chunks: list[RetrievedChunk]
     system_instruction: str
     prompt: str
+    adaptive: dict | None = None
+    direct_answer: str | None = None
 
 
 class GenerateRequest(ContractModel):

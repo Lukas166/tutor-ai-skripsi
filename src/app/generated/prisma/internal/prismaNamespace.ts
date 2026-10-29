@@ -408,7 +408,10 @@ export const ModelName = {
   AssessmentAttempt: 'AssessmentAttempt',
   CourseLearningConfig: 'CourseLearningConfig',
   AssessmentItem: 'AssessmentItem',
-  StudentIndicatorProfile: 'StudentIndicatorProfile'
+  StudentIndicatorProfile: 'StudentIndicatorProfile',
+  PracticeSession: 'PracticeSession',
+  PracticeEvent: 'PracticeEvent',
+  StudentLearningProgress: 'StudentLearningProgress'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -424,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "verification" | "course" | "courseInstructor" | "enrollment" | "courseSession" | "material" | "materialPage" | "materialChunk" | "materialProcessingLog" | "aiChatSession" | "aiChatMessage" | "tutorPromptConfig" | "learningOutcome" | "domainTopic" | "domainTopicOutcome" | "domainConcept" | "domainIndicator" | "questionBankItem" | "assessmentAttempt" | "courseLearningConfig" | "assessmentItem" | "studentIndicatorProfile"
+    modelProps: "user" | "session" | "account" | "verification" | "course" | "courseInstructor" | "enrollment" | "courseSession" | "material" | "materialPage" | "materialChunk" | "materialProcessingLog" | "aiChatSession" | "aiChatMessage" | "tutorPromptConfig" | "learningOutcome" | "domainTopic" | "domainTopicOutcome" | "domainConcept" | "domainIndicator" | "questionBankItem" | "assessmentAttempt" | "courseLearningConfig" | "assessmentItem" | "studentIndicatorProfile" | "practiceSession" | "practiceEvent" | "studentLearningProgress"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2278,6 +2281,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    PracticeSession: {
+      payload: Prisma.$PracticeSessionPayload<ExtArgs>
+      fields: Prisma.PracticeSessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PracticeSessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PracticeSessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+        }
+        findFirst: {
+          args: Prisma.PracticeSessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PracticeSessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+        }
+        findMany: {
+          args: Prisma.PracticeSessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>[]
+        }
+        create: {
+          args: Prisma.PracticeSessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+        }
+        createMany: {
+          args: Prisma.PracticeSessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PracticeSessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>[]
+        }
+        delete: {
+          args: Prisma.PracticeSessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+        }
+        update: {
+          args: Prisma.PracticeSessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.PracticeSessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PracticeSessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PracticeSessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.PracticeSessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeSessionPayload>
+        }
+        aggregate: {
+          args: Prisma.PracticeSessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePracticeSession>
+        }
+        groupBy: {
+          args: Prisma.PracticeSessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PracticeSessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PracticeSessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PracticeSessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    PracticeEvent: {
+      payload: Prisma.$PracticeEventPayload<ExtArgs>
+      fields: Prisma.PracticeEventFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.PracticeEventFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.PracticeEventFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>
+        }
+        findFirst: {
+          args: Prisma.PracticeEventFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.PracticeEventFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>
+        }
+        findMany: {
+          args: Prisma.PracticeEventFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>[]
+        }
+        create: {
+          args: Prisma.PracticeEventCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>
+        }
+        createMany: {
+          args: Prisma.PracticeEventCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.PracticeEventCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>[]
+        }
+        delete: {
+          args: Prisma.PracticeEventDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>
+        }
+        update: {
+          args: Prisma.PracticeEventUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>
+        }
+        deleteMany: {
+          args: Prisma.PracticeEventDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.PracticeEventUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.PracticeEventUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>[]
+        }
+        upsert: {
+          args: Prisma.PracticeEventUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$PracticeEventPayload>
+        }
+        aggregate: {
+          args: Prisma.PracticeEventAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregatePracticeEvent>
+        }
+        groupBy: {
+          args: Prisma.PracticeEventGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PracticeEventGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.PracticeEventCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.PracticeEventCountAggregateOutputType> | number
+        }
+      }
+    }
+    StudentLearningProgress: {
+      payload: Prisma.$StudentLearningProgressPayload<ExtArgs>
+      fields: Prisma.StudentLearningProgressFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StudentLearningProgressFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StudentLearningProgressFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>
+        }
+        findFirst: {
+          args: Prisma.StudentLearningProgressFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StudentLearningProgressFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>
+        }
+        findMany: {
+          args: Prisma.StudentLearningProgressFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>[]
+        }
+        create: {
+          args: Prisma.StudentLearningProgressCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>
+        }
+        createMany: {
+          args: Prisma.StudentLearningProgressCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StudentLearningProgressCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>[]
+        }
+        delete: {
+          args: Prisma.StudentLearningProgressDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>
+        }
+        update: {
+          args: Prisma.StudentLearningProgressUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>
+        }
+        deleteMany: {
+          args: Prisma.StudentLearningProgressDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StudentLearningProgressUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StudentLearningProgressUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>[]
+        }
+        upsert: {
+          args: Prisma.StudentLearningProgressUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudentLearningProgressPayload>
+        }
+        aggregate: {
+          args: Prisma.StudentLearningProgressAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStudentLearningProgress>
+        }
+        groupBy: {
+          args: Prisma.StudentLearningProgressGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StudentLearningProgressGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StudentLearningProgressCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StudentLearningProgressCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2660,7 +2885,11 @@ export const CourseLearningConfigScalarFieldEnum = {
   courseId: 'courseId',
   pretestQuestionCount: 'pretestQuestionCount',
   datasetName: 'datasetName',
-  datasetChecksum: 'datasetChecksum'
+  datasetChecksum: 'datasetChecksum',
+  emaAlpha: 'emaAlpha',
+  developingThreshold: 'developingThreshold',
+  readyThreshold: 'readyThreshold',
+  minimumStudySeconds: 'minimumStudySeconds'
 } as const
 
 export type CourseLearningConfigScalarFieldEnum = (typeof CourseLearningConfigScalarFieldEnum)[keyof typeof CourseLearningConfigScalarFieldEnum]
@@ -2691,11 +2920,61 @@ export const StudentIndicatorProfileScalarFieldEnum = {
   currentScore: 'currentScore',
   evidenceCount: 'evidenceCount',
   initialStatus: 'initialStatus',
+  currentStatus: 'currentStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type StudentIndicatorProfileScalarFieldEnum = (typeof StudentIndicatorProfileScalarFieldEnum)[keyof typeof StudentIndicatorProfileScalarFieldEnum]
+
+
+export const PracticeSessionScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  courseId: 'courseId',
+  chatSessionId: 'chatSessionId',
+  indicatorId: 'indicatorId',
+  questionId: 'questionId',
+  status: 'status',
+  questionSnapshot: 'questionSnapshot',
+  hintCount: 'hintCount',
+  answerCount: 'answerCount',
+  firstAnsweredAt: 'firstAnsweredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PracticeSessionScalarFieldEnum = (typeof PracticeSessionScalarFieldEnum)[keyof typeof PracticeSessionScalarFieldEnum]
+
+
+export const PracticeEventScalarFieldEnum = {
+  id: 'id',
+  practiceSessionId: 'practiceSessionId',
+  requestId: 'requestId',
+  kind: 'kind',
+  selectedOption: 'selectedOption',
+  isCorrect: 'isCorrect',
+  independent: 'independent',
+  hintCount: 'hintCount',
+  scoreBefore: 'scoreBefore',
+  scoreAfter: 'scoreAfter',
+  emaAlpha: 'emaAlpha',
+  feedback: 'feedback',
+  sources: 'sources',
+  createdAt: 'createdAt'
+} as const
+
+export type PracticeEventScalarFieldEnum = (typeof PracticeEventScalarFieldEnum)[keyof typeof PracticeEventScalarFieldEnum]
+
+
+export const StudentLearningProgressScalarFieldEnum = {
+  studentId: 'studentId',
+  courseId: 'courseId',
+  startedAt: 'startedAt',
+  lastStudiedAt: 'lastStudiedAt'
+} as const
+
+export type StudentLearningProgressScalarFieldEnum = (typeof StudentLearningProgressScalarFieldEnum)[keyof typeof StudentLearningProgressScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2977,6 +3256,9 @@ export type GlobalOmitConfig = {
   courseLearningConfig?: Prisma.CourseLearningConfigOmit
   assessmentItem?: Prisma.AssessmentItemOmit
   studentIndicatorProfile?: Prisma.StudentIndicatorProfileOmit
+  practiceSession?: Prisma.PracticeSessionOmit
+  practiceEvent?: Prisma.PracticeEventOmit
+  studentLearningProgress?: Prisma.StudentLearningProgressOmit
 }
 
 /* Types for Logging */

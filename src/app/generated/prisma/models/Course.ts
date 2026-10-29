@@ -227,6 +227,8 @@ export type CourseWhereInput = {
   learningOutcomes?: Prisma.LearningOutcomeListRelationFilter
   domainIndicators?: Prisma.DomainIndicatorListRelationFilter
   questionBank?: Prisma.QuestionBankItemListRelationFilter
+  practiceSessions?: Prisma.PracticeSessionListRelationFilter
+  learningProgress?: Prisma.StudentLearningProgressListRelationFilter
 }
 
 export type CourseOrderByWithRelationInput = {
@@ -252,6 +254,8 @@ export type CourseOrderByWithRelationInput = {
   learningOutcomes?: Prisma.LearningOutcomeOrderByRelationAggregateInput
   domainIndicators?: Prisma.DomainIndicatorOrderByRelationAggregateInput
   questionBank?: Prisma.QuestionBankItemOrderByRelationAggregateInput
+  practiceSessions?: Prisma.PracticeSessionOrderByRelationAggregateInput
+  learningProgress?: Prisma.StudentLearningProgressOrderByRelationAggregateInput
 }
 
 export type CourseWhereUniqueInput = Prisma.AtLeast<{
@@ -280,6 +284,8 @@ export type CourseWhereUniqueInput = Prisma.AtLeast<{
   learningOutcomes?: Prisma.LearningOutcomeListRelationFilter
   domainIndicators?: Prisma.DomainIndicatorListRelationFilter
   questionBank?: Prisma.QuestionBankItemListRelationFilter
+  practiceSessions?: Prisma.PracticeSessionListRelationFilter
+  learningProgress?: Prisma.StudentLearningProgressListRelationFilter
 }, "id" | "enrollmentKey">
 
 export type CourseOrderByWithAggregationInput = {
@@ -334,6 +340,8 @@ export type CourseCreateInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateInput = {
@@ -358,6 +366,8 @@ export type CourseUncheckedCreateInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUpdateInput = {
@@ -382,6 +392,8 @@ export type CourseUpdateInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateInput = {
@@ -406,6 +418,8 @@ export type CourseUncheckedUpdateInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateManyInput = {
@@ -704,6 +718,34 @@ export type CourseUpdateOneRequiredWithoutIndicatorProfilesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutIndicatorProfilesInput, Prisma.CourseUpdateWithoutIndicatorProfilesInput>, Prisma.CourseUncheckedUpdateWithoutIndicatorProfilesInput>
 }
 
+export type CourseCreateNestedOneWithoutPracticeSessionsInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutPracticeSessionsInput, Prisma.CourseUncheckedCreateWithoutPracticeSessionsInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutPracticeSessionsInput
+  connect?: Prisma.CourseWhereUniqueInput
+}
+
+export type CourseUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutPracticeSessionsInput, Prisma.CourseUncheckedCreateWithoutPracticeSessionsInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutPracticeSessionsInput
+  upsert?: Prisma.CourseUpsertWithoutPracticeSessionsInput
+  connect?: Prisma.CourseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutPracticeSessionsInput, Prisma.CourseUpdateWithoutPracticeSessionsInput>, Prisma.CourseUncheckedUpdateWithoutPracticeSessionsInput>
+}
+
+export type CourseCreateNestedOneWithoutLearningProgressInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutLearningProgressInput, Prisma.CourseUncheckedCreateWithoutLearningProgressInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutLearningProgressInput
+  connect?: Prisma.CourseWhereUniqueInput
+}
+
+export type CourseUpdateOneRequiredWithoutLearningProgressNestedInput = {
+  create?: Prisma.XOR<Prisma.CourseCreateWithoutLearningProgressInput, Prisma.CourseUncheckedCreateWithoutLearningProgressInput>
+  connectOrCreate?: Prisma.CourseCreateOrConnectWithoutLearningProgressInput
+  upsert?: Prisma.CourseUpsertWithoutLearningProgressInput
+  connect?: Prisma.CourseWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CourseUpdateToOneWithWhereWithoutLearningProgressInput, Prisma.CourseUpdateWithoutLearningProgressInput>, Prisma.CourseUncheckedUpdateWithoutLearningProgressInput>
+}
+
 export type CourseCreateWithoutCreatorInput = {
   id: string
   title: string
@@ -725,6 +767,8 @@ export type CourseCreateWithoutCreatorInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutCreatorInput = {
@@ -748,6 +792,8 @@ export type CourseUncheckedCreateWithoutCreatorInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutCreatorInput = {
@@ -812,6 +858,8 @@ export type CourseCreateWithoutInstructorsInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutInstructorsInput = {
@@ -835,6 +883,8 @@ export type CourseUncheckedCreateWithoutInstructorsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutInstructorsInput = {
@@ -874,6 +924,8 @@ export type CourseUpdateWithoutInstructorsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutInstructorsInput = {
@@ -897,6 +949,8 @@ export type CourseUncheckedUpdateWithoutInstructorsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutEnrollmentsInput = {
@@ -920,6 +974,8 @@ export type CourseCreateWithoutEnrollmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutEnrollmentsInput = {
@@ -943,6 +999,8 @@ export type CourseUncheckedCreateWithoutEnrollmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutEnrollmentsInput = {
@@ -982,6 +1040,8 @@ export type CourseUpdateWithoutEnrollmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutEnrollmentsInput = {
@@ -1005,6 +1065,8 @@ export type CourseUncheckedUpdateWithoutEnrollmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutSessionsInput = {
@@ -1028,6 +1090,8 @@ export type CourseCreateWithoutSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutSessionsInput = {
@@ -1051,6 +1115,8 @@ export type CourseUncheckedCreateWithoutSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutSessionsInput = {
@@ -1090,6 +1156,8 @@ export type CourseUpdateWithoutSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutSessionsInput = {
@@ -1113,6 +1181,8 @@ export type CourseUncheckedUpdateWithoutSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutMaterialChunksInput = {
@@ -1136,6 +1206,8 @@ export type CourseCreateWithoutMaterialChunksInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutMaterialChunksInput = {
@@ -1159,6 +1231,8 @@ export type CourseUncheckedCreateWithoutMaterialChunksInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutMaterialChunksInput = {
@@ -1198,6 +1272,8 @@ export type CourseUpdateWithoutMaterialChunksInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutMaterialChunksInput = {
@@ -1221,6 +1297,8 @@ export type CourseUncheckedUpdateWithoutMaterialChunksInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutAiChatSessionsInput = {
@@ -1244,6 +1322,8 @@ export type CourseCreateWithoutAiChatSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutAiChatSessionsInput = {
@@ -1267,6 +1347,8 @@ export type CourseUncheckedCreateWithoutAiChatSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutAiChatSessionsInput = {
@@ -1306,6 +1388,8 @@ export type CourseUpdateWithoutAiChatSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutAiChatSessionsInput = {
@@ -1329,6 +1413,8 @@ export type CourseUncheckedUpdateWithoutAiChatSessionsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutLearningOutcomesInput = {
@@ -1352,6 +1438,8 @@ export type CourseCreateWithoutLearningOutcomesInput = {
   learningConfig?: Prisma.CourseLearningConfigCreateNestedOneWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutLearningOutcomesInput = {
@@ -1375,6 +1463,8 @@ export type CourseUncheckedCreateWithoutLearningOutcomesInput = {
   learningConfig?: Prisma.CourseLearningConfigUncheckedCreateNestedOneWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutLearningOutcomesInput = {
@@ -1414,6 +1504,8 @@ export type CourseUpdateWithoutLearningOutcomesInput = {
   learningConfig?: Prisma.CourseLearningConfigUpdateOneWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutLearningOutcomesInput = {
@@ -1437,6 +1529,8 @@ export type CourseUncheckedUpdateWithoutLearningOutcomesInput = {
   learningConfig?: Prisma.CourseLearningConfigUncheckedUpdateOneWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutDomainTopicsInput = {
@@ -1460,6 +1554,8 @@ export type CourseCreateWithoutDomainTopicsInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutDomainTopicsInput = {
@@ -1483,6 +1579,8 @@ export type CourseUncheckedCreateWithoutDomainTopicsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutDomainTopicsInput = {
@@ -1522,6 +1620,8 @@ export type CourseUpdateWithoutDomainTopicsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutDomainTopicsInput = {
@@ -1545,6 +1645,8 @@ export type CourseUncheckedUpdateWithoutDomainTopicsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutDomainIndicatorsInput = {
@@ -1568,6 +1670,8 @@ export type CourseCreateWithoutDomainIndicatorsInput = {
   learningConfig?: Prisma.CourseLearningConfigCreateNestedOneWithoutCourseInput
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutDomainIndicatorsInput = {
@@ -1591,6 +1695,8 @@ export type CourseUncheckedCreateWithoutDomainIndicatorsInput = {
   learningConfig?: Prisma.CourseLearningConfigUncheckedCreateNestedOneWithoutCourseInput
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutDomainIndicatorsInput = {
@@ -1630,6 +1736,8 @@ export type CourseUpdateWithoutDomainIndicatorsInput = {
   learningConfig?: Prisma.CourseLearningConfigUpdateOneWithoutCourseNestedInput
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutDomainIndicatorsInput = {
@@ -1653,6 +1761,8 @@ export type CourseUncheckedUpdateWithoutDomainIndicatorsInput = {
   learningConfig?: Prisma.CourseLearningConfigUncheckedUpdateOneWithoutCourseNestedInput
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutQuestionBankInput = {
@@ -1676,6 +1786,8 @@ export type CourseCreateWithoutQuestionBankInput = {
   learningConfig?: Prisma.CourseLearningConfigCreateNestedOneWithoutCourseInput
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutQuestionBankInput = {
@@ -1699,6 +1811,8 @@ export type CourseUncheckedCreateWithoutQuestionBankInput = {
   learningConfig?: Prisma.CourseLearningConfigUncheckedCreateNestedOneWithoutCourseInput
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutQuestionBankInput = {
@@ -1738,6 +1852,8 @@ export type CourseUpdateWithoutQuestionBankInput = {
   learningConfig?: Prisma.CourseLearningConfigUpdateOneWithoutCourseNestedInput
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutQuestionBankInput = {
@@ -1761,6 +1877,8 @@ export type CourseUncheckedUpdateWithoutQuestionBankInput = {
   learningConfig?: Prisma.CourseLearningConfigUncheckedUpdateOneWithoutCourseNestedInput
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutAssessmentsInput = {
@@ -1784,6 +1902,8 @@ export type CourseCreateWithoutAssessmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutAssessmentsInput = {
@@ -1807,6 +1927,8 @@ export type CourseUncheckedCreateWithoutAssessmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutAssessmentsInput = {
@@ -1846,6 +1968,8 @@ export type CourseUpdateWithoutAssessmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutAssessmentsInput = {
@@ -1869,6 +1993,8 @@ export type CourseUncheckedUpdateWithoutAssessmentsInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutLearningConfigInput = {
@@ -1892,6 +2018,8 @@ export type CourseCreateWithoutLearningConfigInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutLearningConfigInput = {
@@ -1915,6 +2043,8 @@ export type CourseUncheckedCreateWithoutLearningConfigInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutLearningConfigInput = {
@@ -1954,6 +2084,8 @@ export type CourseUpdateWithoutLearningConfigInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutLearningConfigInput = {
@@ -1977,6 +2109,8 @@ export type CourseUncheckedUpdateWithoutLearningConfigInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateWithoutIndicatorProfilesInput = {
@@ -2000,6 +2134,8 @@ export type CourseCreateWithoutIndicatorProfilesInput = {
   learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
 }
 
 export type CourseUncheckedCreateWithoutIndicatorProfilesInput = {
@@ -2023,6 +2159,8 @@ export type CourseUncheckedCreateWithoutIndicatorProfilesInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
   questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
 }
 
 export type CourseCreateOrConnectWithoutIndicatorProfilesInput = {
@@ -2062,6 +2200,8 @@ export type CourseUpdateWithoutIndicatorProfilesInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutIndicatorProfilesInput = {
@@ -2085,6 +2225,240 @@ export type CourseUncheckedUpdateWithoutIndicatorProfilesInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseCreateWithoutPracticeSessionsInput = {
+  id: string
+  title: string
+  description?: string | null
+  coverImage?: string | null
+  enrollmentKey: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutCoursesCreatedInput
+  instructors?: Prisma.CourseInstructorCreateNestedManyWithoutCourseInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
+  sessions?: Prisma.CourseSessionCreateNestedManyWithoutCourseInput
+  materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseInput
+  aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutCourseInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutCourseInput
+  learningConfig?: Prisma.CourseLearningConfigCreateNestedOneWithoutCourseInput
+  learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
+  domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
+  questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressCreateNestedManyWithoutCourseInput
+}
+
+export type CourseUncheckedCreateWithoutPracticeSessionsInput = {
+  id: string
+  createdBy: string
+  title: string
+  description?: string | null
+  coverImage?: string | null
+  enrollmentKey: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  instructors?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutCourseInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
+  sessions?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCourseInput
+  materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutCourseInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutCourseInput
+  learningConfig?: Prisma.CourseLearningConfigUncheckedCreateNestedOneWithoutCourseInput
+  learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
+  domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
+  questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedCreateNestedManyWithoutCourseInput
+}
+
+export type CourseCreateOrConnectWithoutPracticeSessionsInput = {
+  where: Prisma.CourseWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseCreateWithoutPracticeSessionsInput, Prisma.CourseUncheckedCreateWithoutPracticeSessionsInput>
+}
+
+export type CourseUpsertWithoutPracticeSessionsInput = {
+  update: Prisma.XOR<Prisma.CourseUpdateWithoutPracticeSessionsInput, Prisma.CourseUncheckedUpdateWithoutPracticeSessionsInput>
+  create: Prisma.XOR<Prisma.CourseCreateWithoutPracticeSessionsInput, Prisma.CourseUncheckedCreateWithoutPracticeSessionsInput>
+  where?: Prisma.CourseWhereInput
+}
+
+export type CourseUpdateToOneWithWhereWithoutPracticeSessionsInput = {
+  where?: Prisma.CourseWhereInput
+  data: Prisma.XOR<Prisma.CourseUpdateWithoutPracticeSessionsInput, Prisma.CourseUncheckedUpdateWithoutPracticeSessionsInput>
+}
+
+export type CourseUpdateWithoutPracticeSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enrollmentKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutCoursesCreatedNestedInput
+  instructors?: Prisma.CourseInstructorUpdateManyWithoutCourseNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
+  sessions?: Prisma.CourseSessionUpdateManyWithoutCourseNestedInput
+  materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutCourseNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutCourseNestedInput
+  learningConfig?: Prisma.CourseLearningConfigUpdateOneWithoutCourseNestedInput
+  learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
+  domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
+  questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseUncheckedUpdateWithoutPracticeSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enrollmentKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  instructors?: Prisma.CourseInstructorUncheckedUpdateManyWithoutCourseNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
+  sessions?: Prisma.CourseSessionUncheckedUpdateManyWithoutCourseNestedInput
+  materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutCourseNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutCourseNestedInput
+  learningConfig?: Prisma.CourseLearningConfigUncheckedUpdateOneWithoutCourseNestedInput
+  learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
+  domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
+  questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseCreateWithoutLearningProgressInput = {
+  id: string
+  title: string
+  description?: string | null
+  coverImage?: string | null
+  enrollmentKey: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutCoursesCreatedInput
+  instructors?: Prisma.CourseInstructorCreateNestedManyWithoutCourseInput
+  enrollments?: Prisma.EnrollmentCreateNestedManyWithoutCourseInput
+  sessions?: Prisma.CourseSessionCreateNestedManyWithoutCourseInput
+  materialChunks?: Prisma.MaterialChunkCreateNestedManyWithoutCourseInput
+  aiChatSessions?: Prisma.AiChatSessionCreateNestedManyWithoutCourseInput
+  domainTopics?: Prisma.DomainTopicCreateNestedManyWithoutCourseInput
+  assessments?: Prisma.AssessmentAttemptCreateNestedManyWithoutCourseInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileCreateNestedManyWithoutCourseInput
+  learningConfig?: Prisma.CourseLearningConfigCreateNestedOneWithoutCourseInput
+  learningOutcomes?: Prisma.LearningOutcomeCreateNestedManyWithoutCourseInput
+  domainIndicators?: Prisma.DomainIndicatorCreateNestedManyWithoutCourseInput
+  questionBank?: Prisma.QuestionBankItemCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutCourseInput
+}
+
+export type CourseUncheckedCreateWithoutLearningProgressInput = {
+  id: string
+  createdBy: string
+  title: string
+  description?: string | null
+  coverImage?: string | null
+  enrollmentKey: string
+  isActive?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  instructors?: Prisma.CourseInstructorUncheckedCreateNestedManyWithoutCourseInput
+  enrollments?: Prisma.EnrollmentUncheckedCreateNestedManyWithoutCourseInput
+  sessions?: Prisma.CourseSessionUncheckedCreateNestedManyWithoutCourseInput
+  materialChunks?: Prisma.MaterialChunkUncheckedCreateNestedManyWithoutCourseInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedCreateNestedManyWithoutCourseInput
+  domainTopics?: Prisma.DomainTopicUncheckedCreateNestedManyWithoutCourseInput
+  assessments?: Prisma.AssessmentAttemptUncheckedCreateNestedManyWithoutCourseInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutCourseInput
+  learningConfig?: Prisma.CourseLearningConfigUncheckedCreateNestedOneWithoutCourseInput
+  learningOutcomes?: Prisma.LearningOutcomeUncheckedCreateNestedManyWithoutCourseInput
+  domainIndicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutCourseInput
+  questionBank?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutCourseInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutCourseInput
+}
+
+export type CourseCreateOrConnectWithoutLearningProgressInput = {
+  where: Prisma.CourseWhereUniqueInput
+  create: Prisma.XOR<Prisma.CourseCreateWithoutLearningProgressInput, Prisma.CourseUncheckedCreateWithoutLearningProgressInput>
+}
+
+export type CourseUpsertWithoutLearningProgressInput = {
+  update: Prisma.XOR<Prisma.CourseUpdateWithoutLearningProgressInput, Prisma.CourseUncheckedUpdateWithoutLearningProgressInput>
+  create: Prisma.XOR<Prisma.CourseCreateWithoutLearningProgressInput, Prisma.CourseUncheckedCreateWithoutLearningProgressInput>
+  where?: Prisma.CourseWhereInput
+}
+
+export type CourseUpdateToOneWithWhereWithoutLearningProgressInput = {
+  where?: Prisma.CourseWhereInput
+  data: Prisma.XOR<Prisma.CourseUpdateWithoutLearningProgressInput, Prisma.CourseUncheckedUpdateWithoutLearningProgressInput>
+}
+
+export type CourseUpdateWithoutLearningProgressInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enrollmentKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutCoursesCreatedNestedInput
+  instructors?: Prisma.CourseInstructorUpdateManyWithoutCourseNestedInput
+  enrollments?: Prisma.EnrollmentUpdateManyWithoutCourseNestedInput
+  sessions?: Prisma.CourseSessionUpdateManyWithoutCourseNestedInput
+  materialChunks?: Prisma.MaterialChunkUpdateManyWithoutCourseNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUpdateManyWithoutCourseNestedInput
+  domainTopics?: Prisma.DomainTopicUpdateManyWithoutCourseNestedInput
+  assessments?: Prisma.AssessmentAttemptUpdateManyWithoutCourseNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUpdateManyWithoutCourseNestedInput
+  learningConfig?: Prisma.CourseLearningConfigUpdateOneWithoutCourseNestedInput
+  learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
+  domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
+  questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+}
+
+export type CourseUncheckedUpdateWithoutLearningProgressInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  enrollmentKey?: Prisma.StringFieldUpdateOperationsInput | string
+  isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  instructors?: Prisma.CourseInstructorUncheckedUpdateManyWithoutCourseNestedInput
+  enrollments?: Prisma.EnrollmentUncheckedUpdateManyWithoutCourseNestedInput
+  sessions?: Prisma.CourseSessionUncheckedUpdateManyWithoutCourseNestedInput
+  materialChunks?: Prisma.MaterialChunkUncheckedUpdateManyWithoutCourseNestedInput
+  aiChatSessions?: Prisma.AiChatSessionUncheckedUpdateManyWithoutCourseNestedInput
+  domainTopics?: Prisma.DomainTopicUncheckedUpdateManyWithoutCourseNestedInput
+  assessments?: Prisma.AssessmentAttemptUncheckedUpdateManyWithoutCourseNestedInput
+  indicatorProfiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutCourseNestedInput
+  learningConfig?: Prisma.CourseLearningConfigUncheckedUpdateOneWithoutCourseNestedInput
+  learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
+  domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
+  questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseCreateManyCreatorInput = {
@@ -2119,6 +2493,8 @@ export type CourseUpdateWithoutCreatorInput = {
   learningOutcomes?: Prisma.LearningOutcomeUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateWithoutCreatorInput = {
@@ -2142,6 +2518,8 @@ export type CourseUncheckedUpdateWithoutCreatorInput = {
   learningOutcomes?: Prisma.LearningOutcomeUncheckedUpdateManyWithoutCourseNestedInput
   domainIndicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutCourseNestedInput
   questionBank?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutCourseNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutCourseNestedInput
+  learningProgress?: Prisma.StudentLearningProgressUncheckedUpdateManyWithoutCourseNestedInput
 }
 
 export type CourseUncheckedUpdateManyWithoutCreatorInput = {
@@ -2172,6 +2550,8 @@ export type CourseCountOutputType = {
   learningOutcomes: number
   domainIndicators: number
   questionBank: number
+  practiceSessions: number
+  learningProgress: number
 }
 
 export type CourseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2186,6 +2566,8 @@ export type CourseCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   learningOutcomes?: boolean | CourseCountOutputTypeCountLearningOutcomesArgs
   domainIndicators?: boolean | CourseCountOutputTypeCountDomainIndicatorsArgs
   questionBank?: boolean | CourseCountOutputTypeCountQuestionBankArgs
+  practiceSessions?: boolean | CourseCountOutputTypeCountPracticeSessionsArgs
+  learningProgress?: boolean | CourseCountOutputTypeCountLearningProgressArgs
 }
 
 /**
@@ -2275,6 +2657,20 @@ export type CourseCountOutputTypeCountQuestionBankArgs<ExtArgs extends runtime.T
   where?: Prisma.QuestionBankItemWhereInput
 }
 
+/**
+ * CourseCountOutputType without action
+ */
+export type CourseCountOutputTypeCountPracticeSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PracticeSessionWhereInput
+}
+
+/**
+ * CourseCountOutputType without action
+ */
+export type CourseCountOutputTypeCountLearningProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudentLearningProgressWhereInput
+}
+
 
 export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2299,6 +2695,8 @@ export type CourseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   learningOutcomes?: boolean | Prisma.Course$learningOutcomesArgs<ExtArgs>
   domainIndicators?: boolean | Prisma.Course$domainIndicatorsArgs<ExtArgs>
   questionBank?: boolean | Prisma.Course$questionBankArgs<ExtArgs>
+  practiceSessions?: boolean | Prisma.Course$practiceSessionsArgs<ExtArgs>
+  learningProgress?: boolean | Prisma.Course$learningProgressArgs<ExtArgs>
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["course"]>
 
@@ -2355,6 +2753,8 @@ export type CourseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   learningOutcomes?: boolean | Prisma.Course$learningOutcomesArgs<ExtArgs>
   domainIndicators?: boolean | Prisma.Course$domainIndicatorsArgs<ExtArgs>
   questionBank?: boolean | Prisma.Course$questionBankArgs<ExtArgs>
+  practiceSessions?: boolean | Prisma.Course$practiceSessionsArgs<ExtArgs>
+  learningProgress?: boolean | Prisma.Course$learningProgressArgs<ExtArgs>
   _count?: boolean | Prisma.CourseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CourseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2380,6 +2780,8 @@ export type $CoursePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     learningOutcomes: Prisma.$LearningOutcomePayload<ExtArgs>[]
     domainIndicators: Prisma.$DomainIndicatorPayload<ExtArgs>[]
     questionBank: Prisma.$QuestionBankItemPayload<ExtArgs>[]
+    practiceSessions: Prisma.$PracticeSessionPayload<ExtArgs>[]
+    learningProgress: Prisma.$StudentLearningProgressPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2798,6 +3200,8 @@ export interface Prisma__CourseClient<T, Null = never, ExtArgs extends runtime.T
   learningOutcomes<T extends Prisma.Course$learningOutcomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$learningOutcomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$LearningOutcomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   domainIndicators<T extends Prisma.Course$domainIndicatorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$domainIndicatorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DomainIndicatorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   questionBank<T extends Prisma.Course$questionBankArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$questionBankArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$QuestionBankItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  practiceSessions<T extends Prisma.Course$practiceSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$practiceSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  learningProgress<T extends Prisma.Course$learningProgressArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Course$learningProgressArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudentLearningProgressPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3517,6 +3921,54 @@ export type Course$questionBankArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.QuestionBankItemScalarFieldEnum | Prisma.QuestionBankItemScalarFieldEnum[]
+}
+
+/**
+ * Course.practiceSessions
+ */
+export type Course$practiceSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PracticeSession
+   */
+  select?: Prisma.PracticeSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PracticeSession
+   */
+  omit?: Prisma.PracticeSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PracticeSessionInclude<ExtArgs> | null
+  where?: Prisma.PracticeSessionWhereInput
+  orderBy?: Prisma.PracticeSessionOrderByWithRelationInput | Prisma.PracticeSessionOrderByWithRelationInput[]
+  cursor?: Prisma.PracticeSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PracticeSessionScalarFieldEnum | Prisma.PracticeSessionScalarFieldEnum[]
+}
+
+/**
+ * Course.learningProgress
+ */
+export type Course$learningProgressArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StudentLearningProgress
+   */
+  select?: Prisma.StudentLearningProgressSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StudentLearningProgress
+   */
+  omit?: Prisma.StudentLearningProgressOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudentLearningProgressInclude<ExtArgs> | null
+  where?: Prisma.StudentLearningProgressWhereInput
+  orderBy?: Prisma.StudentLearningProgressOrderByWithRelationInput | Prisma.StudentLearningProgressOrderByWithRelationInput[]
+  cursor?: Prisma.StudentLearningProgressWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StudentLearningProgressScalarFieldEnum | Prisma.StudentLearningProgressScalarFieldEnum[]
 }
 
 /**

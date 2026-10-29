@@ -9,13 +9,21 @@ const chunkSchema = z.object({
 
 const preparedSchema = z.object({
   chunks: z.array(chunkSchema), systemInstruction: z.string(), prompt: z.string(),
+  adaptive: z.object({
+    action: z.string(), indicatorId: z.string().nullable(),
+    indicatorCode: z.string().optional(), concept: z.string().optional(),
+    status: z.string().optional(), currentScore: z.number().nullable().optional(),
+    practiceId: z.string().nullable(),
+  }).nullable().optional(),
+  directAnswer: z.string().nullable().optional(),
 });
 
 export type RetrievedChunk = z.infer<typeof chunkSchema>;
 
 export type PrepareRagInput = {
   course: { id: string; title: string; description: string | null };
-  user: { name: string | null; role: string; academicLevel: string | null };
+  user: { id: string; name: string | null; role: string; academicLevel: string | null };
+  chatSessionId: string;
   question: string;
   selectedMaterialIds: string[];
   activeMaterials: { id: string; title: string; fileName: string }[];
@@ -49,6 +57,12 @@ async function pythonRequest(path: string, body: unknown, signal?: AbortSignal) 
 export async function preparePythonRag(input: PrepareRagInput, signal?: AbortSignal) {
   const response = await pythonRequest("/v1/prepare", input, signal);
   return preparedSchema.parse(await response.json());
+}
+
+export async function recordPythonStudy(input: {
+  studentId: string; courseId: string; chatSessionId: string; messageId: string;
+}) {
+  await pythonRequest("/v1/assessment/study", input);
 }
 
 export async function generatePythonAnswer(input: GenerateInput) {

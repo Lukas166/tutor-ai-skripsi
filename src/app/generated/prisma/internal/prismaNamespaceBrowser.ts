@@ -75,7 +75,10 @@ export const ModelName = {
   AssessmentAttempt: 'AssessmentAttempt',
   CourseLearningConfig: 'CourseLearningConfig',
   AssessmentItem: 'AssessmentItem',
-  StudentIndicatorProfile: 'StudentIndicatorProfile'
+  StudentIndicatorProfile: 'StudentIndicatorProfile',
+  PracticeSession: 'PracticeSession',
+  PracticeEvent: 'PracticeEvent',
+  StudentLearningProgress: 'StudentLearningProgress'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -437,7 +440,11 @@ export const CourseLearningConfigScalarFieldEnum = {
   courseId: 'courseId',
   pretestQuestionCount: 'pretestQuestionCount',
   datasetName: 'datasetName',
-  datasetChecksum: 'datasetChecksum'
+  datasetChecksum: 'datasetChecksum',
+  emaAlpha: 'emaAlpha',
+  developingThreshold: 'developingThreshold',
+  readyThreshold: 'readyThreshold',
+  minimumStudySeconds: 'minimumStudySeconds'
 } as const
 
 export type CourseLearningConfigScalarFieldEnum = (typeof CourseLearningConfigScalarFieldEnum)[keyof typeof CourseLearningConfigScalarFieldEnum]
@@ -468,11 +475,61 @@ export const StudentIndicatorProfileScalarFieldEnum = {
   currentScore: 'currentScore',
   evidenceCount: 'evidenceCount',
   initialStatus: 'initialStatus',
+  currentStatus: 'currentStatus',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type StudentIndicatorProfileScalarFieldEnum = (typeof StudentIndicatorProfileScalarFieldEnum)[keyof typeof StudentIndicatorProfileScalarFieldEnum]
+
+
+export const PracticeSessionScalarFieldEnum = {
+  id: 'id',
+  studentId: 'studentId',
+  courseId: 'courseId',
+  chatSessionId: 'chatSessionId',
+  indicatorId: 'indicatorId',
+  questionId: 'questionId',
+  status: 'status',
+  questionSnapshot: 'questionSnapshot',
+  hintCount: 'hintCount',
+  answerCount: 'answerCount',
+  firstAnsweredAt: 'firstAnsweredAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type PracticeSessionScalarFieldEnum = (typeof PracticeSessionScalarFieldEnum)[keyof typeof PracticeSessionScalarFieldEnum]
+
+
+export const PracticeEventScalarFieldEnum = {
+  id: 'id',
+  practiceSessionId: 'practiceSessionId',
+  requestId: 'requestId',
+  kind: 'kind',
+  selectedOption: 'selectedOption',
+  isCorrect: 'isCorrect',
+  independent: 'independent',
+  hintCount: 'hintCount',
+  scoreBefore: 'scoreBefore',
+  scoreAfter: 'scoreAfter',
+  emaAlpha: 'emaAlpha',
+  feedback: 'feedback',
+  sources: 'sources',
+  createdAt: 'createdAt'
+} as const
+
+export type PracticeEventScalarFieldEnum = (typeof PracticeEventScalarFieldEnum)[keyof typeof PracticeEventScalarFieldEnum]
+
+
+export const StudentLearningProgressScalarFieldEnum = {
+  studentId: 'studentId',
+  courseId: 'courseId',
+  startedAt: 'startedAt',
+  lastStudiedAt: 'lastStudiedAt'
+} as const
+
+export type StudentLearningProgressScalarFieldEnum = (typeof StudentLearningProgressScalarFieldEnum)[keyof typeof StudentLearningProgressScalarFieldEnum]
 
 
 export const SortOrder = {

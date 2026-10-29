@@ -28,10 +28,18 @@ export type AggregateCourseLearningConfig = {
 
 export type CourseLearningConfigAvgAggregateOutputType = {
   pretestQuestionCount: number | null
+  emaAlpha: number | null
+  developingThreshold: number | null
+  readyThreshold: number | null
+  minimumStudySeconds: number | null
 }
 
 export type CourseLearningConfigSumAggregateOutputType = {
   pretestQuestionCount: number | null
+  emaAlpha: number | null
+  developingThreshold: number | null
+  readyThreshold: number | null
+  minimumStudySeconds: number | null
 }
 
 export type CourseLearningConfigMinAggregateOutputType = {
@@ -39,6 +47,10 @@ export type CourseLearningConfigMinAggregateOutputType = {
   pretestQuestionCount: number | null
   datasetName: string | null
   datasetChecksum: string | null
+  emaAlpha: number | null
+  developingThreshold: number | null
+  readyThreshold: number | null
+  minimumStudySeconds: number | null
 }
 
 export type CourseLearningConfigMaxAggregateOutputType = {
@@ -46,6 +58,10 @@ export type CourseLearningConfigMaxAggregateOutputType = {
   pretestQuestionCount: number | null
   datasetName: string | null
   datasetChecksum: string | null
+  emaAlpha: number | null
+  developingThreshold: number | null
+  readyThreshold: number | null
+  minimumStudySeconds: number | null
 }
 
 export type CourseLearningConfigCountAggregateOutputType = {
@@ -53,16 +69,28 @@ export type CourseLearningConfigCountAggregateOutputType = {
   pretestQuestionCount: number
   datasetName: number
   datasetChecksum: number
+  emaAlpha: number
+  developingThreshold: number
+  readyThreshold: number
+  minimumStudySeconds: number
   _all: number
 }
 
 
 export type CourseLearningConfigAvgAggregateInputType = {
   pretestQuestionCount?: true
+  emaAlpha?: true
+  developingThreshold?: true
+  readyThreshold?: true
+  minimumStudySeconds?: true
 }
 
 export type CourseLearningConfigSumAggregateInputType = {
   pretestQuestionCount?: true
+  emaAlpha?: true
+  developingThreshold?: true
+  readyThreshold?: true
+  minimumStudySeconds?: true
 }
 
 export type CourseLearningConfigMinAggregateInputType = {
@@ -70,6 +98,10 @@ export type CourseLearningConfigMinAggregateInputType = {
   pretestQuestionCount?: true
   datasetName?: true
   datasetChecksum?: true
+  emaAlpha?: true
+  developingThreshold?: true
+  readyThreshold?: true
+  minimumStudySeconds?: true
 }
 
 export type CourseLearningConfigMaxAggregateInputType = {
@@ -77,6 +109,10 @@ export type CourseLearningConfigMaxAggregateInputType = {
   pretestQuestionCount?: true
   datasetName?: true
   datasetChecksum?: true
+  emaAlpha?: true
+  developingThreshold?: true
+  readyThreshold?: true
+  minimumStudySeconds?: true
 }
 
 export type CourseLearningConfigCountAggregateInputType = {
@@ -84,6 +120,10 @@ export type CourseLearningConfigCountAggregateInputType = {
   pretestQuestionCount?: true
   datasetName?: true
   datasetChecksum?: true
+  emaAlpha?: true
+  developingThreshold?: true
+  readyThreshold?: true
+  minimumStudySeconds?: true
   _all?: true
 }
 
@@ -178,6 +218,10 @@ export type CourseLearningConfigGroupByOutputType = {
   pretestQuestionCount: number
   datasetName: string
   datasetChecksum: string
+  emaAlpha: number
+  developingThreshold: number
+  readyThreshold: number
+  minimumStudySeconds: number
   _count: CourseLearningConfigCountAggregateOutputType | null
   _avg: CourseLearningConfigAvgAggregateOutputType | null
   _sum: CourseLearningConfigSumAggregateOutputType | null
@@ -208,6 +252,10 @@ export type CourseLearningConfigWhereInput = {
   pretestQuestionCount?: Prisma.IntFilter<"CourseLearningConfig"> | number
   datasetName?: Prisma.StringFilter<"CourseLearningConfig"> | string
   datasetChecksum?: Prisma.StringFilter<"CourseLearningConfig"> | string
+  emaAlpha?: Prisma.FloatFilter<"CourseLearningConfig"> | number
+  developingThreshold?: Prisma.FloatFilter<"CourseLearningConfig"> | number
+  readyThreshold?: Prisma.FloatFilter<"CourseLearningConfig"> | number
+  minimumStudySeconds?: Prisma.IntFilter<"CourseLearningConfig"> | number
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }
 
@@ -216,6 +264,10 @@ export type CourseLearningConfigOrderByWithRelationInput = {
   pretestQuestionCount?: Prisma.SortOrder
   datasetName?: Prisma.SortOrder
   datasetChecksum?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
   course?: Prisma.CourseOrderByWithRelationInput
 }
 
@@ -227,6 +279,10 @@ export type CourseLearningConfigWhereUniqueInput = Prisma.AtLeast<{
   pretestQuestionCount?: Prisma.IntFilter<"CourseLearningConfig"> | number
   datasetName?: Prisma.StringFilter<"CourseLearningConfig"> | string
   datasetChecksum?: Prisma.StringFilter<"CourseLearningConfig"> | string
+  emaAlpha?: Prisma.FloatFilter<"CourseLearningConfig"> | number
+  developingThreshold?: Prisma.FloatFilter<"CourseLearningConfig"> | number
+  readyThreshold?: Prisma.FloatFilter<"CourseLearningConfig"> | number
+  minimumStudySeconds?: Prisma.IntFilter<"CourseLearningConfig"> | number
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }, "courseId">
 
@@ -235,6 +291,10 @@ export type CourseLearningConfigOrderByWithAggregationInput = {
   pretestQuestionCount?: Prisma.SortOrder
   datasetName?: Prisma.SortOrder
   datasetChecksum?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
   _count?: Prisma.CourseLearningConfigCountOrderByAggregateInput
   _avg?: Prisma.CourseLearningConfigAvgOrderByAggregateInput
   _max?: Prisma.CourseLearningConfigMaxOrderByAggregateInput
@@ -250,12 +310,20 @@ export type CourseLearningConfigScalarWhereWithAggregatesInput = {
   pretestQuestionCount?: Prisma.IntWithAggregatesFilter<"CourseLearningConfig"> | number
   datasetName?: Prisma.StringWithAggregatesFilter<"CourseLearningConfig"> | string
   datasetChecksum?: Prisma.StringWithAggregatesFilter<"CourseLearningConfig"> | string
+  emaAlpha?: Prisma.FloatWithAggregatesFilter<"CourseLearningConfig"> | number
+  developingThreshold?: Prisma.FloatWithAggregatesFilter<"CourseLearningConfig"> | number
+  readyThreshold?: Prisma.FloatWithAggregatesFilter<"CourseLearningConfig"> | number
+  minimumStudySeconds?: Prisma.IntWithAggregatesFilter<"CourseLearningConfig"> | number
 }
 
 export type CourseLearningConfigCreateInput = {
   pretestQuestionCount: number
   datasetName: string
   datasetChecksum: string
+  emaAlpha?: number
+  developingThreshold?: number
+  readyThreshold?: number
+  minimumStudySeconds?: number
   course: Prisma.CourseCreateNestedOneWithoutLearningConfigInput
 }
 
@@ -264,12 +332,20 @@ export type CourseLearningConfigUncheckedCreateInput = {
   pretestQuestionCount: number
   datasetName: string
   datasetChecksum: string
+  emaAlpha?: number
+  developingThreshold?: number
+  readyThreshold?: number
+  minimumStudySeconds?: number
 }
 
 export type CourseLearningConfigUpdateInput = {
   pretestQuestionCount?: Prisma.IntFieldUpdateOperationsInput | number
   datasetName?: Prisma.StringFieldUpdateOperationsInput | string
   datasetChecksum?: Prisma.StringFieldUpdateOperationsInput | string
+  emaAlpha?: Prisma.FloatFieldUpdateOperationsInput | number
+  developingThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  readyThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  minimumStudySeconds?: Prisma.IntFieldUpdateOperationsInput | number
   course?: Prisma.CourseUpdateOneRequiredWithoutLearningConfigNestedInput
 }
 
@@ -278,6 +354,10 @@ export type CourseLearningConfigUncheckedUpdateInput = {
   pretestQuestionCount?: Prisma.IntFieldUpdateOperationsInput | number
   datasetName?: Prisma.StringFieldUpdateOperationsInput | string
   datasetChecksum?: Prisma.StringFieldUpdateOperationsInput | string
+  emaAlpha?: Prisma.FloatFieldUpdateOperationsInput | number
+  developingThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  readyThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  minimumStudySeconds?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CourseLearningConfigCreateManyInput = {
@@ -285,12 +365,20 @@ export type CourseLearningConfigCreateManyInput = {
   pretestQuestionCount: number
   datasetName: string
   datasetChecksum: string
+  emaAlpha?: number
+  developingThreshold?: number
+  readyThreshold?: number
+  minimumStudySeconds?: number
 }
 
 export type CourseLearningConfigUpdateManyMutationInput = {
   pretestQuestionCount?: Prisma.IntFieldUpdateOperationsInput | number
   datasetName?: Prisma.StringFieldUpdateOperationsInput | string
   datasetChecksum?: Prisma.StringFieldUpdateOperationsInput | string
+  emaAlpha?: Prisma.FloatFieldUpdateOperationsInput | number
+  developingThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  readyThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  minimumStudySeconds?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CourseLearningConfigUncheckedUpdateManyInput = {
@@ -298,6 +386,10 @@ export type CourseLearningConfigUncheckedUpdateManyInput = {
   pretestQuestionCount?: Prisma.IntFieldUpdateOperationsInput | number
   datasetName?: Prisma.StringFieldUpdateOperationsInput | string
   datasetChecksum?: Prisma.StringFieldUpdateOperationsInput | string
+  emaAlpha?: Prisma.FloatFieldUpdateOperationsInput | number
+  developingThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  readyThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  minimumStudySeconds?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CourseLearningConfigNullableScalarRelationFilter = {
@@ -310,10 +402,18 @@ export type CourseLearningConfigCountOrderByAggregateInput = {
   pretestQuestionCount?: Prisma.SortOrder
   datasetName?: Prisma.SortOrder
   datasetChecksum?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
 }
 
 export type CourseLearningConfigAvgOrderByAggregateInput = {
   pretestQuestionCount?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
 }
 
 export type CourseLearningConfigMaxOrderByAggregateInput = {
@@ -321,6 +421,10 @@ export type CourseLearningConfigMaxOrderByAggregateInput = {
   pretestQuestionCount?: Prisma.SortOrder
   datasetName?: Prisma.SortOrder
   datasetChecksum?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
 }
 
 export type CourseLearningConfigMinOrderByAggregateInput = {
@@ -328,10 +432,18 @@ export type CourseLearningConfigMinOrderByAggregateInput = {
   pretestQuestionCount?: Prisma.SortOrder
   datasetName?: Prisma.SortOrder
   datasetChecksum?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
 }
 
 export type CourseLearningConfigSumOrderByAggregateInput = {
   pretestQuestionCount?: Prisma.SortOrder
+  emaAlpha?: Prisma.SortOrder
+  developingThreshold?: Prisma.SortOrder
+  readyThreshold?: Prisma.SortOrder
+  minimumStudySeconds?: Prisma.SortOrder
 }
 
 export type CourseLearningConfigCreateNestedOneWithoutCourseInput = {
@@ -366,16 +478,32 @@ export type CourseLearningConfigUncheckedUpdateOneWithoutCourseNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CourseLearningConfigUpdateToOneWithWhereWithoutCourseInput, Prisma.CourseLearningConfigUpdateWithoutCourseInput>, Prisma.CourseLearningConfigUncheckedUpdateWithoutCourseInput>
 }
 
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 export type CourseLearningConfigCreateWithoutCourseInput = {
   pretestQuestionCount: number
   datasetName: string
   datasetChecksum: string
+  emaAlpha?: number
+  developingThreshold?: number
+  readyThreshold?: number
+  minimumStudySeconds?: number
 }
 
 export type CourseLearningConfigUncheckedCreateWithoutCourseInput = {
   pretestQuestionCount: number
   datasetName: string
   datasetChecksum: string
+  emaAlpha?: number
+  developingThreshold?: number
+  readyThreshold?: number
+  minimumStudySeconds?: number
 }
 
 export type CourseLearningConfigCreateOrConnectWithoutCourseInput = {
@@ -398,12 +526,20 @@ export type CourseLearningConfigUpdateWithoutCourseInput = {
   pretestQuestionCount?: Prisma.IntFieldUpdateOperationsInput | number
   datasetName?: Prisma.StringFieldUpdateOperationsInput | string
   datasetChecksum?: Prisma.StringFieldUpdateOperationsInput | string
+  emaAlpha?: Prisma.FloatFieldUpdateOperationsInput | number
+  developingThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  readyThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  minimumStudySeconds?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type CourseLearningConfigUncheckedUpdateWithoutCourseInput = {
   pretestQuestionCount?: Prisma.IntFieldUpdateOperationsInput | number
   datasetName?: Prisma.StringFieldUpdateOperationsInput | string
   datasetChecksum?: Prisma.StringFieldUpdateOperationsInput | string
+  emaAlpha?: Prisma.FloatFieldUpdateOperationsInput | number
+  developingThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  readyThreshold?: Prisma.FloatFieldUpdateOperationsInput | number
+  minimumStudySeconds?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -413,6 +549,10 @@ export type CourseLearningConfigSelect<ExtArgs extends runtime.Types.Extensions.
   pretestQuestionCount?: boolean
   datasetName?: boolean
   datasetChecksum?: boolean
+  emaAlpha?: boolean
+  developingThreshold?: boolean
+  readyThreshold?: boolean
+  minimumStudySeconds?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseLearningConfig"]>
 
@@ -421,6 +561,10 @@ export type CourseLearningConfigSelectCreateManyAndReturn<ExtArgs extends runtim
   pretestQuestionCount?: boolean
   datasetName?: boolean
   datasetChecksum?: boolean
+  emaAlpha?: boolean
+  developingThreshold?: boolean
+  readyThreshold?: boolean
+  minimumStudySeconds?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseLearningConfig"]>
 
@@ -429,6 +573,10 @@ export type CourseLearningConfigSelectUpdateManyAndReturn<ExtArgs extends runtim
   pretestQuestionCount?: boolean
   datasetName?: boolean
   datasetChecksum?: boolean
+  emaAlpha?: boolean
+  developingThreshold?: boolean
+  readyThreshold?: boolean
+  minimumStudySeconds?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["courseLearningConfig"]>
 
@@ -437,9 +585,13 @@ export type CourseLearningConfigSelectScalar = {
   pretestQuestionCount?: boolean
   datasetName?: boolean
   datasetChecksum?: boolean
+  emaAlpha?: boolean
+  developingThreshold?: boolean
+  readyThreshold?: boolean
+  minimumStudySeconds?: boolean
 }
 
-export type CourseLearningConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"courseId" | "pretestQuestionCount" | "datasetName" | "datasetChecksum", ExtArgs["result"]["courseLearningConfig"]>
+export type CourseLearningConfigOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"courseId" | "pretestQuestionCount" | "datasetName" | "datasetChecksum" | "emaAlpha" | "developingThreshold" | "readyThreshold" | "minimumStudySeconds", ExtArgs["result"]["courseLearningConfig"]>
 export type CourseLearningConfigInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }
@@ -460,6 +612,10 @@ export type $CourseLearningConfigPayload<ExtArgs extends runtime.Types.Extension
     pretestQuestionCount: number
     datasetName: string
     datasetChecksum: string
+    emaAlpha: number
+    developingThreshold: number
+    readyThreshold: number
+    minimumStudySeconds: number
   }, ExtArgs["result"]["courseLearningConfig"]>
   composites: {}
 }
@@ -888,6 +1044,10 @@ export interface CourseLearningConfigFieldRefs {
   readonly pretestQuestionCount: Prisma.FieldRef<"CourseLearningConfig", 'Int'>
   readonly datasetName: Prisma.FieldRef<"CourseLearningConfig", 'String'>
   readonly datasetChecksum: Prisma.FieldRef<"CourseLearningConfig", 'String'>
+  readonly emaAlpha: Prisma.FieldRef<"CourseLearningConfig", 'Float'>
+  readonly developingThreshold: Prisma.FieldRef<"CourseLearningConfig", 'Float'>
+  readonly readyThreshold: Prisma.FieldRef<"CourseLearningConfig", 'Float'>
+  readonly minimumStudySeconds: Prisma.FieldRef<"CourseLearningConfig", 'Int'>
 }
     
 

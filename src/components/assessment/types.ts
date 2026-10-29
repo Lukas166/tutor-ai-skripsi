@@ -21,6 +21,12 @@ export type AssessmentOverview = {
   attemptId: string | null;
   topicCount: number;
   totalQuestions: number;
+  posttest: {
+    available: boolean;
+    status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED";
+    reason: string | null;
+    remainingStudySeconds: number;
+  };
 };
 export type StudentProfile = {
   course: { id: string; title: string };
@@ -51,6 +57,7 @@ export type StudentProfile = {
         | "NOT_ASSESSED"
         | "NEEDS_REINFORCEMENT"
         | "INITIAL_POSITIVE_EVIDENCE";
+      currentStatus: "NOT_ASSESSED" | "NEEDS_REINFORCEMENT" | "INITIAL_POSITIVE_EVIDENCE" | "DEVELOPING" | "READY_TO_ADVANCE";
     }[];
   }[];
 };

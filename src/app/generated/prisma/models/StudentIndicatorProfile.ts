@@ -48,6 +48,7 @@ export type StudentIndicatorProfileMinAggregateOutputType = {
   currentScore: number | null
   evidenceCount: number | null
   initialStatus: string | null
+  currentStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -62,6 +63,7 @@ export type StudentIndicatorProfileMaxAggregateOutputType = {
   currentScore: number | null
   evidenceCount: number | null
   initialStatus: string | null
+  currentStatus: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -76,6 +78,7 @@ export type StudentIndicatorProfileCountAggregateOutputType = {
   currentScore: number
   evidenceCount: number
   initialStatus: number
+  currentStatus: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -104,6 +107,7 @@ export type StudentIndicatorProfileMinAggregateInputType = {
   currentScore?: true
   evidenceCount?: true
   initialStatus?: true
+  currentStatus?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +122,7 @@ export type StudentIndicatorProfileMaxAggregateInputType = {
   currentScore?: true
   evidenceCount?: true
   initialStatus?: true
+  currentStatus?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -132,6 +137,7 @@ export type StudentIndicatorProfileCountAggregateInputType = {
   currentScore?: true
   evidenceCount?: true
   initialStatus?: true
+  currentStatus?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -233,6 +239,7 @@ export type StudentIndicatorProfileGroupByOutputType = {
   currentScore: number
   evidenceCount: number
   initialStatus: string
+  currentStatus: string
   createdAt: Date
   updatedAt: Date
   _count: StudentIndicatorProfileCountAggregateOutputType | null
@@ -270,6 +277,7 @@ export type StudentIndicatorProfileWhereInput = {
   currentScore?: Prisma.FloatFilter<"StudentIndicatorProfile"> | number
   evidenceCount?: Prisma.IntFilter<"StudentIndicatorProfile"> | number
   initialStatus?: Prisma.StringFilter<"StudentIndicatorProfile"> | string
+  currentStatus?: Prisma.StringFilter<"StudentIndicatorProfile"> | string
   createdAt?: Prisma.DateTimeFilter<"StudentIndicatorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudentIndicatorProfile"> | Date | string
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -288,6 +296,7 @@ export type StudentIndicatorProfileOrderByWithRelationInput = {
   currentScore?: Prisma.SortOrder
   evidenceCount?: Prisma.SortOrder
   initialStatus?: Prisma.SortOrder
+  currentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   student?: Prisma.UserOrderByWithRelationInput
@@ -310,6 +319,7 @@ export type StudentIndicatorProfileWhereUniqueInput = Prisma.AtLeast<{
   currentScore?: Prisma.FloatFilter<"StudentIndicatorProfile"> | number
   evidenceCount?: Prisma.IntFilter<"StudentIndicatorProfile"> | number
   initialStatus?: Prisma.StringFilter<"StudentIndicatorProfile"> | string
+  currentStatus?: Prisma.StringFilter<"StudentIndicatorProfile"> | string
   createdAt?: Prisma.DateTimeFilter<"StudentIndicatorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudentIndicatorProfile"> | Date | string
   student?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -328,6 +338,7 @@ export type StudentIndicatorProfileOrderByWithAggregationInput = {
   currentScore?: Prisma.SortOrder
   evidenceCount?: Prisma.SortOrder
   initialStatus?: Prisma.SortOrder
+  currentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.StudentIndicatorProfileCountOrderByAggregateInput
@@ -350,6 +361,7 @@ export type StudentIndicatorProfileScalarWhereWithAggregatesInput = {
   currentScore?: Prisma.FloatWithAggregatesFilter<"StudentIndicatorProfile"> | number
   evidenceCount?: Prisma.IntWithAggregatesFilter<"StudentIndicatorProfile"> | number
   initialStatus?: Prisma.StringWithAggregatesFilter<"StudentIndicatorProfile"> | string
+  currentStatus?: Prisma.StringWithAggregatesFilter<"StudentIndicatorProfile"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"StudentIndicatorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"StudentIndicatorProfile"> | Date | string
 }
@@ -360,6 +372,7 @@ export type StudentIndicatorProfileCreateInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.UserCreateNestedOneWithoutIndicatorProfilesInput
@@ -378,6 +391,7 @@ export type StudentIndicatorProfileUncheckedCreateInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -388,6 +402,7 @@ export type StudentIndicatorProfileUpdateInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.UserUpdateOneRequiredWithoutIndicatorProfilesNestedInput
@@ -406,6 +421,7 @@ export type StudentIndicatorProfileUncheckedUpdateInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -420,6 +436,7 @@ export type StudentIndicatorProfileCreateManyInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -430,6 +447,7 @@ export type StudentIndicatorProfileUpdateManyMutationInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -444,6 +462,7 @@ export type StudentIndicatorProfileUncheckedUpdateManyInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -479,6 +498,7 @@ export type StudentIndicatorProfileCountOrderByAggregateInput = {
   currentScore?: Prisma.SortOrder
   evidenceCount?: Prisma.SortOrder
   initialStatus?: Prisma.SortOrder
+  currentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -499,6 +519,7 @@ export type StudentIndicatorProfileMaxOrderByAggregateInput = {
   currentScore?: Prisma.SortOrder
   evidenceCount?: Prisma.SortOrder
   initialStatus?: Prisma.SortOrder
+  currentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -513,6 +534,7 @@ export type StudentIndicatorProfileMinOrderByAggregateInput = {
   currentScore?: Prisma.SortOrder
   evidenceCount?: Prisma.SortOrder
   initialStatus?: Prisma.SortOrder
+  currentStatus?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -681,20 +703,13 @@ export type StudentIndicatorProfileUncheckedUpdateOneWithoutBaselineItemNestedIn
   update?: Prisma.XOR<Prisma.XOR<Prisma.StudentIndicatorProfileUpdateToOneWithWhereWithoutBaselineItemInput, Prisma.StudentIndicatorProfileUpdateWithoutBaselineItemInput>, Prisma.StudentIndicatorProfileUncheckedUpdateWithoutBaselineItemInput>
 }
 
-export type FloatFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type StudentIndicatorProfileCreateWithoutStudentInput = {
   id: string
   initialScore: number
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   course: Prisma.CourseCreateNestedOneWithoutIndicatorProfilesInput
@@ -711,6 +726,7 @@ export type StudentIndicatorProfileUncheckedCreateWithoutStudentInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -754,6 +770,7 @@ export type StudentIndicatorProfileScalarWhereInput = {
   currentScore?: Prisma.FloatFilter<"StudentIndicatorProfile"> | number
   evidenceCount?: Prisma.IntFilter<"StudentIndicatorProfile"> | number
   initialStatus?: Prisma.StringFilter<"StudentIndicatorProfile"> | string
+  currentStatus?: Prisma.StringFilter<"StudentIndicatorProfile"> | string
   createdAt?: Prisma.DateTimeFilter<"StudentIndicatorProfile"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"StudentIndicatorProfile"> | Date | string
 }
@@ -764,6 +781,7 @@ export type StudentIndicatorProfileCreateWithoutCourseInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.UserCreateNestedOneWithoutIndicatorProfilesInput
@@ -780,6 +798,7 @@ export type StudentIndicatorProfileUncheckedCreateWithoutCourseInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -816,6 +835,7 @@ export type StudentIndicatorProfileCreateWithoutIndicatorInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.UserCreateNestedOneWithoutIndicatorProfilesInput
@@ -832,6 +852,7 @@ export type StudentIndicatorProfileUncheckedCreateWithoutIndicatorInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -868,6 +889,7 @@ export type StudentIndicatorProfileCreateWithoutBaselineItemInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
   student: Prisma.UserCreateNestedOneWithoutIndicatorProfilesInput
@@ -884,6 +906,7 @@ export type StudentIndicatorProfileUncheckedCreateWithoutBaselineItemInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -910,6 +933,7 @@ export type StudentIndicatorProfileUpdateWithoutBaselineItemInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.UserUpdateOneRequiredWithoutIndicatorProfilesNestedInput
@@ -926,6 +950,7 @@ export type StudentIndicatorProfileUncheckedUpdateWithoutBaselineItemInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -939,6 +964,7 @@ export type StudentIndicatorProfileCreateManyStudentInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -949,6 +975,7 @@ export type StudentIndicatorProfileUpdateWithoutStudentInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   course?: Prisma.CourseUpdateOneRequiredWithoutIndicatorProfilesNestedInput
@@ -965,6 +992,7 @@ export type StudentIndicatorProfileUncheckedUpdateWithoutStudentInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -978,6 +1006,7 @@ export type StudentIndicatorProfileUncheckedUpdateManyWithoutStudentInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -991,6 +1020,7 @@ export type StudentIndicatorProfileCreateManyCourseInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1001,6 +1031,7 @@ export type StudentIndicatorProfileUpdateWithoutCourseInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.UserUpdateOneRequiredWithoutIndicatorProfilesNestedInput
@@ -1017,6 +1048,7 @@ export type StudentIndicatorProfileUncheckedUpdateWithoutCourseInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1030,6 +1062,7 @@ export type StudentIndicatorProfileUncheckedUpdateManyWithoutCourseInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1043,6 +1076,7 @@ export type StudentIndicatorProfileCreateManyIndicatorInput = {
   currentScore: number
   evidenceCount?: number
   initialStatus: string
+  currentStatus?: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1053,6 +1087,7 @@ export type StudentIndicatorProfileUpdateWithoutIndicatorInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   student?: Prisma.UserUpdateOneRequiredWithoutIndicatorProfilesNestedInput
@@ -1069,6 +1104,7 @@ export type StudentIndicatorProfileUncheckedUpdateWithoutIndicatorInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1082,6 +1118,7 @@ export type StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorInput = {
   currentScore?: Prisma.FloatFieldUpdateOperationsInput | number
   evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
   initialStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  currentStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1098,6 +1135,7 @@ export type StudentIndicatorProfileSelect<ExtArgs extends runtime.Types.Extensio
   currentScore?: boolean
   evidenceCount?: boolean
   initialStatus?: boolean
+  currentStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1116,6 +1154,7 @@ export type StudentIndicatorProfileSelectCreateManyAndReturn<ExtArgs extends run
   currentScore?: boolean
   evidenceCount?: boolean
   initialStatus?: boolean
+  currentStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1134,6 +1173,7 @@ export type StudentIndicatorProfileSelectUpdateManyAndReturn<ExtArgs extends run
   currentScore?: boolean
   evidenceCount?: boolean
   initialStatus?: boolean
+  currentStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -1152,11 +1192,12 @@ export type StudentIndicatorProfileSelectScalar = {
   currentScore?: boolean
   evidenceCount?: boolean
   initialStatus?: boolean
+  currentStatus?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StudentIndicatorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "courseId" | "indicatorId" | "baselineItemId" | "initialScore" | "currentScore" | "evidenceCount" | "initialStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["studentIndicatorProfile"]>
+export type StudentIndicatorProfileOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "studentId" | "courseId" | "indicatorId" | "baselineItemId" | "initialScore" | "currentScore" | "evidenceCount" | "initialStatus" | "currentStatus" | "createdAt" | "updatedAt", ExtArgs["result"]["studentIndicatorProfile"]>
 export type StudentIndicatorProfileInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   student?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -1194,6 +1235,7 @@ export type $StudentIndicatorProfilePayload<ExtArgs extends runtime.Types.Extens
     currentScore: number
     evidenceCount: number
     initialStatus: string
+    currentStatus: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["studentIndicatorProfile"]>
@@ -1632,6 +1674,7 @@ export interface StudentIndicatorProfileFieldRefs {
   readonly currentScore: Prisma.FieldRef<"StudentIndicatorProfile", 'Float'>
   readonly evidenceCount: Prisma.FieldRef<"StudentIndicatorProfile", 'Int'>
   readonly initialStatus: Prisma.FieldRef<"StudentIndicatorProfile", 'String'>
+  readonly currentStatus: Prisma.FieldRef<"StudentIndicatorProfile", 'String'>
   readonly createdAt: Prisma.FieldRef<"StudentIndicatorProfile", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"StudentIndicatorProfile", 'DateTime'>
 }

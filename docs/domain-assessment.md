@@ -1,4 +1,4 @@
-# Domain pembelajaran, pre-test, dan profil awal
+# Domain pembelajaran dan ITS adaptif
 
 ## Hubungan dengan mata kuliah LMS
 
@@ -20,9 +20,11 @@ Course
 
 `courseId` selalu mengacu ke `Course.id` yang nyata. Importer wajib menerima ID
 course tujuan secara eksplisit dan menolak ID yang tidak ada. Tidak ada pencocokan
-judul mata kuliah otomatis. Pada setiap materi, importer menautkan sesi dengan
-pasangan `(courseId, orderNumber)`; sesi yang belum ada ditambahkan tanpa mengganti
-sesi atau PDF existing.
+judul mata kuliah otomatis. Pada setiap materi, importer memprioritaskan kecocokan
+nama file PDF di dalam course tersebut, lalu memakai `(courseId, orderNumber)` bila
+PDF belum diunggah. Normalisasi nama file hanya dilakukan saat impor; retrieval
+dan penilaian selalu memakai ID database. Sesi yang belum ada ditambahkan tanpa
+mengganti sesi atau PDF existing.
 
 Kode workbook seperti `RPL-M01`, `RPL-I01`, dan `RPL-PP-01` disimpan utuh dalam `code`
 serta baris asli `sourceData`. Primary key internal dibentuk deterministik dari
@@ -70,12 +72,25 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 5. Setelah semua jawaban tersimpan, pilih **Kirim Jawaban** dan konfirmasi.
 6. Halaman hasil menampilkan skor keseluruhan. **Lihat Profil Belajar** membuka
    ringkasan materi dan indikator, lalu tersedia akses ke materi serta AI Tutor.
+7. Pilih **Lanjut Belajar di AI Tutor**. Atur PDF melalui Context Materi; pilihan
+   satu materi membatasi retrieval ke PDF tersebut, pilihan semua materi tetap
+   dibatasi course yang diakses. Tanyakan konsep spesifik, misalnya pengumpulan data.
+   Tutor memakai `/courses/{courseId}/tutor` agar layout layar penuh tidak dibungkus
+   panel Mahasiswa; alias lama `/mahasiswa/courses/{courseId}/tutor` diarahkan ke sana.
+8. Terima atau lewati tawaran latihan pada balasan tutor. Dalam mode avatar,
+   gunakan **Buka Latihan Konsep**. Jawaban, hint, remediasi dan riwayat disimpan.
+9. Kembali ke mata kuliah dan pilih **Mulai Post-test** setelah interaksi belajar.
+   Paket disalin dari snapshot pre-test, termasuk ID soal, urutan dan lima opsi.
+10. Setelah post-test dikirim, **Lihat Perbandingan Hasil** menampilkan skor,
+    perubahan poin persentase, jumlah benar, serta perubahan per indikator/materi.
 
 Alamat halaman bersifat generik:
 
 - `/mahasiswa/courses/{courseId}/pretest`
 - `/mahasiswa/courses/{courseId}/pretest/result`
 - `/mahasiswa/courses/{courseId}/student-profile`
+- `/mahasiswa/courses/{courseId}/posttest`
+- `/mahasiswa/courses/{courseId}/posttest/result`
 
 Course yang belum memiliki konfigurasi domain tidak menampilkan CTA pre-test.
 Login, enrollment aktif, dan role mahasiswa tetap diperiksa di server Next.js
@@ -102,24 +117,85 @@ Ringkasan materi diturunkan dari profil indikator, bukan disimpan dua kali.
 
 Profil menampilkan status per indikator sesuai spesifikasi, tanpa menghubungkannya
 ke rincian jawaban soal atau memperlihatkan kunci. Satu bukti positif tidak dianggap
-penguasaan penuh. Latihan, EMA, adaptive engine, dan post-test belum diaktifkan.
+penguasaan penuh. Post-test tidak membuat ulang baseline dan tidak mengubah EMA.
 
-## Pemeriksaan yang dilakukan
+## Bukti latihan, EMA, dan keputusan tutoring
 
-- Kesesuaian teks/opsi/kunci/penjelasan/sumber seluruh 42 soal terhadap Excel.
-- Seed berulang tidak menambah jumlah materi, indikator, atau soal.
-- Dua course dapat memakai kode sumber yang sama tanpa benturan ID.
-- Skenario 0/14, 7/14, dan 14/14 melalui transaksi database dengan rollback.
-- Draf tersimpan, submit tidak lengkap ditolak, baseline satu bukti per indikator.
-- Alur HTTP Better Auth → Next.js → Python → database → hasil/profil menggunakan
-  akun QA sementara; akun dan hasil QA dibersihkan setelah pengujian.
-- Akses tanpa login/enrollment dan akses attempt mahasiswa lain ditolak.
-- Dua submit serentak menghasilkan satu hasil dan tepat 14 profil.
-- TypeScript, lint kode baru, Ruff, Mypy, serta build produksi.
+`PracticeSession` memiliki constraint unik mahasiswa/course/soal. Hanya jawaban
+pertama pada soal berbeda, ketika `answerCount=0` dan `hintCount=0` di database,
+menjadi bukti mandiri. Benar bernilai 1, salah bernilai 0. Rumus:
 
-Tidak ditambahkan berkas test permanen. Pemeriksaan visual browser tidak dapat
-diselesaikan karena Computer Use tidak dapat memastikan URL browser Windows;
-verifikasi halaman pada tahap ini mencakup build dan respons HTTP terautentikasi.
+```text
+EMA_baru = (1 - emaAlpha) * EMA_lama + emaAlpha * hasil
+```
 
-Lint seluruh repositori masih melaporkan 9 error dan 12 warning lama pada seed serta
-halaman admin/dashboard/dosen yang tidak diubah dalam fitur ini; lint kode baru lulus.
+`PracticeEvent` menyimpan requestId, jawaban, benar/salah, kondisi bantuan, alpha,
+EMA sebelum/sesudah, feedback dan sumber. Lock sesi dan profil, constraint requestId
+serta satu event mandiri per sesi mencegah pembaruan ganda. Hint/ulang tetap dicatat
+tetapi tidak menaikkan jumlah bukti dan tidak mengubah EMA. Riwayat ini tetap ada
+jika chat dihapus karena relasi chat memakai `SET NULL`, bukan cascade penilaian.
+Tawaran yang dilewati sebelum dibuka dapat ditawarkan kembali dan tidak dianggap
+bukti/soal yang telah dikerjakan. Setelah menjawab atau memakai hint, mahasiswa
+dapat mengakhiri latihan tanpa harus menjawab benar; riwayat dan bukti tetap utuh.
+Ketika soal masih terbuka tanpa jawaban/hint, permintaan penjelasan untuk indikator
+yang sama diarahkan ke tombol hint. Ini mencegah bantuan lewat chat biasa dianggap
+sebagai jawaban mandiri; setelah hint tercatat, diskusi konsep dapat dilanjutkan.
+
+Konfigurasi ada pada `course_learning_config` per course, tanpa tambahan env wajib:
+
+| Kolom | Default | Penggunaan |
+| --- | --- | --- |
+| emaAlpha | 0.3 | Bobot bukti latihan baru |
+| developingThreshold | 0.5 | Batas sinyal berkembang setelah ada latihan mandiri |
+| readyThreshold | 0.8 | Batas sinyal siap lanjut setelah ada latihan mandiri |
+| minimumStudySeconds | 0 | Durasi minimum sejak interaksi belajar pertama |
+
+Angka default adalah pengaturan aplikasi, bukan standar ilmiah. Tidak ada batas
+waktu pre/post yang dipaksakan. Status operasional diturunkan dari skor dan jumlah
+bukti yang tersimpan: NOT_ASSESSED, NEEDS_REINFORCEMENT, INITIAL_POSITIVE_EVIDENCE,
+DEVELOPING, READY_TO_ADVANCE. Nilai ringkasan materi dihitung dari indikator.
+`currentStatus` menyimpan sinyal saat pembaruan bukti; status yang dikirim ke tutor/UI
+dihitung kembali dengan konfigurasi course terkini agar perubahan threshold terbaca.
+
+Python memetakan pesan ke daftar indikator resmi dalam materi terpilih, membaca
+profil terbaru, lalu memutuskan FOUNDATION, APPLICATION, CLARIFY atau REVIEW.
+Pemetaan eksplisit didahulukan; usulan LLM terstruktur divalidasi terhadap ID resmi.
+Tidak ada indikator acak atau perubahan skor dari percakapan. Retrieval tetap
+mengikat courseId dan materialId; konteks indikator dapat mempersempit sesi materi.
+Tanpa sumber, respons mengakui keterbatasannya. Soal hanya berasal dari PRACTICE,
+bukan generasi LLM. Hint/remediasi tidak menerima kunci atau opsi jawaban dari bank.
+
+Post-test tersedia setelah pre-test selesai dan ada jawaban tutor bersumber yang
+tersimpan atau interaksi latihan. `student_learning_progress` menyimpan waktu
+belajar server. Tidak ada syarat seluruh indikator harus siap lanjut. Perbandingan
+benar/salah per indikator baru dikirim setelah rangkaian post-test selesai.
+
+## PDF dan OCR
+
+Unggah/retry memakai mekanisme materi LMS yang sudah ada. Worker Python mengisi
+material_page dan material_chunk dengan course/sesi/halaman. Tunggu status ready
+sebelum memilih dokumen sebagai konteks tutor. `MaterialRepository.claim(course_id)`
+dapat membatasi pemrosesan ulang ke satu course; worker aplikasi tetap memakai
+antrean existing dengan lease dan SKIP LOCKED.
+
+OCR memakai konfigurasi eksplisit, PATH, runtime lokal `.tools/tesseract/tesseract.exe`,
+atau instalasi Windows standar. Data eng.traineddata dan ind.traineddata dibaca dari
+root proyek. Binary lokal diabaikan Git dan harus disediakan lagi pada mesin lain.
+Unduhan Windows tersedia melalui [dokumentasi Tesseract](https://github.com/UB-Mannheim/tesseract/wiki).
+Jika executable OCR tidak tersedia, cek metadata halaman: status ready saja tidak
+menjamin PDF scan memiliki cakupan teks yang lengkap.
+
+Pada database pengembangan, tujuh PDF RPL telah diproses ulang: 347 halaman disimpan
+dan 351 chunk ber-embedding dipublikasikan. Semua dokumen ready, tanpa error OCR.
+Satu halaman UML tidak menghasilkan teks; halaman kosong tidak diberi chunk palsu.
+
+## Validasi pengembangan lanjutan
+
+Migrasi `20261030010000_adaptive_learning` diterapkan dan client Prisma diregenerasi.
+Migrasi `20261030020000_persist_learner_status` menambahkan status operasional tersimpan
+dan mengisi status profil existing tanpa mengubah baseline atau nilai performa.
+Seed RPL dijalankan kembali untuk memperbaiki relasi PDF tanpa mengganti baseline.
+Pemeriksaan TypeScript, ESLint perubahan, Ruff, Mypy, dan build produksi dijalankan.
+Tidak dibuat atau dijalankan automated test/test suite untuk tahap lanjutan ini.
+Alur interaktif perlu dicoba manual melalui langkah di atas; build dan pemeriksaan
+statis tidak menggantikan pemeriksaan visual atau hasil percakapan LLM.

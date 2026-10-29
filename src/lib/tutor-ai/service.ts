@@ -2,6 +2,7 @@ import type { Prisma } from "@/app/generated/prisma/client";
 import prisma from "@/lib/prisma";
 import {
   preparePythonRag,
+  recordPythonStudy,
   generatePythonAnswer,
   streamPythonAnswer,
   getPythonAvatarExpression,
@@ -210,6 +211,16 @@ async function listReadyMaterialsForCourse(courseId: string) {
       return bySession || a.createdAt.getTime() - b.createdAt.getTime();
     })
     .map(toReadyMaterial);
+}
+
+async function needsPretest(courseId: string, userId: string) {
+  const config = await prisma.courseLearningConfig.findUnique({ where: { courseId }, select: { courseId: true } });
+  if (!config) return false;
+  const pretest = await prisma.assessmentAttempt.findUnique({
+    where: { studentId_courseId_kind: { studentId: userId, courseId, kind: "PRE" } },
+    select: { status: true },
+  });
+  return pretest?.status !== "SUBMITTED";
 }
 
 async function getCourseAnchorSessionId(courseId: string) {
@@ -439,7 +450,8 @@ function buildAvatarRagSources(
   avatarExpression: AvatarExpression,
   responseMode: TutorResponseMode,
   reason?: string,
-  spokenText?: string
+  spokenText?: string,
+  adaptive?: Prisma.InputJsonValue | null
 ) {
   return {
     avatarExpression,
@@ -447,6 +459,7 @@ function buildAvatarRagSources(
     reason: reason ?? null,
     sources: chunks.map(toRagSource),
     spokenText: spokenText ? buildAvatarSpokenText(spokenText) : null,
+    adaptive: adaptive ?? null,
   };
 }
 
@@ -490,6 +503,7 @@ async function prepareTutorAnswer(input: {
   return preparePythonRag({
     course: input.course,
     user: input.user,
+    chatSessionId: input.sessionId,
     question: input.question,
     selectedMaterialIds: input.selectedMaterialIds,
     activeMaterials,
@@ -507,7 +521,7 @@ async function createAiMessage(input: {
   ragSources: Prisma.InputJsonValue;
   responseTimeMs?: number;
 }) {
-  return prisma.aiChatMessage.create({
+  const message = await prisma.aiChatMessage.create({
     data: {
       id: crypto.randomUUID(),
       aiChatSessionId: input.aiChatSessionId,
@@ -517,6 +531,15 @@ async function createAiMessage(input: {
       responseTimeMs: input.responseTimeMs ?? null,
     },
   });
+  const metadata = input.ragSources as { adaptive?: unknown; sources?: unknown[] };
+  if (metadata.adaptive && metadata.sources?.length) {
+    const session = await prisma.aiChatSession.findUniqueOrThrow({
+      where: { id: input.aiChatSessionId }, select: { userId: true, courseId: true },
+    });
+    await recordPythonStudy({ studentId: session.userId, courseId: session.courseId,
+      chatSessionId: input.aiChatSessionId, messageId: message.id });
+  }
+  return message;
 }
 
 export async function getTutorOverview(courseId: string, userId: string) {
@@ -536,6 +559,7 @@ export async function getTutorOverview(courseId: string, userId: string) {
     },
     readyMaterials,
     chatSessions,
+    pretestRequired: await needsPretest(courseId, userId),
   };
 }
 
@@ -701,6 +725,8 @@ export async function askTutor(input: {
   }
 
   const { user, course } = await getTutorAccess(input.courseId, input.userId);
+  if (await needsPretest(input.courseId, input.userId))
+    throw new TutorAiServiceError("Selesaikan pre-test pada halaman mata kuliah sebelum belajar di tutor.", 409);
   const [session, readyMaterials] = await Promise.all([
     getSessionOrThrow(input),
     listReadyMaterialsForCourse(input.courseId),
@@ -748,6 +774,7 @@ export async function askTutor(input: {
 
   let answer: string;
   let chunks: RetrievedChunk[];
+  let adaptive: Prisma.InputJsonValue | null = null;
   
   try {
     const prepared = await prepareTutorAnswer({
@@ -755,7 +782,8 @@ export async function askTutor(input: {
       selectedMaterialIds, readyMaterials, responseMode,
     });
     chunks = prepared.chunks;
-    answer = await generatePythonAnswer(prepared);
+    adaptive = prepared.adaptive ?? null;
+    answer = prepared.directAnswer || await generatePythonAnswer(prepared);
   } catch (error) {
     // Hapus pesan user yang terlanjur disimpan jika ADA step yang gagal (embedding, RAG, atau chat)
     await prisma.aiChatMessage.delete({ where: { id: userMessage.id } });
@@ -776,7 +804,8 @@ export async function askTutor(input: {
       avatarExpression,
       responseMode,
       undefined,
-      responseMode === "avatar" ? answer : undefined
+      responseMode === "avatar" ? answer : undefined,
+      adaptive
     ),
     responseTimeMs: Date.now() - startTime,
   });
@@ -804,6 +833,8 @@ export async function askTutorStream(input: {
   }
 
   const { user, course } = await getTutorAccess(input.courseId, input.userId);
+  if (await needsPretest(input.courseId, input.userId))
+    throw new TutorAiServiceError("Selesaikan pre-test pada halaman mata kuliah sebelum belajar di tutor.", 409);
   const [session, readyMaterials] = await Promise.all([
     getSessionOrThrow(input),
     listReadyMaterialsForCourse(input.courseId),
@@ -886,6 +917,8 @@ export async function askTutorStream(input: {
   let chunks: RetrievedChunk[];
   let systemInstruction: string;
   let prompt: string;
+  let adaptive: Prisma.InputJsonValue | null = null;
+  let directAnswer: string | null = null;
 
   try {
     throwIfAborted();
@@ -896,6 +929,8 @@ export async function askTutorStream(input: {
     chunks = prepared.chunks;
     systemInstruction = prepared.systemInstruction;
     prompt = prepared.prompt;
+    adaptive = prepared.adaptive ?? null;
+    directAnswer = prepared.directAnswer ?? null;
     throwIfAborted();
   } catch (error) {
     await prisma.aiChatMessage.delete({ where: { id: userMessage.id } });
@@ -921,7 +956,9 @@ export async function askTutorStream(input: {
 
       try {
         throwIfAborted();
-        const stream = streamPythonAnswer({ systemInstruction, prompt, signal: input.signal });
+        const stream = directAnswer
+          ? (async function* () { yield directAnswer!; })()
+          : streamPythonAnswer({ systemInstruction, prompt, signal: input.signal });
         for await (const textChunk of stream) {
           throwIfAborted();
           fullAnswer += textChunk;
@@ -948,7 +985,8 @@ export async function askTutorStream(input: {
           avatarExpression,
           responseMode,
           undefined,
-          responseMode === "avatar" ? fullAnswer.trim() : undefined
+          responseMode === "avatar" ? fullAnswer.trim() : undefined,
+          adaptive
         );
         const responseTimeMs = Date.now() - startTime;
 

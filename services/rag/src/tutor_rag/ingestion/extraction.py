@@ -1,15 +1,18 @@
+import os
 from collections.abc import Callable
 from contextlib import closing
+from pathlib import Path
+from shutil import which
 
 import pypdfium2 as pdfium
 import pytesseract
 
-from tutor_rag.core.config import OCR_LANGUAGES, PDF_RENDER_SCALE, Settings
+from tutor_rag.core.config import OCR_LANGUAGES, PDF_RENDER_SCALE, PROJECT_ROOT, Settings
 from tutor_rag.ingestion.cleaning import clean_text
 from tutor_rag.ingestion.models import ExtractedPage
 
 
-def recognize_page(page: pdfium.PdfPage, settings: Settings) -> str:
+def recognize_page(page: pdfium.PdfPage) -> str:
     # PDF gambar perlu dirender sebelum dibaca OCR; skala dua mempertahankan detail huruf.
     # OCR tetap dicoba pada setiap halaman sesuai kebijakan pemrosesan yang sudah ada.
     bitmap = page.render(scale=PDF_RENDER_SCALE)
@@ -19,7 +22,6 @@ def recognize_page(page: pdfium.PdfPage, settings: Settings) -> str:
                 image,
                 lang=OCR_LANGUAGES,
                 timeout=120,
-                config=f'--tessdata-dir "{settings.tessdata_prefix}"',
             )
         return clean_text(text)
     finally:
@@ -27,13 +29,13 @@ def recognize_page(page: pdfium.PdfPage, settings: Settings) -> str:
         bitmap.close()
 
 
-def extract_page(page: pdfium.PdfPage, number: int, settings: Settings) -> ExtractedPage:
+def extract_page(page: pdfium.PdfPage, number: int) -> ExtractedPage:
     # Embedded text adalah lapisan teks asli PDF, sedangkan OCR membaca tampilan halamannya.
     with closing(page.get_textpage()) as text_page:
         embedded_text = clean_text(text_page.get_text_bounded())
     ocr_text, ocr_error = "", None
     try:
-        ocr_text = recognize_page(page, settings)
+        ocr_text = recognize_page(page)
     except Exception as error:
         # PDF teks masih bisa diindeks ketika OCR gagal; penyebab dicatat pada metadata.
         # Untuk PDF scan tanpa embedded text, hasil kosong akan ditolak pipeline ingestion.
@@ -59,14 +61,32 @@ def extract_page(page: pdfium.PdfPage, number: int, settings: Settings) -> Extra
 def extract_pdf(
     data: bytes, settings: Settings, on_page: Callable[[int, int], None]
 ) -> list[ExtractedPage]:
-    if settings.tesseract_cmd:
-        pytesseract.pytesseract.tesseract_cmd = settings.tesseract_cmd
+    # Variabel proses diwariskan subprocess tanpa masalah literal quote pada Windows.
+    # Path dengan spasi juga aman; tidak perlu merangkai --tessdata-dir lewat shlex.
+    os.environ["TESSDATA_PREFIX"] = settings.tessdata_prefix
+    # Utamakan konfigurasi eksplisit/PATH; runtime lokal menjaga setup Windows tetap mandiri.
+    # Binary berada di .tools yang diabaikan Git, bukan menjadi bagian source aplikasi.
+    candidates = [
+        settings.tesseract_cmd,
+        which("tesseract"),
+        str(PROJECT_ROOT / ".tools" / "tesseract" / "tesseract.exe"),
+        str(
+            Path(os.environ.get("PROGRAMFILES", "C:/Program Files"))
+            / "Tesseract-OCR"
+            / "tesseract.exe"
+        ),
+    ]
+    executable = next(
+        (candidate for candidate in candidates if candidate and Path(candidate).is_file()), None
+    )
+    if executable:
+        pytesseract.pytesseract.tesseract_cmd = executable
     pages = []
     # Simpan hasil per halaman agar cleaning, chunking, dan sumber jawaban tetap terlacak.
     with pdfium.PdfDocument(data) as document:
         for index in range(len(document)):
             with closing(document[index]) as page:
-                pages.append(extract_page(page, index + 1, settings))
+                pages.append(extract_page(page, index + 1))
             # Callback hanya melaporkan progres; detail penyimpanan tetap di repository.
             on_page(index + 1, len(document))
     return pages

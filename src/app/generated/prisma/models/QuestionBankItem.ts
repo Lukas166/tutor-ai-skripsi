@@ -299,6 +299,7 @@ export type QuestionBankItemWhereInput = {
   topic?: Prisma.XOR<Prisma.DomainTopicScalarRelationFilter, Prisma.DomainTopicWhereInput>
   indicator?: Prisma.XOR<Prisma.DomainIndicatorScalarRelationFilter, Prisma.DomainIndicatorWhereInput>
   items?: Prisma.AssessmentItemListRelationFilter
+  practiceSessions?: Prisma.PracticeSessionListRelationFilter
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }
 
@@ -322,6 +323,7 @@ export type QuestionBankItemOrderByWithRelationInput = {
   topic?: Prisma.DomainTopicOrderByWithRelationInput
   indicator?: Prisma.DomainIndicatorOrderByWithRelationInput
   items?: Prisma.AssessmentItemOrderByRelationAggregateInput
+  practiceSessions?: Prisma.PracticeSessionOrderByRelationAggregateInput
   course?: Prisma.CourseOrderByWithRelationInput
 }
 
@@ -350,6 +352,7 @@ export type QuestionBankItemWhereUniqueInput = Prisma.AtLeast<{
   topic?: Prisma.XOR<Prisma.DomainTopicScalarRelationFilter, Prisma.DomainTopicWhereInput>
   indicator?: Prisma.XOR<Prisma.DomainIndicatorScalarRelationFilter, Prisma.DomainIndicatorWhereInput>
   items?: Prisma.AssessmentItemListRelationFilter
+  practiceSessions?: Prisma.PracticeSessionListRelationFilter
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }, "id" | "courseId_code" | "indicatorId_kind_practiceNumber">
 
@@ -416,6 +419,7 @@ export type QuestionBankItemCreateInput = {
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
   course: Prisma.CourseCreateNestedOneWithoutQuestionBankInput
 }
 
@@ -437,6 +441,7 @@ export type QuestionBankItemUncheckedCreateInput = {
   validationStatus: string
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionBankItemUpdateInput = {
@@ -456,6 +461,7 @@ export type QuestionBankItemUpdateInput = {
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutQuestionBankNestedInput
 }
 
@@ -477,6 +483,7 @@ export type QuestionBankItemUncheckedUpdateInput = {
   validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionBankItemCreateManyInput = {
@@ -760,6 +767,20 @@ export type QuestionBankItemUpdateOneRequiredWithoutItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.QuestionBankItemUpdateToOneWithWhereWithoutItemsInput, Prisma.QuestionBankItemUpdateWithoutItemsInput>, Prisma.QuestionBankItemUncheckedUpdateWithoutItemsInput>
 }
 
+export type QuestionBankItemCreateNestedOneWithoutPracticeSessionsInput = {
+  create?: Prisma.XOR<Prisma.QuestionBankItemCreateWithoutPracticeSessionsInput, Prisma.QuestionBankItemUncheckedCreateWithoutPracticeSessionsInput>
+  connectOrCreate?: Prisma.QuestionBankItemCreateOrConnectWithoutPracticeSessionsInput
+  connect?: Prisma.QuestionBankItemWhereUniqueInput
+}
+
+export type QuestionBankItemUpdateOneRequiredWithoutPracticeSessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.QuestionBankItemCreateWithoutPracticeSessionsInput, Prisma.QuestionBankItemUncheckedCreateWithoutPracticeSessionsInput>
+  connectOrCreate?: Prisma.QuestionBankItemCreateOrConnectWithoutPracticeSessionsInput
+  upsert?: Prisma.QuestionBankItemUpsertWithoutPracticeSessionsInput
+  connect?: Prisma.QuestionBankItemWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.QuestionBankItemUpdateToOneWithWhereWithoutPracticeSessionsInput, Prisma.QuestionBankItemUpdateWithoutPracticeSessionsInput>, Prisma.QuestionBankItemUncheckedUpdateWithoutPracticeSessionsInput>
+}
+
 export type QuestionBankItemCreateWithoutCourseInput = {
   id: string
   code: string
@@ -777,6 +798,7 @@ export type QuestionBankItemCreateWithoutCourseInput = {
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionBankItemUncheckedCreateWithoutCourseInput = {
@@ -796,6 +818,7 @@ export type QuestionBankItemUncheckedCreateWithoutCourseInput = {
   validationStatus: string
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionBankItemCreateOrConnectWithoutCourseInput = {
@@ -862,6 +885,7 @@ export type QuestionBankItemCreateWithoutTopicInput = {
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
   course: Prisma.CourseCreateNestedOneWithoutQuestionBankInput
 }
 
@@ -882,6 +906,7 @@ export type QuestionBankItemUncheckedCreateWithoutTopicInput = {
   validationStatus: string
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionBankItemCreateOrConnectWithoutTopicInput = {
@@ -926,6 +951,7 @@ export type QuestionBankItemCreateWithoutIndicatorInput = {
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
   course: Prisma.CourseCreateNestedOneWithoutQuestionBankInput
 }
 
@@ -946,6 +972,7 @@ export type QuestionBankItemUncheckedCreateWithoutIndicatorInput = {
   validationStatus: string
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionBankItemCreateOrConnectWithoutIndicatorInput = {
@@ -990,6 +1017,7 @@ export type QuestionBankItemCreateWithoutItemsInput = {
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
+  practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
   course: Prisma.CourseCreateNestedOneWithoutQuestionBankInput
 }
 
@@ -1010,6 +1038,7 @@ export type QuestionBankItemUncheckedCreateWithoutItemsInput = {
   sourcePages: string
   validationStatus: string
   sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
 export type QuestionBankItemCreateOrConnectWithoutItemsInput = {
@@ -1044,6 +1073,7 @@ export type QuestionBankItemUpdateWithoutItemsInput = {
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutQuestionBankNestedInput
 }
 
@@ -1064,6 +1094,103 @@ export type QuestionBankItemUncheckedUpdateWithoutItemsInput = {
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
   validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
+}
+
+export type QuestionBankItemCreateWithoutPracticeSessionsInput = {
+  id: string
+  code: string
+  kind: string
+  question: string
+  options: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  correctOption: string
+  explanation: string
+  cognitiveLevel: string
+  practiceNumber?: number | null
+  sourcePdf: string
+  sourcePages: string
+  validationStatus: string
+  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
+  indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
+  items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
+  course: Prisma.CourseCreateNestedOneWithoutQuestionBankInput
+}
+
+export type QuestionBankItemUncheckedCreateWithoutPracticeSessionsInput = {
+  id: string
+  code: string
+  courseId: string
+  topicId: string
+  indicatorId: string
+  kind: string
+  question: string
+  options: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  correctOption: string
+  explanation: string
+  cognitiveLevel: string
+  practiceNumber?: number | null
+  sourcePdf: string
+  sourcePages: string
+  validationStatus: string
+  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
+}
+
+export type QuestionBankItemCreateOrConnectWithoutPracticeSessionsInput = {
+  where: Prisma.QuestionBankItemWhereUniqueInput
+  create: Prisma.XOR<Prisma.QuestionBankItemCreateWithoutPracticeSessionsInput, Prisma.QuestionBankItemUncheckedCreateWithoutPracticeSessionsInput>
+}
+
+export type QuestionBankItemUpsertWithoutPracticeSessionsInput = {
+  update: Prisma.XOR<Prisma.QuestionBankItemUpdateWithoutPracticeSessionsInput, Prisma.QuestionBankItemUncheckedUpdateWithoutPracticeSessionsInput>
+  create: Prisma.XOR<Prisma.QuestionBankItemCreateWithoutPracticeSessionsInput, Prisma.QuestionBankItemUncheckedCreateWithoutPracticeSessionsInput>
+  where?: Prisma.QuestionBankItemWhereInput
+}
+
+export type QuestionBankItemUpdateToOneWithWhereWithoutPracticeSessionsInput = {
+  where?: Prisma.QuestionBankItemWhereInput
+  data: Prisma.XOR<Prisma.QuestionBankItemUpdateWithoutPracticeSessionsInput, Prisma.QuestionBankItemUncheckedUpdateWithoutPracticeSessionsInput>
+}
+
+export type QuestionBankItemUpdateWithoutPracticeSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  correctOption?: Prisma.StringFieldUpdateOperationsInput | string
+  explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  cognitiveLevel?: Prisma.StringFieldUpdateOperationsInput | string
+  practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
+  sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
+  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
+  indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
+  items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
+  course?: Prisma.CourseUpdateOneRequiredWithoutQuestionBankNestedInput
+}
+
+export type QuestionBankItemUncheckedUpdateWithoutPracticeSessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  courseId?: Prisma.StringFieldUpdateOperationsInput | string
+  topicId?: Prisma.StringFieldUpdateOperationsInput | string
+  indicatorId?: Prisma.StringFieldUpdateOperationsInput | string
+  kind?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  options?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  correctOption?: Prisma.StringFieldUpdateOperationsInput | string
+  explanation?: Prisma.StringFieldUpdateOperationsInput | string
+  cognitiveLevel?: Prisma.StringFieldUpdateOperationsInput | string
+  practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
+  sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
+  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
+  items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionBankItemCreateManyCourseInput = {
@@ -1101,6 +1228,7 @@ export type QuestionBankItemUpdateWithoutCourseInput = {
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionBankItemUncheckedUpdateWithoutCourseInput = {
@@ -1120,6 +1248,7 @@ export type QuestionBankItemUncheckedUpdateWithoutCourseInput = {
   validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionBankItemUncheckedUpdateManyWithoutCourseInput = {
@@ -1174,6 +1303,7 @@ export type QuestionBankItemUpdateWithoutTopicInput = {
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutQuestionBankNestedInput
 }
 
@@ -1194,6 +1324,7 @@ export type QuestionBankItemUncheckedUpdateWithoutTopicInput = {
   validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionBankItemUncheckedUpdateManyWithoutTopicInput = {
@@ -1248,6 +1379,7 @@ export type QuestionBankItemUpdateWithoutIndicatorInput = {
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutQuestionBankNestedInput
 }
 
@@ -1268,6 +1400,7 @@ export type QuestionBankItemUncheckedUpdateWithoutIndicatorInput = {
   validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
   sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
+  practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
 export type QuestionBankItemUncheckedUpdateManyWithoutIndicatorInput = {
@@ -1295,10 +1428,12 @@ export type QuestionBankItemUncheckedUpdateManyWithoutIndicatorInput = {
 
 export type QuestionBankItemCountOutputType = {
   items: number
+  practiceSessions: number
 }
 
 export type QuestionBankItemCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | QuestionBankItemCountOutputTypeCountItemsArgs
+  practiceSessions?: boolean | QuestionBankItemCountOutputTypeCountPracticeSessionsArgs
 }
 
 /**
@@ -1316,6 +1451,13 @@ export type QuestionBankItemCountOutputTypeDefaultArgs<ExtArgs extends runtime.T
  */
 export type QuestionBankItemCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AssessmentItemWhereInput
+}
+
+/**
+ * QuestionBankItemCountOutputType without action
+ */
+export type QuestionBankItemCountOutputTypeCountPracticeSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PracticeSessionWhereInput
 }
 
 
@@ -1339,6 +1481,7 @@ export type QuestionBankItemSelect<ExtArgs extends runtime.Types.Extensions.Inte
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   indicator?: boolean | Prisma.DomainIndicatorDefaultArgs<ExtArgs>
   items?: boolean | Prisma.QuestionBankItem$itemsArgs<ExtArgs>
+  practiceSessions?: boolean | Prisma.QuestionBankItem$practiceSessionsArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionBankItemCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["questionBankItem"]>
@@ -1411,6 +1554,7 @@ export type QuestionBankItemInclude<ExtArgs extends runtime.Types.Extensions.Int
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   indicator?: boolean | Prisma.DomainIndicatorDefaultArgs<ExtArgs>
   items?: boolean | Prisma.QuestionBankItem$itemsArgs<ExtArgs>
+  practiceSessions?: boolean | Prisma.QuestionBankItem$practiceSessionsArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.QuestionBankItemCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1431,6 +1575,7 @@ export type $QuestionBankItemPayload<ExtArgs extends runtime.Types.Extensions.In
     topic: Prisma.$DomainTopicPayload<ExtArgs>
     indicator: Prisma.$DomainIndicatorPayload<ExtArgs>
     items: Prisma.$AssessmentItemPayload<ExtArgs>[]
+    practiceSessions: Prisma.$PracticeSessionPayload<ExtArgs>[]
     course: Prisma.$CoursePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1847,6 +1992,7 @@ export interface Prisma__QuestionBankItemClient<T, Null = never, ExtArgs extends
   topic<T extends Prisma.DomainTopicDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DomainTopicDefaultArgs<ExtArgs>>): Prisma.Prisma__DomainTopicClient<runtime.Types.Result.GetResult<Prisma.$DomainTopicPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   indicator<T extends Prisma.DomainIndicatorDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DomainIndicatorDefaultArgs<ExtArgs>>): Prisma.Prisma__DomainIndicatorClient<runtime.Types.Result.GetResult<Prisma.$DomainIndicatorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   items<T extends Prisma.QuestionBankItem$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionBankItem$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AssessmentItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  practiceSessions<T extends Prisma.QuestionBankItem$practiceSessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.QuestionBankItem$practiceSessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PracticeSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   course<T extends Prisma.CourseDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CourseDefaultArgs<ExtArgs>>): Prisma.Prisma__CourseClient<runtime.Types.Result.GetResult<Prisma.$CoursePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2315,6 +2461,30 @@ export type QuestionBankItem$itemsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.AssessmentItemScalarFieldEnum | Prisma.AssessmentItemScalarFieldEnum[]
+}
+
+/**
+ * QuestionBankItem.practiceSessions
+ */
+export type QuestionBankItem$practiceSessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PracticeSession
+   */
+  select?: Prisma.PracticeSessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PracticeSession
+   */
+  omit?: Prisma.PracticeSessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PracticeSessionInclude<ExtArgs> | null
+  where?: Prisma.PracticeSessionWhereInput
+  orderBy?: Prisma.PracticeSessionOrderByWithRelationInput | Prisma.PracticeSessionOrderByWithRelationInput[]
+  cursor?: Prisma.PracticeSessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PracticeSessionScalarFieldEnum | Prisma.PracticeSessionScalarFieldEnum[]
 }
 
 /**
