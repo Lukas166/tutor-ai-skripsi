@@ -43,6 +43,7 @@ function resolveMaterialHref(material: MaterialItem) {
   if (resolveMaterialType(material) === "link") {
     return material.externalUrl || material.filePath.replace("link:", "");
   }
+  if (material.storagePath) return `/api/materials/${encodeURIComponent(material.id)}/file`;
   return material.publicUrl || material.filePath;
 }
 

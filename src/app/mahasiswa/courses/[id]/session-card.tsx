@@ -36,6 +36,7 @@ function resolveMaterialHref(material: MaterialItem) {
     return material.externalUrl || material.filePath.replace("link:", "");
   }
 
+  if (material.storagePath) return `/api/materials/${encodeURIComponent(material.id)}/file`;
   return material.publicUrl || material.filePath;
 }
 

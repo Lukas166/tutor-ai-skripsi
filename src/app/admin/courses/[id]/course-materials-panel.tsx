@@ -140,6 +140,7 @@ function formatDate(date: string) {
 
 function getMaterialHref(material: MaterialItem) {
   if (material.materialType === "link") return material.externalUrl || material.filePath;
+  if (material.storagePath) return `/api/materials/${encodeURIComponent(material.id)}/file`;
   return material.publicUrl || material.filePath;
 }
 

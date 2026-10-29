@@ -137,9 +137,9 @@ export async function POST(
       materialType: "file",
       description: description?.trim() || null,
       fileName: uploadedFile.fileName,
-      filePath: uploadedFile.publicUrl,
+      filePath: uploadedFile.storagePath,
       storagePath: uploadedFile.storagePath,
-      publicUrl: uploadedFile.publicUrl,
+      publicUrl: null,
       fileSize: file.size,
     });
 

@@ -12,7 +12,6 @@ type UploadFileInput = {
 
 type UploadFileResult = {
   fileName: string;
-  publicUrl: string;
   storagePath: string;
 };
 
@@ -124,7 +123,6 @@ export async function uploadMaterialFileToSupabase({
       return {
         fileName: candidate.fileName,
         storagePath: candidate.storagePath,
-        publicUrl: `${supabaseUrl}/storage/v1/object/public/${bucket}/${encodedPath}`,
       };
     }
 
