@@ -1,0 +1,43 @@
+[project]
+name = "tutor-rag"
+version = "0.1.0"
+description = "Document ingestion and retrieval-augmented generation for Tutor AI"
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.115,<1",
+  "uvicorn>=0.34,<1",
+  "pydantic-settings>=2.7,<3",
+  "google-genai>=1.0,<3",
+  "psycopg[binary]>=3.2,<4",
+  "httpx>=0.28,<1",
+  "pypdfium2>=4.30,<6",
+  "pytesseract>=0.3.13,<0.4",
+  "Pillow>=11,<13",
+  "langchain-text-splitters>=0.3,<2",
+]
+
+[dependency-groups]
+dev = ["ruff>=0.11,<1", "mypy>=1.15,<2"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tutor_rag"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]
+
+[tool.mypy]
+python_version = "3.12"
+check_untyped_defs = true
+ignore_missing_imports = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+

@@ -46,3 +46,13 @@ next-env.d.ts
 /app/generated/prisma
 
 dist/
+
+# Python service and project-local tooling
+.tools/
+**/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+**/.mypy_cache/
+*.py[cod]
+*.egg-info/
