@@ -56,7 +56,7 @@ class RagPipeline:
                 "Anda tetap dapat memilih materi lain."
             )
         elif adaptive and adaptive["action"] == "CLARIFY":
-            direct_answer = (
+            direct_answer = adaptive.get("clarification") or (
                 "Konsep atau materi mana yang ingin Anda bahas? "
                 "Sebutkan topiknya agar penjelasan dan latihan sesuai kebutuhan Anda."
             )

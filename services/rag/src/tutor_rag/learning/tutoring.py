@@ -50,8 +50,47 @@ def words(text: str) -> set[str]:
     }
 
 
+def requests_weak_material(question: str) -> bool:
+    message = question.lower()
+    weakness = re.search(
+        r"\b(lemah|kelemahan|kurang|kesulitan|sulit)\b|belum\s+(paham|kuasai|mengerti)",
+        message,
+    )
+    learning = re.search(
+        r"\b(belajar|pelajari|ajari|ajarkan|bahas|materi|bagian|konsep|pre[ -]?test)\b",
+        message,
+    )
+    return bool(weakness and learning)
+
+
+def requested_weak_indicator(question: str, candidates: list[dict], config: dict) -> dict | None:
+    if not requests_weak_material(question):
+        return None
+    use_pretest = bool(re.search(r"\bpre[ -]?test\b", question.lower()))
+    weak = [
+        row
+        for row in candidates
+        if row.get("initialScore") is not None
+        and (
+            row.get("initialStatus") == "NEEDS_REINFORCEMENT"
+            if use_pretest
+            else operational_status(row, config) == "NEEDS_REINFORCEMENT"
+        )
+    ]
+    # Permintaan pre-test memakai baseline; kebutuhan saat ini memakai bukti belajar terbaru.
+    return min(
+        weak,
+        key=lambda row: (
+            row["initialScore"] if use_pretest else row["currentScore"],
+            row["currentScore"],
+            row["code"],
+        ),
+        default=None,
+    )
+
+
 def resolve_indicator(
-    request: PrepareRequest, candidates: list[dict], provider: GeminiProvider
+    request: PrepareRequest, candidates: list[dict], provider: GeminiProvider, config: dict
 ) -> dict | None:
     if not candidates:
         return None
@@ -74,6 +113,8 @@ def resolve_indicator(
     )
     if ranked[0][0] >= 2 and (len(ranked) == 1 or ranked[0][0] > ranked[1][0]):
         return ranked[0][1]
+    if requests_weak_material(request.question):
+        return requested_weak_indicator(request.question, candidates, config)
     # Pada konteks ambigu model hanya boleh mengusulkan ID daftar resmi, termasuk null.
     # Tidak ada pemilihan acak dan tidak ada perubahan profil dari interpretasi percakapan.
     try:
@@ -146,12 +187,26 @@ class AdaptiveTutoring:
                     request.selected_material_ids,
                 ),
             ).fetchall()
-            indicator = resolve_indicator(request, candidates, self.provider)
+            indicator = resolve_indicator(request, candidates, self.provider, config)
             if not indicator:
+                clarification = None
+                if not candidates:
+                    clarification = (
+                        "Materi yang dipilih belum terhubung dengan indikator pembelajaran. "
+                        "Pilih materi terkait profil belajar Anda. Jika sudah dipilih, "
+                        "minta pengampu memeriksa pemetaan materi dan indikator."
+                    )
+                elif requests_weak_material(request.question):
+                    clarification = (
+                        "Belum ditemukan indikator yang perlu diperkuat pada profil "
+                        "yang sesuai dengan materi terpilih. Pilih materi lain dari profil "
+                        "belajar, atau sebutkan konsep yang ingin Anda ulangi."
+                    )
                 return {
                     "action": "CLARIFY",
                     "indicatorId": None,
                     "practiceId": None,
+                    "clarification": clarification,
                     "instruction": "Konteks indikator belum jelas. Minta mahasiswa menyebut "
                     "konsep/materi yang ingin dibahas. Jangan menawarkan soal acak.",
                 }
@@ -194,6 +249,9 @@ class AdaptiveTutoring:
                 f"{indicator['description']}",
                 "practiceId": None,
                 "instruction": f"Konsep: {indicator['concept']}. Status sinyal: {status}. "
+                f"Sinyal awal pre-test: {indicator['initialStatus']}. "
+                "Jika mahasiswa meminta materi yang lemah di pre-test, sebutkan konsep ini "
+                "sebagai titik awal berdasarkan sinyal pre-test, bukan diagnosis pasti. "
                 + (
                     "Jelaskan dasar secara bertahap dan sederhana."
                     if action == "FOUNDATION"
