@@ -11,7 +11,7 @@ export type Attempt = {
     id: string;
     number: number;
     question: string;
-    options: Record<Option, string>;
+    options: Partial<Record<Option, string>>;
     selectedOption: Option | null;
   }[];
 };

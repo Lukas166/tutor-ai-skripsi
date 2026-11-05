@@ -47,7 +47,8 @@ uv sync --project services/rag --locked
 pnpm seed:domain:rpl COURSE_ID_TUJUAN
 ```
 
-Seed menggunakan `data/rpl/domain-model.xlsx`. Alternatif jika uv belum ada di PATH,
+Seed menggunakan `data/rpl/RPL.xlsm`. Pembaca hanya mengambil nilai sel tanpa
+menjalankan makro. Alternatif jika uv belum ada di PATH,
 gunakan Python environment proyek langsung:
 
 ```powershell
@@ -57,7 +58,8 @@ services/rag/.venv/Scripts/python.exe scripts/data/import-rpl.py COURSE_ID_TUJUA
 Struktur, relasi, jumlah soal, opsi, dan kunci divalidasi sebelum ditulis. Validasi ini
 bukan peninjauan akademik isi soal. Upsert dan pemetaan dilakukan dalam satu
 transaksi; seed tidak menghapus data LMS atau menimpa baseline mahasiswa.
-`datasetChecksum` mencatat SHA-256 workbook. Seluruh lima opsi, kunci, penjelasan,
+`datasetChecksum` mencatat SHA-256 workbook. Empat opsi A-D dari workbook baru,
+kunci, penjelasan,
 metadata PDF/halaman, serta pemetaan CPMK/Sub-CPMK tetap sesuai sumber.
 Status `Draf`/`Status Sumber` dan salinan JSON baris Excel tidak disimpan sebagai kolom
 operasional: saat ini tidak ada alur verifikasi soal yang memakainya. Workbook tetap
@@ -72,7 +74,7 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
    Python menggunakan konfigurasi URL, port, serta token yang sudah ada.
 2. Login sebagai mahasiswa yang memiliki enrollment aktif pada course tujuan.
 3. Buka mata kuliah, lalu pilih **Mulai Pre-test** pada kartu Profil Belajar Awal.
-4. Pilih satu dari lima opsi untuk setiap soal. Jawaban tersimpan otomatis ke
+4. Pilih satu dari opsi yang tersedia untuk setiap soal. Jawaban tersimpan otomatis ke
    database; draf yang belum terkonfirmasi juga dipertahankan pada perangkat.
 5. Setelah semua jawaban tersimpan, pilih **Kirim Jawaban** dan konfirmasi.
 6. Halaman hasil menampilkan skor keseluruhan. **Lihat Profil Belajar** membuka
@@ -85,7 +87,7 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 8. Terima atau lewati tawaran latihan pada balasan tutor. Dalam mode avatar,
    gunakan **Buka Latihan Konsep**. Jawaban, hint, remediasi dan riwayat disimpan.
 9. Kembali ke mata kuliah dan pilih **Mulai Post-test** setelah interaksi belajar.
-   Paket disalin dari snapshot pre-test, termasuk ID soal, urutan dan lima opsi.
+   Paket disalin dari snapshot pre-test, termasuk ID soal, urutan dan opsi yang sama.
 10. Setelah post-test dikirim, **Lihat Perbandingan Hasil** menampilkan skor,
     perubahan poin persentase, jumlah benar, serta perubahan per indikator/materi.
 
@@ -108,6 +110,12 @@ dibentuk, soal dan kunci disalin ke snapshot privat agar perubahan seed berikutn
 tidak mengubah penilaian sesi tersebut. API soal hanya mengembalikan ID, nomor,
 pertanyaan, opsi, dan draf pilihan. Kunci, pembahasan, snapshot, dan isCorrect tidak
 dikirim pada API mahasiswa, termasuk setelah pre-test selesai.
+Workbook RPL saat ini menggunakan empat opsi A-D. Pada pergantian dataset, seluruh
+sesi penilaian, profil awal, latihan, dan progres belajar RPL versi lama direset sekali
+setelah persetujuan pemilik data. Metadata adaptif lama pada pesan chat dilepas agar
+kartu latihan yang sudah dihapus tidak muncul lagi. Mahasiswa dapat memulai pre-test
+baru dari paket RPL.xlsm. Reset ini bukan bagian dari seed yang dapat dijalankan ulang;
+impor dataset berikutnya tidak menghapus riwayat mahasiswa.
 
 Jawaban bernilai 1 bila sama dengan kunci snapshot dan 0 bila berbeda. Finalisasi
 mengunci attempt dengan `FOR UPDATE`, menilai jawaban, membuat profil, dan menyimpan

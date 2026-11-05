@@ -14,4 +14,4 @@ if len(sys.argv) != 2:
 
 # Tidak ada pencocokan judul otomatis: kelas dengan judul sama tidak boleh tertukar.
 with connect_database(Settings()) as connection:
-    print(import_dataset(connection, ROOT / "data/rpl/domain-model.xlsx", sys.argv[1]))
+    print(import_dataset(connection, ROOT / "data/rpl/RPL.xlsm", sys.argv[1]))

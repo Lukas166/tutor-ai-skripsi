@@ -7,6 +7,7 @@ from xml.etree import ElementTree as ET
 
 NS = {"m": "http://schemas.openxmlformats.org/spreadsheetml/2006/main"}
 SHEETS = ("RPS RPL", "Materi RPL", "Indikator RPL", "Soal Pre-Post RPL", "Soal Latihan RPL")
+QUESTION_OPTIONS = ("A", "B", "C", "D")
 
 
 def read_workbook(path: Path) -> dict[str, list[dict[str, str]]]:
@@ -99,10 +100,10 @@ def validate_workbook(data: dict[str, list[dict[str, str]]]) -> None:
                 "Penjelasan Jawaban",
                 "Sumber PDF",
                 "Halaman PDF",
-                *[f"Opsi {letter}" for letter in "ABCDE"],
+                *[f"Opsi {letter}" for letter in QUESTION_OPTIONS],
             ]
             if (
-                row["Kunci"] not in "ABCDE"
+                row["Kunci"] not in QUESTION_OPTIONS
                 or len(row["Kunci"]) != 1
                 or any(not row.get(field, "").strip() for field in required)
             ):

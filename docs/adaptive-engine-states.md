@@ -41,7 +41,7 @@ stateDiagram-v2
 | Belum ada attempt, dataset valid | Ambil seluruh soal `PRE_POST`, urutkan kode indikator, buat attempt dan snapshot item | Belum membuat profil |
 | Jumlah soal/indikator tidak sesuai konfigurasi | 409; transaksi dibatalkan | Tidak membuat profil |
 | Klik mulai lagi ketika attempt sudah ada | Mengembalikan attempt lama; tidak mengacak atau membuat ulang paket | Tidak berubah |
-| Pilih/ubah opsi A–E | Simpan `selectedOption` dan `answeredAt` selama `IN_PROGRESS` | Tidak berubah |
+| Pilih/ubah opsi pada snapshot soal | Simpan `selectedOption` dan `answeredAt` selama `IN_PROGRESS` | Tidak berubah |
 | Pilihan tidak valid atau field wajib kosong | 422 | Tidak berubah |
 | Soal bukan anggota attempt | 404 | Tidak berubah |
 | Attempt salah atau bukan milik mahasiswa | 404 setelah pemeriksaan konteks | Tidak berubah |

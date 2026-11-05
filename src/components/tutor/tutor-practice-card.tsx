@@ -34,7 +34,7 @@ type Practice = {
   concept: string;
   code: string;
   question: string | null;
-  options: Record<Option, string> | null;
+  options: Partial<Record<Option, string>> | null;
   events: {
     id: string;
     kind: "HINT" | "ANSWER";
@@ -160,7 +160,9 @@ export function TutorPracticeCard({
                 onValueChange={(value) => setOption(value as Option)}
               >
                 <FieldGroup>
-                  {(["A", "B", "C", "D", "E"] as Option[]).map((letter) => (
+                  {(["A", "B", "C", "D", "E"] as Option[])
+                    .filter((letter) => practice.options?.[letter])
+                    .map((letter) => (
                     <Field orientation="horizontal" key={letter}>
                       <RadioGroupItem
                         id={`${practiceId}-${letter}`}
@@ -173,7 +175,7 @@ export function TutorPracticeCard({
                         </FieldLabel>
                       </FieldContent>
                     </Field>
-                  ))}
+                    ))}
                 </FieldGroup>
               </RadioGroup>
             </FieldSet>

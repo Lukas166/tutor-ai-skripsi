@@ -130,7 +130,7 @@ export function AssessmentPage({
           local = {};
         data.questions = data.questions.map((question) => {
           const option = local[question.id];
-          if (OPTIONS.includes(option)) {
+          if (OPTIONS.includes(option) && question.options[option]) {
             save(data.id, question.id, option);
             return { ...question, selectedOption: option };
           }
@@ -243,7 +243,7 @@ export function AssessmentPage({
         </div>
         <Badge variant="secondary">
           {attempt
-            ? `${attempt.totalQuestions} soal · 5 opsi`
+            ? `${attempt.totalQuestions} soal · ${Object.keys(attempt.questions[0]?.options ?? {}).length} opsi`
             : `Satu sesi ${label.toLowerCase()} final`}
         </Badge>
       </div>
@@ -267,7 +267,7 @@ export function AssessmentPage({
           <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
             <p>
               Setiap soal mewakili satu indikator kemampuan. Pilih satu dari
-              lima opsi dan jawab seluruh soal sebelum mengirim.
+              opsi yang tersedia dan jawab seluruh soal sebelum mengirim.
             </p>
             <p>
               Jawaban disimpan otomatis. Anda dapat kembali melanjutkan draf
@@ -377,7 +377,7 @@ export function AssessmentPage({
                       aria-label={`Jawaban soal ${index + 1}`}
                     >
                       <FieldGroup>
-                        {OPTIONS.map((option) => (
+                        {OPTIONS.filter((option) => question.options[option]).map((option) => (
                           <FieldLabel
                             key={option}
                             htmlFor={`${question.id}-${option}`}

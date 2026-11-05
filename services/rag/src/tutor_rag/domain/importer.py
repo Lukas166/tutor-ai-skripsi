@@ -1,4 +1,5 @@
 import re
+from decimal import Decimal, InvalidOperation
 from hashlib import sha256
 from pathlib import Path
 from typing import Any
@@ -7,12 +8,23 @@ from uuid import NAMESPACE_URL, uuid4, uuid5
 from psycopg import Connection, sql
 from psycopg.types.json import Jsonb
 
-from tutor_rag.domain.workbook import codes, read_workbook
+from tutor_rag.domain.workbook import QUESTION_OPTIONS, codes, read_workbook
 
 
 def scoped_id(course_id: str, code: str) -> str:
     # Kode sumber tetap utuh; UUID internal berbeda untuk setiap mata kuliah.
     return str(uuid5(NAMESPACE_URL, f"learning:{course_id}:{code}"))
+
+
+def integer_cell(value: str, field: str) -> int:
+    # Excel menyimpan bilangan bulat sebagai 1 atau 1.0; pecahan tetap ditolak.
+    try:
+        number = Decimal(value)
+    except InvalidOperation as error:
+        raise ValueError(f"{field} harus bilangan bulat: {value}") from error
+    if not number.is_finite() or number != number.to_integral_value():
+        raise ValueError(f"{field} harus bilangan bulat: {value}")
+    return int(number)
 
 
 def upsert(connection: Connection[dict[str, Any]], table: str, row: dict) -> None:
@@ -57,7 +69,7 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
                 },
             )
         for row in data["Materi RPL"]:
-            number = int(row["Pertemuan"])
+            number = integer_cell(row["Pertemuan"], "Pertemuan")
 
             # Urutan LMS dapat berbeda dari workbook. Prioritaskan PDF yang sudah diunggah.
             def normalized_file(value: str) -> str:
@@ -155,11 +167,17 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
                         "indicatorId": scoped_id(course["id"], row["ID Indikator"]),
                         "kind": kind,
                         "question": row["Pertanyaan"],
-                        "options": Jsonb({letter: row[f"Opsi {letter}"] for letter in "ABCDE"}),
+                        "options": Jsonb(
+                            {letter: row[f"Opsi {letter}"] for letter in QUESTION_OPTIONS}
+                        ),
                         "correctOption": row["Kunci"],
                         "explanation": row["Penjelasan Jawaban"],
                         "cognitiveLevel": row["Tingkat Kognitif"],
-                        "practiceNumber": int(row["Latihan Ke"]) if kind == "PRACTICE" else None,
+                        "practiceNumber": (
+                            integer_cell(row["Latihan Ke"], "Latihan Ke")
+                            if kind == "PRACTICE"
+                            else None
+                        ),
                         "sourcePdf": row["Sumber PDF"],
                         "sourcePages": row["Halaman PDF"],
                     },

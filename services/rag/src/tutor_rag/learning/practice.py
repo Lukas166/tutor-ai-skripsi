@@ -250,8 +250,8 @@ class PracticeService:
                     (hints, practice_id),
                 )
             else:
-                if selected_option not in ("A", "B", "C", "D", "E"):
-                    raise HTTPException(422, "Pilihan harus A–E.")
+                if selected_option not in row["questionSnapshot"]["options"]:
+                    raise HTTPException(422, "Pilihan tidak tersedia pada soal ini.")
                 # Hanya jawaban pertama tanpa bantuan pada soal berbeda yang menjadi bukti.
                 independent = row["answerCount"] == 0 and hints == 0
                 correct = selected_option == row["questionSnapshot"]["correctOption"]

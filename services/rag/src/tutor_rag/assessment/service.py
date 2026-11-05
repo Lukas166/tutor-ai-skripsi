@@ -208,15 +208,21 @@ class AssessmentService:
             attempt = self.owned_attempt(attempt_id)
             if attempt["status"] != "IN_PROGRESS":
                 raise HTTPException(409, "Pre-test sudah difinalisasi dan tidak dapat diubah.")
-            if option not in ("A", "B", "C", "D", "E"):
-                raise HTTPException(422, "Pilihan harus A–E.")
             row = self.connection.execute(
-                'UPDATE assessment_item SET "selectedOption"=%s,"answeredAt"=NOW() '
-                'WHERE "attemptId"=%s AND "questionId"=%s RETURNING id',
-                (option, attempt_id, question_id),
+                'SELECT "questionSnapshot" FROM assessment_item '
+                'WHERE "attemptId"=%s AND "questionId"=%s',
+                (attempt_id, question_id),
             ).fetchone()
             if row is None:
                 raise HTTPException(404, "Soal tidak berada dalam sesi ini.")
+            # Validasi mengikuti snapshot sesi: paket lama A-E, paket baru A-D.
+            if option not in row["questionSnapshot"]["options"]:
+                raise HTTPException(422, "Pilihan tidak tersedia pada soal ini.")
+            self.connection.execute(
+                'UPDATE assessment_item SET "selectedOption"=%s,"answeredAt"=NOW() '
+                'WHERE "attemptId"=%s AND "questionId"=%s',
+                (option, attempt_id, question_id),
+            )
         return {"saved": True, "questionId": question_id, "selectedOption": option}
 
     def submit(self, attempt_id: str) -> dict:
