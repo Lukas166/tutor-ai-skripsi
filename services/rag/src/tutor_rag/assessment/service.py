@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from psycopg import Connection
 from psycopg.types.json import Jsonb
 
-from tutor_rag.assessment.scoring import POSITIVE, REINFORCEMENT, grade_responses
+from tutor_rag.assessment.scoring import POSITIVE, REINFORCEMENT, grade_responses, has_four_options
 from tutor_rag.learning.profile import operational_status
 
 
@@ -130,6 +130,10 @@ class AssessmentService:
                 'FROM assessment_item WHERE "attemptId"=%s ORDER BY "orderNumber"',
                 (attempt["id"],),
             ).fetchall()
+            if any(not has_four_options(i["questionSnapshot"]) for i in items):
+                raise HTTPException(
+                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
+                )
             result["questions"] = [
                 {
                     "id": i["questionId"],
@@ -163,6 +167,10 @@ class AssessmentService:
             ).fetchall()
             if len(questions) != expected or len({q["indicatorId"] for q in questions}) != expected:
                 raise HTTPException(409, "Dataset pre-test belum lengkap. Hubungi pengampu.")
+            if any(not has_four_options(q) for q in questions):
+                raise HTTPException(
+                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
+                )
             attempt = self.connection.execute(
                 'INSERT INTO assessment_attempt (id,"studentId","courseId","totalQuestions") '
                 "VALUES (%s,%s,%s,%s) RETURNING *",
@@ -202,7 +210,7 @@ class AssessmentService:
             raise HTTPException(404, "Sesi pre-test tidak ditemukan.")
         return attempt
 
-    def save(self, attempt_id: str, question_id: str, option: str) -> dict:
+    def save(self, attempt_id: str, question_id: str, option: str | None) -> dict:
         self.require_access()
         with self.connection.transaction():
             attempt = self.owned_attempt(attempt_id)
@@ -215,13 +223,16 @@ class AssessmentService:
             ).fetchone()
             if row is None:
                 raise HTTPException(404, "Soal tidak berada dalam sesi ini.")
-            # Validasi mengikuti snapshot sesi: paket lama A-E, paket baru A-D.
-            if option not in row["questionSnapshot"]["options"]:
+            if option is not None and (
+                option not in ("A", "B", "C", "D")
+                or option not in row["questionSnapshot"]["options"]
+            ):
                 raise HTTPException(422, "Pilihan tidak tersedia pada soal ini.")
             self.connection.execute(
-                'UPDATE assessment_item SET "selectedOption"=%s,"answeredAt"=NOW() '
+                'UPDATE assessment_item SET "selectedOption"=%s,'
+                '"answeredAt"=CASE WHEN %s::text IS NULL THEN NULL ELSE NOW() END '
                 'WHERE "attemptId"=%s AND "questionId"=%s',
-                (option, attempt_id, question_id),
+                (option, option, attempt_id, question_id),
             )
         return {"saved": True, "questionId": question_id, "selectedOption": option}
 

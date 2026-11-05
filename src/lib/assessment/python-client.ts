@@ -16,7 +16,7 @@ export async function assessmentProxy(
   request: NextRequest,
   courseId: string,
   operation: Operation | LearningOperation,
-  body: Record<string, string> = {},
+  body: Record<string, string | null | undefined> = {},
 ) {
   const { error, session } = await requireMahasiswa(request);
   if (error) return error;

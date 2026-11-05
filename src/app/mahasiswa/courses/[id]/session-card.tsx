@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -60,10 +60,26 @@ export function MahasiswaSessionCard({ session }: { session: SessionItem }) {
   const [expanded, setExpanded] = useState(false);
   const [descExpanded, setDescExpanded] = useState(false);
   const [textMaterial, setTextMaterial] = useState<MaterialItem | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (window.location.hash !== `#session-${session.id}`) return;
+    const frame = window.requestAnimationFrame(() => {
+      setExpanded(true);
+      cardRef.current?.scrollIntoView({ block: "start" });
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [session.id]);
 
   return (
-    <Card className="overflow-hidden border-border/70 shadow-sm transition-shadow hover:shadow-md">
+    <Card
+      ref={cardRef}
+      id={`session-${session.id}`}
+      className="scroll-mt-6 overflow-hidden border-border/70 shadow-sm transition-shadow hover:shadow-md"
+    >
       <button
+        type="button"
+        aria-expanded={expanded}
         onClick={() => setExpanded(!expanded)}
         className="flex w-full items-center justify-between gap-4 p-5 text-left transition-colors hover:bg-muted/30"
       >

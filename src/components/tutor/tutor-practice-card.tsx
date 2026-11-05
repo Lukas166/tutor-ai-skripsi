@@ -160,7 +160,7 @@ export function TutorPracticeCard({
                 onValueChange={(value) => setOption(value as Option)}
               >
                 <FieldGroup>
-                  {(["A", "B", "C", "D", "E"] as Option[])
+                  {(["A", "B", "C", "D"] as Option[])
                     .filter((letter) => practice.options?.[letter])
                     .map((letter) => (
                     <Field orientation="horizontal" key={letter}>

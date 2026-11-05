@@ -1,4 +1,4 @@
-export type Option = "A" | "B" | "C" | "D" | "E";
+export type Option = "A" | "B" | "C" | "D";
 export type Attempt = {
   id: string;
   status: "IN_PROGRESS" | "SUBMITTED";

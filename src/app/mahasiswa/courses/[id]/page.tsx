@@ -64,6 +64,14 @@ export default function MahasiswaCourseDetailPage() {
     return () => window.clearTimeout(timeoutId);
   }, [fetchCourse, fetchSessions]);
 
+  useEffect(() => {
+    if (loadingSessions || !window.location.hash.startsWith("#session-")) return;
+    const sessionId = window.location.hash.slice("#session-".length);
+    if (!sessions.some((session) => session.id === sessionId)) {
+      document.getElementById("materi")?.scrollIntoView({ block: "start" });
+    }
+  }, [loadingSessions, sessions]);
+
   if (loading) {
     return (
       <div className="flex flex-col gap-6">

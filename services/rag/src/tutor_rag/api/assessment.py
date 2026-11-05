@@ -22,7 +22,7 @@ class StudentContext(ContractModel):
     course_id: str
     attempt_id: str | None = None
     question_id: str | None = None
-    selected_option: Literal["A", "B", "C", "D", "E"] | None = None
+    selected_option: Literal["A", "B", "C", "D"] | None = None
     kind: Literal["PRE", "POST"] = "PRE"
     practice_id: str | None = None
     request_id: str | None = None
@@ -113,8 +113,8 @@ def assessment(
                     connection, request.student_id, request.course_id
                 ).comparison()
             elif operation == "save":
-                if not request.attempt_id or not request.question_id or not request.selected_option:
-                    raise HTTPException(422, "Sesi, soal, dan pilihan wajib diisi.")
+                if not request.attempt_id or not request.question_id:
+                    raise HTTPException(422, "Sesi dan soal wajib diisi.")
                 result = service.save(
                     request.attempt_id, request.question_id, request.selected_option
                 )

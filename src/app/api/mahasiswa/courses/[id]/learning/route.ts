@@ -14,7 +14,7 @@ const schema = z
     ]),
     practiceId: z.string().uuid(),
     requestId: z.string().uuid().optional(),
-    selectedOption: z.enum(["A", "B", "C", "D", "E"]).optional(),
+    selectedOption: z.enum(["A", "B", "C", "D"]).optional(),
   })
   .strict();
 

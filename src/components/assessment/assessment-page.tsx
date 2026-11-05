@@ -9,46 +9,16 @@ import {
   Check,
   ClipboardList,
   Loader2,
-  Save,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Field,
-  FieldContent,
-  FieldDescription,
-  FieldGroup,
-  FieldLabel,
-  FieldLegend,
-  FieldSet,
-} from "@/components/ui/field";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Progress } from "@/components/ui/progress";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils";
 import { assessmentRequest, type Attempt, type Option } from "./types";
 
-const OPTIONS: Option[] = ["A", "B", "C", "D", "E"];
+const OPTIONS: Option[] = ["A", "B", "C", "D"];
 
 export function AssessmentPage({
   courseId,
@@ -59,7 +29,9 @@ export function AssessmentPage({
 }) {
   const router = useRouter();
   const label = kind === "posttest" ? "Post-test" : "Pre-test";
-  const resultUrl = `/mahasiswa/courses/${courseId}/${kind}/result`;
+  const resultUrl = kind === "pretest"
+    ? `/mahasiswa/courses/${courseId}/student-profile`
+    : `/mahasiswa/courses/${courseId}/posttest/result`;
   const url = `/api/mahasiswa/courses/${courseId}/${kind}`;
   const [attempt, setAttempt] = useState<Attempt | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,10 +39,9 @@ export function AssessmentPage({
   const [error, setError] = useState("");
   const [saveError, setSaveError] = useState("");
   const [saving, setSaving] = useState(0);
-  const [unsaved, setUnsaved] = useState(0);
   const [index, setIndex] = useState(0);
   const queue = useRef<Promise<void>>(Promise.resolve());
-  const pending = useRef<Record<string, Option>>({});
+  const pending = useRef<Record<string, Option | null>>({});
 
   const persistLocal = useCallback((id: string) => {
     try {
@@ -78,15 +49,13 @@ export function AssessmentPage({
     } catch {
       /* Database tetap menjadi penyimpanan utama. */
     }
-    setUnsaved(Object.keys(pending.current).length);
   }, []);
 
   const save = useCallback(
-    (id: string, questionId: string, selectedOption: Option) => {
+    (id: string, questionId: string, selectedOption: Option | null) => {
       pending.current[questionId] = selectedOption;
       persistLocal(id);
       setSaving((value) => value + 1);
-      // Antrean berurutan mencegah respons pilihan lama menimpa pilihan terbaru.
       queue.current = queue.current.then(async () => {
         try {
           await assessmentRequest(url, "PATCH", {
@@ -94,8 +63,9 @@ export function AssessmentPage({
             questionId,
             selectedOption,
           });
-          if (pending.current[questionId] === selectedOption)
+          if (pending.current[questionId] === selectedOption) {
             delete pending.current[questionId];
+          }
           persistLocal(id);
           if (Object.keys(pending.current).length === 0) setSaveError("");
         } catch (cause) {
@@ -117,8 +87,7 @@ export function AssessmentPage({
         return;
       }
       if (data) {
-        // Hanya draf yang belum mendapat konfirmasi server dipulihkan dari perangkat ini.
-        let local: Record<string, Option> = {};
+        let local: Record<string, Option | null> = {};
         try {
           local = JSON.parse(
             localStorage.getItem(`pretest:${data.id}`) || "{}",
@@ -126,11 +95,18 @@ export function AssessmentPage({
         } catch {
           /* Abaikan cache rusak. */
         }
-        if (!local || typeof local !== "object" || Array.isArray(local))
+        if (!local || typeof local !== "object" || Array.isArray(local)) {
           local = {};
+        }
         data.questions = data.questions.map((question) => {
           const option = local[question.id];
-          if (OPTIONS.includes(option) && question.options[option]) {
+          if (
+            Object.prototype.hasOwnProperty.call(local, question.id) &&
+            (option === null ||
+              (typeof option === "string" &&
+                OPTIONS.includes(option) &&
+                question.options[option]))
+          ) {
             save(data.id, question.id, option);
             return { ...question, selectedOption: option };
           }
@@ -168,7 +144,7 @@ export function AssessmentPage({
       setError(
         cause instanceof Error
           ? cause.message
-          : "Pre-test tidak dapat dimulai.",
+          : `${label} tidak dapat dimulai.`,
       );
     } finally {
       setBusy(false);
@@ -176,7 +152,7 @@ export function AssessmentPage({
   }
 
   async function submit() {
-    if (!attempt) return;
+    if (!attempt || attempt.questions.some((item) => !item.selectedOption)) return;
     setBusy(true);
     await queue.current;
     if (Object.keys(pending.current).length) {
@@ -204,205 +180,174 @@ export function AssessmentPage({
     }
   }
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="mx-auto flex max-w-5xl flex-col gap-6">
-        <Skeleton className="h-10 w-64" />
-        <Skeleton className="h-96 w-full" />
+      <div className="mx-auto flex max-w-6xl flex-col gap-6">
+        <Skeleton className="h-10 w-52" />
+        <Skeleton className="h-[32rem] w-full" />
       </div>
     );
+  }
+
   const answered =
-    attempt?.questions.filter((question) => question.selectedOption).length ||
-    0;
+    attempt?.questions.filter((item) => item.selectedOption).length || 0;
+  const unanswered = (attempt?.totalQuestions || 0) - answered;
   const question = attempt?.questions[index];
-  const allAnswered = Boolean(attempt && answered === attempt.totalQuestions);
+  const allAnswered = Boolean(attempt && unanswered === 0);
 
   return (
-    <div className="mx-auto flex max-w-6xl flex-col gap-6">
-      <Button variant="ghost" asChild className="self-start">
+    <div className="mx-auto flex max-w-6xl flex-col gap-5">
+      <Button variant="ghost" asChild className="-ml-3 self-start">
         <Link href={`/mahasiswa/courses/${courseId}`}>
           <ArrowLeft data-icon="inline-start" />
           Kembali ke Mata Kuliah
         </Link>
       </Button>
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">
-            {kind === "posttest" ? "ASESMEN HASIL PEMBELAJARAN" : "ASESMEN DIAGNOSTIK"}
-          </p>
-          <h1 className="mt-2 text-3xl font-bold tracking-tight">
-            {kind === "posttest"
-              ? "Post-test Hasil Pembelajaran"
-              : "Pre-test Kemampuan Awal"}
-          </h1>
-          <p className="mt-2 text-muted-foreground">
-            {kind === "posttest"
-              ? "Jawab secara mandiri. Hasil dibandingkan dengan pre-test dan tidak mengubah EMA belajar."
-              : "Jawab sesuai pemahaman Anda saat ini. Hasil membantu mengenali kebutuhan belajar."}
-          </p>
-        </div>
-        <Badge variant="secondary">
-          {attempt
-            ? `${attempt.totalQuestions} soal · ${Object.keys(attempt.questions[0]?.options ?? {}).length} opsi`
-            : `Satu sesi ${label.toLowerCase()} final`}
-        </Badge>
+
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">{label}</h1>
       </div>
+
       {error && (
         <Alert variant="destructive">
           <AlertTitle>{label} belum dapat dibuka</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
+
       {!attempt ? (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <ClipboardList className="size-5" />
-              Sebelum memulai
-            </CardTitle>
-            <CardDescription>
-              {label} dapat diselesaikan satu kali untuk mata kuliah ini.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
-            <p>
-              Setiap soal mewakili satu indikator kemampuan. Pilih satu dari
-              opsi yang tersedia dan jawab seluruh soal sebelum mengirim.
+        <section className="overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
+          <div className="flex flex-col gap-5 p-6">
+            <div className="flex items-center gap-3">
+              <span className="flex size-10 items-center justify-center rounded-lg bg-brand/10 text-brand">
+                <ClipboardList className="size-5" />
+              </span>
+              <h2 className="text-xl font-bold">Sebelum mulai</h2>
+            </div>
+            <p className="max-w-3xl leading-relaxed text-muted-foreground">
+              Pilih satu jawaban per soal. Jawaban tersimpan otomatis dan tidak
+              dapat diubah setelah dikirim.
             </p>
-            <p>
-              Jawaban disimpan otomatis. Anda dapat kembali melanjutkan draf
-              yang sama. Setelah difinalisasi, jawaban tidak dapat diubah.
-            </p>
-            <p>
-              {kind === "posttest"
-                ? "Kunci dan pembahasan belum ditampilkan selama post-test berlangsung."
-                : "Kunci dan pembahasan belum ditampilkan karena paket soal digunakan kembali pada post-test."}
-            </p>
-          </CardContent>
-          <CardFooter>
-            <Button onClick={start} disabled={busy}>
-              {busy && <Loader2 className="animate-spin" />}Mulai {label}
+            <Button variant="brand" className="self-start" onClick={start} disabled={busy}>
+              {busy && <Loader2 className="animate-spin" />}
+              Mulai {label}
               <ArrowRight data-icon="inline-end" />
             </Button>
-          </CardFooter>
-        </Card>
+          </div>
+        </section>
       ) : (
         question && (
           <>
-            <div className="flex flex-col gap-2">
-              <div className="flex flex-wrap justify-between gap-2 text-sm">
-                <span>
-                  {answered} dari {attempt.totalQuestions} soal terisi
-                </span>
-                <span
-                  className="flex items-center gap-2 text-muted-foreground"
-                  role="status"
-                  aria-live="polite"
-                >
-                  {saving ? (
-                    <>
-                      <Loader2 className="size-4 animate-spin" />
-                      Menyimpan…
-                    </>
-                  ) : unsaved ? (
-                    "Ada jawaban belum tersimpan"
-                  ) : (
-                    <>
-                      <Save className="size-4" />
-                      Semua jawaban tersimpan
-                    </>
-                  )}
-                </span>
-              </div>
-              <Progress
-                value={(answered / attempt.totalQuestions) * 100}
-                aria-label="Progres jawaban pre-test"
-              />
-            </div>
             {saveError && (
               <Alert variant="destructive">
-                <AlertTitle>Draf belum tersimpan ke server</AlertTitle>
+                <AlertTitle>Jawaban belum tersimpan</AlertTitle>
                 <AlertDescription className="flex flex-col gap-3">
-                  <p>
-                    {saveError} Pilihan Anda tetap disimpan pada perangkat ini.
-                  </p>
+                  <p>{saveError} Pilihan Anda masih tersimpan di perangkat ini.</p>
                   <Button
                     variant="outline"
+                    className="self-start"
                     disabled={saving > 0}
                     onClick={() => {
                       for (const [id, option] of Object.entries(
                         pending.current,
-                      ))
+                      )) {
                         save(attempt.id, id, option);
+                      }
                     }}
                   >
-                    Simpan ulang jawaban
+                    Simpan ulang
                   </Button>
                 </AlertDescription>
               </Alert>
             )}
-            <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_240px]">
-              <Card>
-                <CardHeader>
-                  <CardDescription>
-                    Soal {index + 1} dari {attempt.totalQuestions}
-                  </CardDescription>
-                  <CardTitle className="text-xl leading-relaxed">
-                    {question.question}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <FieldSet disabled={busy}>
-                    <FieldLegend className="sr-only">
-                      Pilih satu jawaban
-                    </FieldLegend>
-                    <RadioGroup
-                      value={question.selectedOption || ""}
-                      onValueChange={(value) => {
-                        const option = value as Option;
+
+            <div className="grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_17rem]">
+              <section className="min-w-0 px-1 py-1 sm:px-2">
+                <div>
+                  <div className="mb-3 flex min-h-8 items-center justify-between gap-4">
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Soal {index + 1}
+                    </p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className={cn(
+                        "text-destructive hover:bg-destructive/10 hover:text-destructive",
+                        !question.selectedOption && "invisible",
+                      )}
+                      disabled={busy || !question.selectedOption}
+                      aria-hidden={!question.selectedOption}
+                      onClick={() => {
                         setAttempt((current) =>
                           current
                             ? {
                                 ...current,
                                 questions: current.questions.map((item) =>
                                   item.id === question.id
-                                    ? { ...item, selectedOption: option }
+                                    ? { ...item, selectedOption: null }
                                     : item,
                                 ),
                               }
                             : current,
                         );
-                        save(attempt.id, question.id, option);
+                        save(attempt.id, question.id, null);
                       }}
-                      aria-label={`Jawaban soal ${index + 1}`}
                     >
-                      <FieldGroup>
-                        {OPTIONS.filter((option) => question.options[option]).map((option) => (
-                          <FieldLabel
+                      Hapus pilihan
+                    </Button>
+                  </div>
+                  <h2 className="max-w-3xl text-lg font-semibold leading-relaxed sm:text-xl">
+                    {question.question}
+                  </h2>
+                  <RadioGroup
+                    className="mt-6 gap-1"
+                    value={question.selectedOption || ""}
+                    onValueChange={(value) => {
+                      const option = value as Option;
+                      setAttempt((current) =>
+                        current
+                          ? {
+                              ...current,
+                              questions: current.questions.map((item) =>
+                                item.id === question.id
+                                  ? { ...item, selectedOption: option }
+                                  : item,
+                              ),
+                            }
+                          : current,
+                      );
+                      save(attempt.id, question.id, option);
+                    }}
+                    aria-label={`Jawaban soal ${index + 1}`}
+                    disabled={busy}
+                  >
+                    {OPTIONS.filter((option) => question.options[option]).map(
+                      (option) => {
+                        return (
+                          <label
                             key={option}
                             htmlFor={`${question.id}-${option}`}
+                            className="flex cursor-pointer items-start gap-5 py-3 leading-6"
                           >
-                            <Field orientation="horizontal">
-                              <RadioGroupItem
-                                value={option}
-                                id={`${question.id}-${option}`}
-                              />
-                              <FieldContent>
-                                <span className="font-semibold">
-                                  Opsi {option}
-                                </span>
-                                <FieldDescription className="text-foreground">
-                                  {question.options[option]}
-                                </FieldDescription>
-                              </FieldContent>
-                            </Field>
-                          </FieldLabel>
-                        ))}
-                      </FieldGroup>
-                    </RadioGroup>
-                  </FieldSet>
-                </CardContent>
-                <CardFooter className="flex justify-between gap-3">
+                            <RadioGroupItem
+                              className="mt-1 border-foreground/60 data-checked:border-brand data-checked:bg-brand [&[data-checked]_span]:bg-black"
+                              value={option}
+                              id={`${question.id}-${option}`}
+                            />
+                            <span className="flex min-w-0 items-start gap-2">
+                              <span className="shrink-0 font-semibold">{option}.</span>
+                              <span className="leading-6">
+                                {question.options[option]}
+                              </span>
+                            </span>
+                          </label>
+                        );
+                      },
+                    )}
+                  </RadioGroup>
+                </div>
+
+                <div className="mt-8 flex justify-between gap-3">
                   <Button
                     variant="outline"
                     disabled={index === 0 || busy}
@@ -419,31 +364,30 @@ export function AssessmentPage({
                     Berikutnya
                     <ArrowRight data-icon="inline-end" />
                   </Button>
-                </CardFooter>
-              </Card>
-              <Card>
-                <CardHeader>
-                  <CardTitle>Navigasi soal</CardTitle>
-                  <CardDescription>
-                    Pilih nomor untuk meninjau jawaban.
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <nav
-                    aria-label="Nomor soal"
-                    className="grid grid-cols-5 gap-2"
-                  >
+                </div>
+              </section>
+
+              <aside className="rounded-xl border border-border/70 bg-card p-5 shadow-sm lg:sticky lg:top-6">
+                <div className="flex flex-col gap-5">
+                  <div className="flex items-baseline justify-between gap-3">
+                    <h2 className="font-bold">Daftar soal</h2>
+                    <span className="text-sm font-semibold tabular-nums">
+                      {answered}/{attempt.totalQuestions}
+                    </span>
+                  </div>
+                  <nav aria-label="Nomor soal" className="grid grid-cols-5 gap-2">
                     {attempt.questions.map((item, position) => (
                       <Button
                         key={item.id}
-                        variant={
-                          position === index
-                            ? "default"
-                            : item.selectedOption
-                              ? "secondary"
-                              : "outline"
-                        }
-                        size="icon"
+                        variant={position === index ? "brand" : "outline"}
+                        size="icon-sm"
+                        className={cn(
+                          item.selectedOption &&
+                            position !== index &&
+                            "border-foreground/60",
+                          !item.selectedOption && position !== index &&
+                            "border-dashed text-muted-foreground",
+                        )}
                         aria-label={`Soal ${position + 1}${item.selectedOption ? ", sudah dijawab" : ", belum dijawab"}`}
                         aria-current={position === index ? "step" : undefined}
                         onClick={() => setIndex(position)}
@@ -453,47 +397,33 @@ export function AssessmentPage({
                       </Button>
                     ))}
                   </nav>
-                  <p className="mt-4 text-xs text-muted-foreground">
-                    {attempt.totalQuestions - answered} soal belum terisi. Anda
-                    dapat meninjau kembali sebelum mengirim.
-                  </p>
-                </CardContent>
-                <CardFooter>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        className="w-full"
-                        disabled={
-                          !allAnswered || saving > 0 || unsaved > 0 || busy
-                        }
-                      >
-                        <Check data-icon="inline-start" />
-                        {busy ? "Mengirim…" : "Kirim Jawaban"}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          Finalisasi {label.toLowerCase()}?
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Seluruh {answered} jawaban sudah terisi. Setelah
-                          dikirim, jawaban tidak dapat diubah.
-                          {kind === "posttest"
-                            ? " Hasil perbandingan pembelajaran akan tersedia."
-                            : " Profil kemampuan awal akan terbentuk."}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Tinjau Kembali</AlertDialogCancel>
-                        <AlertDialogAction onClick={submit}>
-                          Ya, Kirim Jawaban
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
-                </CardFooter>
-              </Card>
+
+                  <div className="flex flex-col gap-2 text-xs text-muted-foreground">
+                    <p className="flex items-center gap-2">
+                      <span className="size-2 rounded-full border border-foreground/60" />
+                      Sudah dijawab
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <span className="size-2 rounded-full border border-dashed border-border" />
+                      Belum dijawab
+                    </p>
+                  </div>
+
+                  <Button
+                    variant="brand"
+                    className="w-full"
+                    disabled={!allAnswered || busy}
+                    onClick={submit}
+                  >
+                    {busy ? (
+                      <Loader2 data-icon="inline-start" className="animate-spin" />
+                    ) : (
+                      <Check data-icon="inline-start" />
+                    )}
+                    {busy ? "Mengirim…" : "Kirim Jawaban"}
+                  </Button>
+                </div>
+              </aside>
             </div>
           </>
         )

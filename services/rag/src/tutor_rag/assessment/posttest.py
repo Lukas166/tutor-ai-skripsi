@@ -3,6 +3,7 @@ from uuid import uuid4
 from fastapi import HTTPException
 from psycopg.types.json import Jsonb
 
+from tutor_rag.assessment.scoring import has_four_options
 from tutor_rag.assessment.service import AssessmentService
 
 
@@ -27,15 +28,19 @@ class PosttestService(AssessmentService):
                 (self.student_id, self.course_id),
             ).fetchone()
             assert pretest is not None
+            items = self.connection.execute(
+                'SELECT * FROM assessment_item WHERE "attemptId"=%s', (pretest["id"],)
+            ).fetchall()
+            if any(not has_four_options(item["questionSnapshot"]) for item in items):
+                raise HTTPException(
+                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
+                )
             attempt = self.connection.execute(
                 'INSERT INTO assessment_attempt (id,"studentId","courseId",kind,"totalQuestions") '
                 "VALUES (%s,%s,%s,'POST',%s) RETURNING *",
                 (str(uuid4()), self.student_id, self.course_id, pretest["totalQuestions"]),
             ).fetchone()
             assert attempt is not None
-            items = self.connection.execute(
-                'SELECT * FROM assessment_item WHERE "attemptId"=%s', (pretest["id"],)
-            ).fetchall()
             for item in items:
                 self.connection.execute(
                     'INSERT INTO assessment_item (id,"attemptId","questionId","indicatorId",'

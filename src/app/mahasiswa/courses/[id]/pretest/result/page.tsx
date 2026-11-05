@@ -1,9 +1,9 @@
-import { StudentProfilePage } from "@/components/assessment/student-profile-page";
+import { redirect } from "next/navigation";
 
 export default async function Page({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  return <StudentProfilePage courseId={(await params).id} resultOnly />;
+  redirect(`/mahasiswa/courses/${(await params).id}/student-profile`);
 }

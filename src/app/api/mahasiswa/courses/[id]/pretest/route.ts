@@ -7,7 +7,7 @@ const draftSchema = z
   .object({
     attemptId: z.string().uuid(),
     questionId: z.string().min(1),
-    selectedOption: z.enum(["A", "B", "C", "D", "E"]),
+    selectedOption: z.enum(["A", "B", "C", "D"]).nullable(),
   })
   .strict();
 
@@ -23,7 +23,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
   const parsed = draftSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success)
     return NextResponse.json(
-      { error: "Sesi, soal, dan pilihan A–E wajib valid." },
+      { error: "Sesi, soal, dan pilihan wajib valid." },
       { status: 400 },
     );
   return assessmentProxy(

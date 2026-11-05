@@ -61,6 +61,8 @@ transaksi; seed tidak menghapus data LMS atau menimpa baseline mahasiswa.
 `datasetChecksum` mencatat SHA-256 workbook. Empat opsi A-D dari workbook baru,
 kunci, penjelasan,
 metadata PDF/halaman, serta pemetaan CPMK/Sub-CPMK tetap sesuai sumber.
+API dan soal baru hanya menerima A-D. Sesi lama yang masih memuat E ditolak
+dengan pesan untuk memperbarui dataset; data historis tidak dihapus oleh migrasi.
 Status `Draf`/`Status Sumber` dan salinan JSON baris Excel tidak disimpan sebagai kolom
 operasional: saat ini tidak ada alur verifikasi soal yang memakainya. Workbook tetap
 menjadi sumber asli untuk meninjau metadata tersebut. Soal yang diimpor tetap dapat
@@ -73,13 +75,13 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 1. Jalankan ulang `pnpm dev` setelah perubahan backend Python ini. Next.js dan API
    Python menggunakan konfigurasi URL, port, serta token yang sudah ada.
 2. Login sebagai mahasiswa yang memiliki enrollment aktif pada course tujuan.
-3. Buka mata kuliah, lalu pilih **Mulai Pre-test** pada kartu Profil Belajar Awal.
+3. Buka mata kuliah, lalu pilih **Mulai Pre-test**.
 4. Pilih satu dari opsi yang tersedia untuk setiap soal. Jawaban tersimpan otomatis ke
    database; draf yang belum terkonfirmasi juga dipertahankan pada perangkat.
-5. Setelah semua jawaban tersimpan, pilih **Kirim Jawaban** dan konfirmasi.
-6. Halaman hasil menampilkan skor keseluruhan. **Lihat Profil Belajar** membuka
-   ringkasan materi dan indikator, lalu tersedia akses ke materi serta AI Tutor.
-7. Pilih **Lanjut Belajar di AI Tutor**. Atur PDF melalui Context Materi; pilihan
+5. Setelah semua jawaban terisi, pilih **Kirim Jawaban**.
+6. Setelah dikirim, Profil Belajar langsung menampilkan skor pre-test, ringkasan
+   materi dan indikator, serta akses ke materi dan AI Tutor.
+7. Pilih **Buka AI Tutor**. Atur PDF melalui Context Materi; pilihan
    satu materi membatasi retrieval ke PDF tersebut, pilihan semua materi tetap
    dibatasi course yang diakses. Tanyakan konsep spesifik, misalnya pengumpulan data.
    Tutor memakai `/courses/{courseId}/tutor` agar layout layar penuh tidak dibungkus
@@ -94,10 +96,11 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 Alamat halaman bersifat generik:
 
 - `/mahasiswa/courses/{courseId}/pretest`
-- `/mahasiswa/courses/{courseId}/pretest/result`
 - `/mahasiswa/courses/{courseId}/student-profile`
 - `/mahasiswa/courses/{courseId}/posttest`
 - `/mahasiswa/courses/{courseId}/posttest/result`
+
+URL lama `/mahasiswa/courses/{courseId}/pretest/result` diarahkan ke Profil Belajar.
 
 Course yang belum memiliki konfigurasi domain tidak menampilkan CTA pre-test.
 Login, enrollment aktif, dan role mahasiswa tetap diperiksa di server Next.js

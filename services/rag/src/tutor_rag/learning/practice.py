@@ -6,6 +6,7 @@ from psycopg import Connection
 from psycopg.types.json import Jsonb
 
 from tutor_rag.assessment.service import AssessmentService
+from tutor_rag.assessment.scoring import has_four_options
 from tutor_rag.contracts.rag import GenerateRequest
 from tutor_rag.core.config import Settings
 from tutor_rag.infrastructure.gemini import GeminiProvider
@@ -89,6 +90,10 @@ class PracticeService:
                     (chat_session_id, ignored["id"]),
                 )
                 return ignored["id"]
+            if not has_four_options(question):
+                raise HTTPException(
+                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
+                )
             practice_id = str(uuid4())
             # Snapshot privat menjaga soal/kunci stabil jika dataset diimpor kembali.
             self.connection.execute(
@@ -123,6 +128,10 @@ class PracticeService:
     def current(self, practice_id: str) -> dict:
         row = self.owned(practice_id)
         snapshot = row["questionSnapshot"]
+        if not has_four_options(snapshot):
+            raise HTTPException(
+                409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
+            )
         # Field publik disusun eksplisit; snapshot, kunci, dan penjelasan salah tidak bocor.
         result = {
             key: row[key]
@@ -222,6 +231,10 @@ class PracticeService:
     ) -> dict:
         with self.connection.transaction():
             row = self.owned(practice_id, locked=True)
+            if not has_four_options(row["questionSnapshot"]):
+                raise HTTPException(
+                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
+                )
             duplicate = self.connection.execute(
                 'SELECT id FROM practice_event WHERE "practiceSessionId"=%s AND "requestId"=%s',
                 (practice_id, request_id),

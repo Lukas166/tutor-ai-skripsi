@@ -18,7 +18,7 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
     .object({
       attemptId: z.string().uuid(),
       questionId: z.string().min(1),
-      selectedOption: z.enum(["A", "B", "C", "D", "E"]),
+      selectedOption: z.enum(["A", "B", "C", "D"]).nullable(),
     })
     .strict()
     .safeParse(await request.json().catch(() => null));
