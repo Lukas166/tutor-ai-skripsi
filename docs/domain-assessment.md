@@ -26,8 +26,8 @@ PDF belum diunggah. Normalisasi nama file hanya dilakukan saat impor; retrieval
 dan penilaian selalu memakai ID database. Sesi yang belum ada ditambahkan tanpa
 mengganti sesi atau PDF existing.
 
-Kode workbook seperti `RPL-M01`, `RPL-I01`, dan `RPL-PP-01` disimpan utuh dalam `code`
-serta baris asli `sourceData`. Primary key internal dibentuk deterministik dari
+Kode workbook seperti `RPL-M01`, `RPL-I01`, dan `RPL-PP-01` disimpan utuh dalam `code`.
+Primary key internal dibentuk deterministik dari
 `courseId + kode`, sehingga impor ulang memakai ID yang sama. Constraint
 `(courseId, code)` mencegah duplikasi sekaligus membolehkan dua course menggunakan
 kode sumber yang sama. Relasi internal memakai primary key tersebut, bukan judul.
@@ -54,10 +54,15 @@ gunakan Python environment proyek langsung:
 services/rag/.venv/Scripts/python.exe scripts/data/import-rpl.py COURSE_ID_TUJUAN
 ```
 
-Seluruh data divalidasi sebelum ditulis. Upsert dan pemetaan dilakukan dalam satu
+Struktur, relasi, jumlah soal, opsi, dan kunci divalidasi sebelum ditulis. Validasi ini
+bukan peninjauan akademik isi soal. Upsert dan pemetaan dilakukan dalam satu
 transaksi; seed tidak menghapus data LMS atau menimpa baseline mahasiswa.
 `datasetChecksum` mencatat SHA-256 workbook. Seluruh lima opsi, kunci, penjelasan,
-metadata PDF/halaman, status Draf, serta pemetaan CPMK/Sub-CPMK tetap sesuai sumber.
+metadata PDF/halaman, serta pemetaan CPMK/Sub-CPMK tetap sesuai sumber.
+Status `Draf`/`Status Sumber` dan salinan JSON baris Excel tidak disimpan sebagai kolom
+operasional: saat ini tidak ada alur verifikasi soal yang memakainya. Workbook tetap
+menjadi sumber asli untuk meninjau metadata tersebut. Soal yang diimpor tetap dapat
+dipakai oleh pre-test/latihan; impor tidak berarti isi soal telah disahkan secara akademik.
 PDF asli tidak disertakan workbook: metadata materi disimpan, tetapi tidak dibuat
 file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 

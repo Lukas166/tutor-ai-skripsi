@@ -361,7 +361,6 @@ model LearningOutcome {
   code        String
   cpmk        String
   description String
-  sourceData  Json
   topics      DomainTopicOutcome[]
   course      Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   @@unique([courseId, code])
@@ -379,7 +378,6 @@ model DomainTopic {
   subCpmkCodes    String[]
   sourcePdf       String
   sourcePages     String
-  sourceData      Json
   course          Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   courseSession   CourseSession? @relation(fields: [courseSessionId], references: [id], onDelete: SetNull)
   outcomes        DomainTopicOutcome[]
@@ -422,8 +420,6 @@ model DomainIndicator {
   subCpmkCodes String[]
   sourcePdf    String
   sourcePages  String
-  sourceStatus String
-  sourceData   Json
   topic        DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   concept      DomainConcept @relation(fields: [conceptId], references: [id], onDelete: Restrict)
   questions    QuestionBankItem[]
@@ -451,8 +447,6 @@ model QuestionBankItem {
   practiceNumber   Int?
   sourcePdf        String
   sourcePages      String
-  validationStatus String
-  sourceData       Json
   topic            DomainTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
   indicator        DomainIndicator @relation(fields: [indicatorId], references: [id], onDelete: Restrict)
   items            AssessmentItem[]

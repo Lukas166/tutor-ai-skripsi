@@ -67,7 +67,6 @@ export type DomainTopicCountAggregateOutputType = {
   subCpmkCodes: number
   sourcePdf: number
   sourcePages: number
-  sourceData: number
   _all: number
 }
 
@@ -113,7 +112,6 @@ export type DomainTopicCountAggregateInputType = {
   subCpmkCodes?: true
   sourcePdf?: true
   sourcePages?: true
-  sourceData?: true
   _all?: true
 }
 
@@ -214,7 +212,6 @@ export type DomainTopicGroupByOutputType = {
   subCpmkCodes: string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: runtime.JsonValue
   _count: DomainTopicCountAggregateOutputType | null
   _avg: DomainTopicAvgAggregateOutputType | null
   _sum: DomainTopicSumAggregateOutputType | null
@@ -251,7 +248,6 @@ export type DomainTopicWhereInput = {
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainTopic">
   sourcePdf?: Prisma.StringFilter<"DomainTopic"> | string
   sourcePages?: Prisma.StringFilter<"DomainTopic"> | string
-  sourceData?: Prisma.JsonFilter<"DomainTopic">
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   courseSession?: Prisma.XOR<Prisma.CourseSessionNullableScalarRelationFilter, Prisma.CourseSessionWhereInput> | null
   outcomes?: Prisma.DomainTopicOutcomeListRelationFilter
@@ -271,7 +267,6 @@ export type DomainTopicOrderByWithRelationInput = {
   subCpmkCodes?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   course?: Prisma.CourseOrderByWithRelationInput
   courseSession?: Prisma.CourseSessionOrderByWithRelationInput
   outcomes?: Prisma.DomainTopicOutcomeOrderByRelationAggregateInput
@@ -296,7 +291,6 @@ export type DomainTopicWhereUniqueInput = Prisma.AtLeast<{
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainTopic">
   sourcePdf?: Prisma.StringFilter<"DomainTopic"> | string
   sourcePages?: Prisma.StringFilter<"DomainTopic"> | string
-  sourceData?: Prisma.JsonFilter<"DomainTopic">
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
   courseSession?: Prisma.XOR<Prisma.CourseSessionNullableScalarRelationFilter, Prisma.CourseSessionWhereInput> | null
   outcomes?: Prisma.DomainTopicOutcomeListRelationFilter
@@ -316,7 +310,6 @@ export type DomainTopicOrderByWithAggregationInput = {
   subCpmkCodes?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   _count?: Prisma.DomainTopicCountOrderByAggregateInput
   _avg?: Prisma.DomainTopicAvgOrderByAggregateInput
   _max?: Prisma.DomainTopicMaxOrderByAggregateInput
@@ -338,7 +331,6 @@ export type DomainTopicScalarWhereWithAggregatesInput = {
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainTopic">
   sourcePdf?: Prisma.StringWithAggregatesFilter<"DomainTopic"> | string
   sourcePages?: Prisma.StringWithAggregatesFilter<"DomainTopic"> | string
-  sourceData?: Prisma.JsonWithAggregatesFilter<"DomainTopic">
 }
 
 export type DomainTopicCreateInput = {
@@ -350,7 +342,6 @@ export type DomainTopicCreateInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutDomainTopicsInput
   courseSession?: Prisma.CourseSessionCreateNestedOneWithoutDomainTopicsInput
   outcomes?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutTopicInput
@@ -370,7 +361,6 @@ export type DomainTopicUncheckedCreateInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptUncheckedCreateNestedManyWithoutTopicInput
   indicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutTopicInput
@@ -386,7 +376,6 @@ export type DomainTopicUpdateInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainTopicsNestedInput
   courseSession?: Prisma.CourseSessionUpdateOneWithoutDomainTopicsNestedInput
   outcomes?: Prisma.DomainTopicOutcomeUpdateManyWithoutTopicNestedInput
@@ -406,7 +395,6 @@ export type DomainTopicUncheckedUpdateInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUncheckedUpdateManyWithoutTopicNestedInput
   indicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutTopicNestedInput
@@ -424,7 +412,6 @@ export type DomainTopicCreateManyInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainTopicUpdateManyMutationInput = {
@@ -436,7 +423,6 @@ export type DomainTopicUpdateManyMutationInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainTopicUncheckedUpdateManyInput = {
@@ -450,7 +436,6 @@ export type DomainTopicUncheckedUpdateManyInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainTopicListRelationFilter = {
@@ -492,7 +477,6 @@ export type DomainTopicCountOrderByAggregateInput = {
   subCpmkCodes?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
 }
 
 export type DomainTopicAvgOrderByAggregateInput = {
@@ -697,7 +681,6 @@ export type DomainTopicCreateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   courseSession?: Prisma.CourseSessionCreateNestedOneWithoutDomainTopicsInput
   outcomes?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptCreateNestedManyWithoutTopicInput
@@ -715,7 +698,6 @@ export type DomainTopicUncheckedCreateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptUncheckedCreateNestedManyWithoutTopicInput
   indicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutTopicInput
@@ -762,7 +744,6 @@ export type DomainTopicScalarWhereInput = {
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainTopic">
   sourcePdf?: Prisma.StringFilter<"DomainTopic"> | string
   sourcePages?: Prisma.StringFilter<"DomainTopic"> | string
-  sourceData?: Prisma.JsonFilter<"DomainTopic">
 }
 
 export type DomainTopicCreateWithoutCourseSessionInput = {
@@ -774,7 +755,6 @@ export type DomainTopicCreateWithoutCourseSessionInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutDomainTopicsInput
   outcomes?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptCreateNestedManyWithoutTopicInput
@@ -792,7 +772,6 @@ export type DomainTopicUncheckedCreateWithoutCourseSessionInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptUncheckedCreateNestedManyWithoutTopicInput
   indicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutTopicInput
@@ -834,7 +813,6 @@ export type DomainTopicCreateWithoutOutcomesInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutDomainTopicsInput
   courseSession?: Prisma.CourseSessionCreateNestedOneWithoutDomainTopicsInput
   concepts?: Prisma.DomainConceptCreateNestedManyWithoutTopicInput
@@ -853,7 +831,6 @@ export type DomainTopicUncheckedCreateWithoutOutcomesInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   concepts?: Prisma.DomainConceptUncheckedCreateNestedManyWithoutTopicInput
   indicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutTopicInput
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutTopicInput
@@ -884,7 +861,6 @@ export type DomainTopicUpdateWithoutOutcomesInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainTopicsNestedInput
   courseSession?: Prisma.CourseSessionUpdateOneWithoutDomainTopicsNestedInput
   concepts?: Prisma.DomainConceptUpdateManyWithoutTopicNestedInput
@@ -903,7 +879,6 @@ export type DomainTopicUncheckedUpdateWithoutOutcomesInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   concepts?: Prisma.DomainConceptUncheckedUpdateManyWithoutTopicNestedInput
   indicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutTopicNestedInput
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutTopicNestedInput
@@ -918,7 +893,6 @@ export type DomainTopicCreateWithoutConceptsInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutDomainTopicsInput
   courseSession?: Prisma.CourseSessionCreateNestedOneWithoutDomainTopicsInput
   outcomes?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutTopicInput
@@ -937,7 +911,6 @@ export type DomainTopicUncheckedCreateWithoutConceptsInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutTopicInput
   indicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutTopicInput
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutTopicInput
@@ -968,7 +941,6 @@ export type DomainTopicUpdateWithoutConceptsInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainTopicsNestedInput
   courseSession?: Prisma.CourseSessionUpdateOneWithoutDomainTopicsNestedInput
   outcomes?: Prisma.DomainTopicOutcomeUpdateManyWithoutTopicNestedInput
@@ -987,7 +959,6 @@ export type DomainTopicUncheckedUpdateWithoutConceptsInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutTopicNestedInput
   indicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutTopicNestedInput
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutTopicNestedInput
@@ -1002,7 +973,6 @@ export type DomainTopicCreateWithoutIndicatorsInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutDomainTopicsInput
   courseSession?: Prisma.CourseSessionCreateNestedOneWithoutDomainTopicsInput
   outcomes?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutTopicInput
@@ -1021,7 +991,6 @@ export type DomainTopicUncheckedCreateWithoutIndicatorsInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptUncheckedCreateNestedManyWithoutTopicInput
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutTopicInput
@@ -1052,7 +1021,6 @@ export type DomainTopicUpdateWithoutIndicatorsInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainTopicsNestedInput
   courseSession?: Prisma.CourseSessionUpdateOneWithoutDomainTopicsNestedInput
   outcomes?: Prisma.DomainTopicOutcomeUpdateManyWithoutTopicNestedInput
@@ -1071,7 +1039,6 @@ export type DomainTopicUncheckedUpdateWithoutIndicatorsInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUncheckedUpdateManyWithoutTopicNestedInput
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutTopicNestedInput
@@ -1086,7 +1053,6 @@ export type DomainTopicCreateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutDomainTopicsInput
   courseSession?: Prisma.CourseSessionCreateNestedOneWithoutDomainTopicsInput
   outcomes?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutTopicInput
@@ -1105,7 +1071,6 @@ export type DomainTopicUncheckedCreateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutTopicInput
   concepts?: Prisma.DomainConceptUncheckedCreateNestedManyWithoutTopicInput
   indicators?: Prisma.DomainIndicatorUncheckedCreateNestedManyWithoutTopicInput
@@ -1136,7 +1101,6 @@ export type DomainTopicUpdateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainTopicsNestedInput
   courseSession?: Prisma.CourseSessionUpdateOneWithoutDomainTopicsNestedInput
   outcomes?: Prisma.DomainTopicOutcomeUpdateManyWithoutTopicNestedInput
@@ -1155,7 +1119,6 @@ export type DomainTopicUncheckedUpdateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUncheckedUpdateManyWithoutTopicNestedInput
   indicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutTopicNestedInput
@@ -1171,7 +1134,6 @@ export type DomainTopicCreateManyCourseInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainTopicUpdateWithoutCourseInput = {
@@ -1183,7 +1145,6 @@ export type DomainTopicUpdateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   courseSession?: Prisma.CourseSessionUpdateOneWithoutDomainTopicsNestedInput
   outcomes?: Prisma.DomainTopicOutcomeUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUpdateManyWithoutTopicNestedInput
@@ -1201,7 +1162,6 @@ export type DomainTopicUncheckedUpdateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUncheckedUpdateManyWithoutTopicNestedInput
   indicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutTopicNestedInput
@@ -1218,7 +1178,6 @@ export type DomainTopicUncheckedUpdateManyWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainTopicCreateManyCourseSessionInput = {
@@ -1231,7 +1190,6 @@ export type DomainTopicCreateManyCourseSessionInput = {
   subCpmkCodes?: Prisma.DomainTopicCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainTopicUpdateWithoutCourseSessionInput = {
@@ -1243,7 +1201,6 @@ export type DomainTopicUpdateWithoutCourseSessionInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutDomainTopicsNestedInput
   outcomes?: Prisma.DomainTopicOutcomeUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUpdateManyWithoutTopicNestedInput
@@ -1261,7 +1218,6 @@ export type DomainTopicUncheckedUpdateWithoutCourseSessionInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   outcomes?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutTopicNestedInput
   concepts?: Prisma.DomainConceptUncheckedUpdateManyWithoutTopicNestedInput
   indicators?: Prisma.DomainIndicatorUncheckedUpdateManyWithoutTopicNestedInput
@@ -1278,7 +1234,6 @@ export type DomainTopicUncheckedUpdateManyWithoutCourseSessionInput = {
   subCpmkCodes?: Prisma.DomainTopicUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -1350,7 +1305,6 @@ export type DomainTopicSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceData?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   courseSession?: boolean | Prisma.DomainTopic$courseSessionArgs<ExtArgs>
   outcomes?: boolean | Prisma.DomainTopic$outcomesArgs<ExtArgs>
@@ -1371,7 +1325,6 @@ export type DomainTopicSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceData?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   courseSession?: boolean | Prisma.DomainTopic$courseSessionArgs<ExtArgs>
 }, ExtArgs["result"]["domainTopic"]>
@@ -1387,7 +1340,6 @@ export type DomainTopicSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceData?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   courseSession?: boolean | Prisma.DomainTopic$courseSessionArgs<ExtArgs>
 }, ExtArgs["result"]["domainTopic"]>
@@ -1403,10 +1355,9 @@ export type DomainTopicSelectScalar = {
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceData?: boolean
 }
 
-export type DomainTopicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "courseId" | "courseSessionId" | "title" | "orderNumber" | "cpmkCodes" | "subCpmkCodes" | "sourcePdf" | "sourcePages" | "sourceData", ExtArgs["result"]["domainTopic"]>
+export type DomainTopicOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "courseId" | "courseSessionId" | "title" | "orderNumber" | "cpmkCodes" | "subCpmkCodes" | "sourcePdf" | "sourcePages", ExtArgs["result"]["domainTopic"]>
 export type DomainTopicInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   courseSession?: boolean | Prisma.DomainTopic$courseSessionArgs<ExtArgs>
@@ -1446,7 +1397,6 @@ export type $DomainTopicPayload<ExtArgs extends runtime.Types.Extensions.Interna
     subCpmkCodes: string[]
     sourcePdf: string
     sourcePages: string
-    sourceData: runtime.JsonValue
   }, ExtArgs["result"]["domainTopic"]>
   composites: {}
 }
@@ -1886,7 +1836,6 @@ export interface DomainTopicFieldRefs {
   readonly subCpmkCodes: Prisma.FieldRef<"DomainTopic", 'String[]'>
   readonly sourcePdf: Prisma.FieldRef<"DomainTopic", 'String'>
   readonly sourcePages: Prisma.FieldRef<"DomainTopic", 'String'>
-  readonly sourceData: Prisma.FieldRef<"DomainTopic", 'Json'>
 }
     
 

@@ -99,7 +99,6 @@ def validate_workbook(data: dict[str, list[dict[str, str]]]) -> None:
                 "Penjelasan Jawaban",
                 "Sumber PDF",
                 "Halaman PDF",
-                "Status Validasi",
                 *[f"Opsi {letter}" for letter in "ABCDE"],
             ]
             if (

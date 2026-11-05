@@ -46,7 +46,6 @@ export type LearningOutcomeCountAggregateOutputType = {
   code: number
   cpmk: number
   description: number
-  sourceData: number
   _all: number
 }
 
@@ -73,7 +72,6 @@ export type LearningOutcomeCountAggregateInputType = {
   code?: true
   cpmk?: true
   description?: true
-  sourceData?: true
   _all?: true
 }
 
@@ -155,7 +153,6 @@ export type LearningOutcomeGroupByOutputType = {
   code: string
   cpmk: string
   description: string
-  sourceData: runtime.JsonValue
   _count: LearningOutcomeCountAggregateOutputType | null
   _min: LearningOutcomeMinAggregateOutputType | null
   _max: LearningOutcomeMaxAggregateOutputType | null
@@ -185,7 +182,6 @@ export type LearningOutcomeWhereInput = {
   code?: Prisma.StringFilter<"LearningOutcome"> | string
   cpmk?: Prisma.StringFilter<"LearningOutcome"> | string
   description?: Prisma.StringFilter<"LearningOutcome"> | string
-  sourceData?: Prisma.JsonFilter<"LearningOutcome">
   topics?: Prisma.DomainTopicOutcomeListRelationFilter
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }
@@ -196,7 +192,6 @@ export type LearningOutcomeOrderByWithRelationInput = {
   code?: Prisma.SortOrder
   cpmk?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   topics?: Prisma.DomainTopicOutcomeOrderByRelationAggregateInput
   course?: Prisma.CourseOrderByWithRelationInput
 }
@@ -211,7 +206,6 @@ export type LearningOutcomeWhereUniqueInput = Prisma.AtLeast<{
   code?: Prisma.StringFilter<"LearningOutcome"> | string
   cpmk?: Prisma.StringFilter<"LearningOutcome"> | string
   description?: Prisma.StringFilter<"LearningOutcome"> | string
-  sourceData?: Prisma.JsonFilter<"LearningOutcome">
   topics?: Prisma.DomainTopicOutcomeListRelationFilter
   course?: Prisma.XOR<Prisma.CourseScalarRelationFilter, Prisma.CourseWhereInput>
 }, "id" | "courseId_code">
@@ -222,7 +216,6 @@ export type LearningOutcomeOrderByWithAggregationInput = {
   code?: Prisma.SortOrder
   cpmk?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   _count?: Prisma.LearningOutcomeCountOrderByAggregateInput
   _max?: Prisma.LearningOutcomeMaxOrderByAggregateInput
   _min?: Prisma.LearningOutcomeMinOrderByAggregateInput
@@ -237,7 +230,6 @@ export type LearningOutcomeScalarWhereWithAggregatesInput = {
   code?: Prisma.StringWithAggregatesFilter<"LearningOutcome"> | string
   cpmk?: Prisma.StringWithAggregatesFilter<"LearningOutcome"> | string
   description?: Prisma.StringWithAggregatesFilter<"LearningOutcome"> | string
-  sourceData?: Prisma.JsonWithAggregatesFilter<"LearningOutcome">
 }
 
 export type LearningOutcomeCreateInput = {
@@ -245,7 +237,6 @@ export type LearningOutcomeCreateInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutOutcomeInput
   course: Prisma.CourseCreateNestedOneWithoutLearningOutcomesInput
 }
@@ -256,7 +247,6 @@ export type LearningOutcomeUncheckedCreateInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutOutcomeInput
 }
 
@@ -265,7 +255,6 @@ export type LearningOutcomeUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeUpdateManyWithoutOutcomeNestedInput
   course?: Prisma.CourseUpdateOneRequiredWithoutLearningOutcomesNestedInput
 }
@@ -276,7 +265,6 @@ export type LearningOutcomeUncheckedUpdateInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutOutcomeNestedInput
 }
 
@@ -286,7 +274,6 @@ export type LearningOutcomeCreateManyInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type LearningOutcomeUpdateManyMutationInput = {
@@ -294,7 +281,6 @@ export type LearningOutcomeUpdateManyMutationInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type LearningOutcomeUncheckedUpdateManyInput = {
@@ -303,7 +289,6 @@ export type LearningOutcomeUncheckedUpdateManyInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type LearningOutcomeListRelationFilter = {
@@ -327,7 +312,6 @@ export type LearningOutcomeCountOrderByAggregateInput = {
   code?: Prisma.SortOrder
   cpmk?: Prisma.SortOrder
   description?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
 }
 
 export type LearningOutcomeMaxOrderByAggregateInput = {
@@ -412,7 +396,6 @@ export type LearningOutcomeCreateWithoutCourseInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeCreateNestedManyWithoutOutcomeInput
 }
 
@@ -421,7 +404,6 @@ export type LearningOutcomeUncheckedCreateWithoutCourseInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeUncheckedCreateNestedManyWithoutOutcomeInput
 }
 
@@ -460,7 +442,6 @@ export type LearningOutcomeScalarWhereInput = {
   code?: Prisma.StringFilter<"LearningOutcome"> | string
   cpmk?: Prisma.StringFilter<"LearningOutcome"> | string
   description?: Prisma.StringFilter<"LearningOutcome"> | string
-  sourceData?: Prisma.JsonFilter<"LearningOutcome">
 }
 
 export type LearningOutcomeCreateWithoutTopicsInput = {
@@ -468,7 +449,6 @@ export type LearningOutcomeCreateWithoutTopicsInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course: Prisma.CourseCreateNestedOneWithoutLearningOutcomesInput
 }
 
@@ -478,7 +458,6 @@ export type LearningOutcomeUncheckedCreateWithoutTopicsInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type LearningOutcomeCreateOrConnectWithoutTopicsInput = {
@@ -502,7 +481,6 @@ export type LearningOutcomeUpdateWithoutTopicsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   course?: Prisma.CourseUpdateOneRequiredWithoutLearningOutcomesNestedInput
 }
 
@@ -512,7 +490,6 @@ export type LearningOutcomeUncheckedUpdateWithoutTopicsInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type LearningOutcomeCreateManyCourseInput = {
@@ -520,7 +497,6 @@ export type LearningOutcomeCreateManyCourseInput = {
   code: string
   cpmk: string
   description: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type LearningOutcomeUpdateWithoutCourseInput = {
@@ -528,7 +504,6 @@ export type LearningOutcomeUpdateWithoutCourseInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeUpdateManyWithoutOutcomeNestedInput
 }
 
@@ -537,7 +512,6 @@ export type LearningOutcomeUncheckedUpdateWithoutCourseInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topics?: Prisma.DomainTopicOutcomeUncheckedUpdateManyWithoutOutcomeNestedInput
 }
 
@@ -546,7 +520,6 @@ export type LearningOutcomeUncheckedUpdateManyWithoutCourseInput = {
   code?: Prisma.StringFieldUpdateOperationsInput | string
   cpmk?: Prisma.StringFieldUpdateOperationsInput | string
   description?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -586,7 +559,6 @@ export type LearningOutcomeSelect<ExtArgs extends runtime.Types.Extensions.Inter
   code?: boolean
   cpmk?: boolean
   description?: boolean
-  sourceData?: boolean
   topics?: boolean | Prisma.LearningOutcome$topicsArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.LearningOutcomeCountOutputTypeDefaultArgs<ExtArgs>
@@ -598,7 +570,6 @@ export type LearningOutcomeSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   code?: boolean
   cpmk?: boolean
   description?: boolean
-  sourceData?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["learningOutcome"]>
 
@@ -608,7 +579,6 @@ export type LearningOutcomeSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   code?: boolean
   cpmk?: boolean
   description?: boolean
-  sourceData?: boolean
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["learningOutcome"]>
 
@@ -618,10 +588,9 @@ export type LearningOutcomeSelectScalar = {
   code?: boolean
   cpmk?: boolean
   description?: boolean
-  sourceData?: boolean
 }
 
-export type LearningOutcomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "courseId" | "code" | "cpmk" | "description" | "sourceData", ExtArgs["result"]["learningOutcome"]>
+export type LearningOutcomeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "courseId" | "code" | "cpmk" | "description", ExtArgs["result"]["learningOutcome"]>
 export type LearningOutcomeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   topics?: boolean | Prisma.LearningOutcome$topicsArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -646,7 +615,6 @@ export type $LearningOutcomePayload<ExtArgs extends runtime.Types.Extensions.Int
     code: string
     cpmk: string
     description: string
-    sourceData: runtime.JsonValue
   }, ExtArgs["result"]["learningOutcome"]>
   composites: {}
 }
@@ -1077,7 +1045,6 @@ export interface LearningOutcomeFieldRefs {
   readonly code: Prisma.FieldRef<"LearningOutcome", 'String'>
   readonly cpmk: Prisma.FieldRef<"LearningOutcome", 'String'>
   readonly description: Prisma.FieldRef<"LearningOutcome", 'String'>
-  readonly sourceData: Prisma.FieldRef<"LearningOutcome", 'Json'>
 }
     
 

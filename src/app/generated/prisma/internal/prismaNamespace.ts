@@ -2783,8 +2783,7 @@ export const LearningOutcomeScalarFieldEnum = {
   courseId: 'courseId',
   code: 'code',
   cpmk: 'cpmk',
-  description: 'description',
-  sourceData: 'sourceData'
+  description: 'description'
 } as const
 
 export type LearningOutcomeScalarFieldEnum = (typeof LearningOutcomeScalarFieldEnum)[keyof typeof LearningOutcomeScalarFieldEnum]
@@ -2800,8 +2799,7 @@ export const DomainTopicScalarFieldEnum = {
   cpmkCodes: 'cpmkCodes',
   subCpmkCodes: 'subCpmkCodes',
   sourcePdf: 'sourcePdf',
-  sourcePages: 'sourcePages',
-  sourceData: 'sourceData'
+  sourcePages: 'sourcePages'
 } as const
 
 export type DomainTopicScalarFieldEnum = (typeof DomainTopicScalarFieldEnum)[keyof typeof DomainTopicScalarFieldEnum]
@@ -2835,9 +2833,7 @@ export const DomainIndicatorScalarFieldEnum = {
   cpmkCodes: 'cpmkCodes',
   subCpmkCodes: 'subCpmkCodes',
   sourcePdf: 'sourcePdf',
-  sourcePages: 'sourcePages',
-  sourceStatus: 'sourceStatus',
-  sourceData: 'sourceData'
+  sourcePages: 'sourcePages'
 } as const
 
 export type DomainIndicatorScalarFieldEnum = (typeof DomainIndicatorScalarFieldEnum)[keyof typeof DomainIndicatorScalarFieldEnum]
@@ -2857,9 +2853,7 @@ export const QuestionBankItemScalarFieldEnum = {
   cognitiveLevel: 'cognitiveLevel',
   practiceNumber: 'practiceNumber',
   sourcePdf: 'sourcePdf',
-  sourcePages: 'sourcePages',
-  validationStatus: 'validationStatus',
-  sourceData: 'sourceData'
+  sourcePages: 'sourcePages'
 } as const
 
 export type QuestionBankItemScalarFieldEnum = (typeof QuestionBankItemScalarFieldEnum)[keyof typeof QuestionBankItemScalarFieldEnum]

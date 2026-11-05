@@ -33,7 +33,6 @@ export type DomainIndicatorMinAggregateOutputType = {
   description: string | null
   sourcePdf: string | null
   sourcePages: string | null
-  sourceStatus: string | null
 }
 
 export type DomainIndicatorMaxAggregateOutputType = {
@@ -45,7 +44,6 @@ export type DomainIndicatorMaxAggregateOutputType = {
   description: string | null
   sourcePdf: string | null
   sourcePages: string | null
-  sourceStatus: string | null
 }
 
 export type DomainIndicatorCountAggregateOutputType = {
@@ -59,8 +57,6 @@ export type DomainIndicatorCountAggregateOutputType = {
   subCpmkCodes: number
   sourcePdf: number
   sourcePages: number
-  sourceStatus: number
-  sourceData: number
   _all: number
 }
 
@@ -74,7 +70,6 @@ export type DomainIndicatorMinAggregateInputType = {
   description?: true
   sourcePdf?: true
   sourcePages?: true
-  sourceStatus?: true
 }
 
 export type DomainIndicatorMaxAggregateInputType = {
@@ -86,7 +81,6 @@ export type DomainIndicatorMaxAggregateInputType = {
   description?: true
   sourcePdf?: true
   sourcePages?: true
-  sourceStatus?: true
 }
 
 export type DomainIndicatorCountAggregateInputType = {
@@ -100,8 +94,6 @@ export type DomainIndicatorCountAggregateInputType = {
   subCpmkCodes?: true
   sourcePdf?: true
   sourcePages?: true
-  sourceStatus?: true
-  sourceData?: true
   _all?: true
 }
 
@@ -188,8 +180,6 @@ export type DomainIndicatorGroupByOutputType = {
   subCpmkCodes: string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: runtime.JsonValue
   _count: DomainIndicatorCountAggregateOutputType | null
   _min: DomainIndicatorMinAggregateOutputType | null
   _max: DomainIndicatorMaxAggregateOutputType | null
@@ -224,8 +214,6 @@ export type DomainIndicatorWhereInput = {
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainIndicator">
   sourcePdf?: Prisma.StringFilter<"DomainIndicator"> | string
   sourcePages?: Prisma.StringFilter<"DomainIndicator"> | string
-  sourceStatus?: Prisma.StringFilter<"DomainIndicator"> | string
-  sourceData?: Prisma.JsonFilter<"DomainIndicator">
   topic?: Prisma.XOR<Prisma.DomainTopicScalarRelationFilter, Prisma.DomainTopicWhereInput>
   concept?: Prisma.XOR<Prisma.DomainConceptScalarRelationFilter, Prisma.DomainConceptWhereInput>
   questions?: Prisma.QuestionBankItemListRelationFilter
@@ -246,8 +234,6 @@ export type DomainIndicatorOrderByWithRelationInput = {
   subCpmkCodes?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceStatus?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   topic?: Prisma.DomainTopicOrderByWithRelationInput
   concept?: Prisma.DomainConceptOrderByWithRelationInput
   questions?: Prisma.QuestionBankItemOrderByRelationAggregateInput
@@ -272,8 +258,6 @@ export type DomainIndicatorWhereUniqueInput = Prisma.AtLeast<{
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainIndicator">
   sourcePdf?: Prisma.StringFilter<"DomainIndicator"> | string
   sourcePages?: Prisma.StringFilter<"DomainIndicator"> | string
-  sourceStatus?: Prisma.StringFilter<"DomainIndicator"> | string
-  sourceData?: Prisma.JsonFilter<"DomainIndicator">
   topic?: Prisma.XOR<Prisma.DomainTopicScalarRelationFilter, Prisma.DomainTopicWhereInput>
   concept?: Prisma.XOR<Prisma.DomainConceptScalarRelationFilter, Prisma.DomainConceptWhereInput>
   questions?: Prisma.QuestionBankItemListRelationFilter
@@ -294,8 +278,6 @@ export type DomainIndicatorOrderByWithAggregationInput = {
   subCpmkCodes?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceStatus?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   _count?: Prisma.DomainIndicatorCountOrderByAggregateInput
   _max?: Prisma.DomainIndicatorMaxOrderByAggregateInput
   _min?: Prisma.DomainIndicatorMinOrderByAggregateInput
@@ -315,8 +297,6 @@ export type DomainIndicatorScalarWhereWithAggregatesInput = {
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainIndicator">
   sourcePdf?: Prisma.StringWithAggregatesFilter<"DomainIndicator"> | string
   sourcePages?: Prisma.StringWithAggregatesFilter<"DomainIndicator"> | string
-  sourceStatus?: Prisma.StringWithAggregatesFilter<"DomainIndicator"> | string
-  sourceData?: Prisma.JsonWithAggregatesFilter<"DomainIndicator">
 }
 
 export type DomainIndicatorCreateInput = {
@@ -327,8 +307,6 @@ export type DomainIndicatorCreateInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
@@ -349,8 +327,6 @@ export type DomainIndicatorUncheckedCreateInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
@@ -365,8 +341,6 @@ export type DomainIndicatorUpdateInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
@@ -387,8 +361,6 @@ export type DomainIndicatorUncheckedUpdateInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -406,8 +378,6 @@ export type DomainIndicatorCreateManyInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorUpdateManyMutationInput = {
@@ -418,8 +388,6 @@ export type DomainIndicatorUpdateManyMutationInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorUncheckedUpdateManyInput = {
@@ -433,8 +401,6 @@ export type DomainIndicatorUncheckedUpdateManyInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorListRelationFilter = {
@@ -463,8 +429,6 @@ export type DomainIndicatorCountOrderByAggregateInput = {
   subCpmkCodes?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceStatus?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
 }
 
 export type DomainIndicatorMaxOrderByAggregateInput = {
@@ -476,7 +440,6 @@ export type DomainIndicatorMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceStatus?: Prisma.SortOrder
 }
 
 export type DomainIndicatorMinOrderByAggregateInput = {
@@ -488,7 +451,6 @@ export type DomainIndicatorMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  sourceStatus?: Prisma.SortOrder
 }
 
 export type DomainIndicatorScalarRelationFilter = {
@@ -704,8 +666,6 @@ export type DomainIndicatorCreateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
@@ -724,8 +684,6 @@ export type DomainIndicatorUncheckedCreateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
@@ -772,8 +730,6 @@ export type DomainIndicatorScalarWhereInput = {
   subCpmkCodes?: Prisma.StringNullableListFilter<"DomainIndicator">
   sourcePdf?: Prisma.StringFilter<"DomainIndicator"> | string
   sourcePages?: Prisma.StringFilter<"DomainIndicator"> | string
-  sourceStatus?: Prisma.StringFilter<"DomainIndicator"> | string
-  sourceData?: Prisma.JsonFilter<"DomainIndicator">
 }
 
 export type DomainIndicatorCreateWithoutTopicInput = {
@@ -784,8 +740,6 @@ export type DomainIndicatorCreateWithoutTopicInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
@@ -804,8 +758,6 @@ export type DomainIndicatorUncheckedCreateWithoutTopicInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
@@ -846,8 +798,6 @@ export type DomainIndicatorCreateWithoutConceptInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
@@ -866,8 +816,6 @@ export type DomainIndicatorUncheckedCreateWithoutConceptInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
@@ -908,8 +856,6 @@ export type DomainIndicatorCreateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutIndicatorInput
@@ -929,8 +875,6 @@ export type DomainIndicatorUncheckedCreateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
@@ -960,8 +904,6 @@ export type DomainIndicatorUpdateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
@@ -981,8 +923,6 @@ export type DomainIndicatorUncheckedUpdateWithoutQuestionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -996,8 +936,6 @@ export type DomainIndicatorCreateWithoutItemsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
@@ -1017,8 +955,6 @@ export type DomainIndicatorUncheckedCreateWithoutItemsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
@@ -1048,8 +984,6 @@ export type DomainIndicatorUpdateWithoutItemsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
@@ -1069,8 +1003,6 @@ export type DomainIndicatorUncheckedUpdateWithoutItemsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -1084,8 +1016,6 @@ export type DomainIndicatorCreateWithoutProfilesInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
@@ -1105,8 +1035,6 @@ export type DomainIndicatorUncheckedCreateWithoutProfilesInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutIndicatorInput
@@ -1136,8 +1064,6 @@ export type DomainIndicatorUpdateWithoutProfilesInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
@@ -1157,8 +1083,6 @@ export type DomainIndicatorUncheckedUpdateWithoutProfilesInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -1172,8 +1096,6 @@ export type DomainIndicatorCreateWithoutPracticeSessionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutIndicatorsInput
   concept: Prisma.DomainConceptCreateNestedOneWithoutIndicatorsInput
   questions?: Prisma.QuestionBankItemCreateNestedManyWithoutIndicatorInput
@@ -1193,8 +1115,6 @@ export type DomainIndicatorUncheckedCreateWithoutPracticeSessionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedCreateNestedManyWithoutIndicatorInput
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutIndicatorInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedCreateNestedManyWithoutIndicatorInput
@@ -1224,8 +1144,6 @@ export type DomainIndicatorUpdateWithoutPracticeSessionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
@@ -1245,8 +1163,6 @@ export type DomainIndicatorUncheckedUpdateWithoutPracticeSessionsInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -1262,8 +1178,6 @@ export type DomainIndicatorCreateManyCourseInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorUpdateWithoutCourseInput = {
@@ -1274,8 +1188,6 @@ export type DomainIndicatorUpdateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
@@ -1294,8 +1206,6 @@ export type DomainIndicatorUncheckedUpdateWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -1312,8 +1222,6 @@ export type DomainIndicatorUncheckedUpdateManyWithoutCourseInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorCreateManyTopicInput = {
@@ -1326,8 +1234,6 @@ export type DomainIndicatorCreateManyTopicInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorUpdateWithoutTopicInput = {
@@ -1338,8 +1244,6 @@ export type DomainIndicatorUpdateWithoutTopicInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   concept?: Prisma.DomainConceptUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
@@ -1358,8 +1262,6 @@ export type DomainIndicatorUncheckedUpdateWithoutTopicInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -1376,8 +1278,6 @@ export type DomainIndicatorUncheckedUpdateManyWithoutTopicInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorCreateManyConceptInput = {
@@ -1390,8 +1290,6 @@ export type DomainIndicatorCreateManyConceptInput = {
   subCpmkCodes?: Prisma.DomainIndicatorCreatesubCpmkCodesInput | string[]
   sourcePdf: string
   sourcePages: string
-  sourceStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type DomainIndicatorUpdateWithoutConceptInput = {
@@ -1402,8 +1300,6 @@ export type DomainIndicatorUpdateWithoutConceptInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutIndicatorsNestedInput
   questions?: Prisma.QuestionBankItemUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutIndicatorNestedInput
@@ -1422,8 +1318,6 @@ export type DomainIndicatorUncheckedUpdateWithoutConceptInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   questions?: Prisma.QuestionBankItemUncheckedUpdateManyWithoutIndicatorNestedInput
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutIndicatorNestedInput
   profiles?: Prisma.StudentIndicatorProfileUncheckedUpdateManyWithoutIndicatorNestedInput
@@ -1440,8 +1334,6 @@ export type DomainIndicatorUncheckedUpdateManyWithoutConceptInput = {
   subCpmkCodes?: Prisma.DomainIndicatorUpdatesubCpmkCodesInput | string[]
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -1513,8 +1405,6 @@ export type DomainIndicatorSelect<ExtArgs extends runtime.Types.Extensions.Inter
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceStatus?: boolean
-  sourceData?: boolean
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   concept?: boolean | Prisma.DomainConceptDefaultArgs<ExtArgs>
   questions?: boolean | Prisma.DomainIndicator$questionsArgs<ExtArgs>
@@ -1536,8 +1426,6 @@ export type DomainIndicatorSelectCreateManyAndReturn<ExtArgs extends runtime.Typ
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceStatus?: boolean
-  sourceData?: boolean
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   concept?: boolean | Prisma.DomainConceptDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -1554,8 +1442,6 @@ export type DomainIndicatorSelectUpdateManyAndReturn<ExtArgs extends runtime.Typ
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceStatus?: boolean
-  sourceData?: boolean
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   concept?: boolean | Prisma.DomainConceptDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -1572,11 +1458,9 @@ export type DomainIndicatorSelectScalar = {
   subCpmkCodes?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  sourceStatus?: boolean
-  sourceData?: boolean
 }
 
-export type DomainIndicatorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "courseId" | "topicId" | "conceptId" | "description" | "cpmkCodes" | "subCpmkCodes" | "sourcePdf" | "sourcePages" | "sourceStatus" | "sourceData", ExtArgs["result"]["domainIndicator"]>
+export type DomainIndicatorOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "courseId" | "topicId" | "conceptId" | "description" | "cpmkCodes" | "subCpmkCodes" | "sourcePdf" | "sourcePages", ExtArgs["result"]["domainIndicator"]>
 export type DomainIndicatorInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   concept?: boolean | Prisma.DomainConceptDefaultArgs<ExtArgs>
@@ -1620,8 +1504,6 @@ export type $DomainIndicatorPayload<ExtArgs extends runtime.Types.Extensions.Int
     subCpmkCodes: string[]
     sourcePdf: string
     sourcePages: string
-    sourceStatus: string
-    sourceData: runtime.JsonValue
   }, ExtArgs["result"]["domainIndicator"]>
   composites: {}
 }
@@ -2062,8 +1944,6 @@ export interface DomainIndicatorFieldRefs {
   readonly subCpmkCodes: Prisma.FieldRef<"DomainIndicator", 'String[]'>
   readonly sourcePdf: Prisma.FieldRef<"DomainIndicator", 'String'>
   readonly sourcePages: Prisma.FieldRef<"DomainIndicator", 'String'>
-  readonly sourceStatus: Prisma.FieldRef<"DomainIndicator", 'String'>
-  readonly sourceData: Prisma.FieldRef<"DomainIndicator", 'Json'>
 }
     
 

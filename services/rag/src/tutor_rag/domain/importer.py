@@ -54,7 +54,6 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
                     "code": match[1],
                     "cpmk": row["CPMK"],
                     "description": row["Sub-CPMK"],
-                    "sourceData": Jsonb(row),
                 },
             )
         for row in data["Materi RPL"]:
@@ -107,7 +106,6 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
                     "subCpmkCodes": codes(row["Sub-CPMK"]),
                     "sourcePdf": row["Nama File PDF"],
                     "sourcePages": row["Halaman PDF"],
-                    "sourceData": Jsonb(row),
                 },
             )
             for outcome in codes(row["Sub-CPMK"]):
@@ -142,8 +140,6 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
                     "subCpmkCodes": codes(row["Sub-CPMK"]),
                     "sourcePdf": row["Sumber PDF"],
                     "sourcePages": row["Halaman PDF"],
-                    "sourceStatus": row["Status Sumber"],
-                    "sourceData": Jsonb(row),
                 },
             )
         for sheet, kind in [("Soal Pre-Post RPL", "PRE_POST"), ("Soal Latihan RPL", "PRACTICE")]:
@@ -166,8 +162,6 @@ def import_dataset(connection: Connection[dict[str, Any]], path: Path, course_id
                         "practiceNumber": int(row["Latihan Ke"]) if kind == "PRACTICE" else None,
                         "sourcePdf": row["Sumber PDF"],
                         "sourcePages": row["Halaman PDF"],
-                        "validationStatus": row["Status Validasi"],
-                        "sourceData": Jsonb(row),
                     },
                 )
         connection.execute(

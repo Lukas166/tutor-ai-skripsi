@@ -48,7 +48,6 @@ export type QuestionBankItemMinAggregateOutputType = {
   practiceNumber: number | null
   sourcePdf: string | null
   sourcePages: string | null
-  validationStatus: string | null
 }
 
 export type QuestionBankItemMaxAggregateOutputType = {
@@ -65,7 +64,6 @@ export type QuestionBankItemMaxAggregateOutputType = {
   practiceNumber: number | null
   sourcePdf: string | null
   sourcePages: string | null
-  validationStatus: string | null
 }
 
 export type QuestionBankItemCountAggregateOutputType = {
@@ -83,8 +81,6 @@ export type QuestionBankItemCountAggregateOutputType = {
   practiceNumber: number
   sourcePdf: number
   sourcePages: number
-  validationStatus: number
-  sourceData: number
   _all: number
 }
 
@@ -111,7 +107,6 @@ export type QuestionBankItemMinAggregateInputType = {
   practiceNumber?: true
   sourcePdf?: true
   sourcePages?: true
-  validationStatus?: true
 }
 
 export type QuestionBankItemMaxAggregateInputType = {
@@ -128,7 +123,6 @@ export type QuestionBankItemMaxAggregateInputType = {
   practiceNumber?: true
   sourcePdf?: true
   sourcePages?: true
-  validationStatus?: true
 }
 
 export type QuestionBankItemCountAggregateInputType = {
@@ -146,8 +140,6 @@ export type QuestionBankItemCountAggregateInputType = {
   practiceNumber?: true
   sourcePdf?: true
   sourcePages?: true
-  validationStatus?: true
-  sourceData?: true
   _all?: true
 }
 
@@ -252,8 +244,6 @@ export type QuestionBankItemGroupByOutputType = {
   practiceNumber: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: runtime.JsonValue
   _count: QuestionBankItemCountAggregateOutputType | null
   _avg: QuestionBankItemAvgAggregateOutputType | null
   _sum: QuestionBankItemSumAggregateOutputType | null
@@ -294,8 +284,6 @@ export type QuestionBankItemWhereInput = {
   practiceNumber?: Prisma.IntNullableFilter<"QuestionBankItem"> | number | null
   sourcePdf?: Prisma.StringFilter<"QuestionBankItem"> | string
   sourcePages?: Prisma.StringFilter<"QuestionBankItem"> | string
-  validationStatus?: Prisma.StringFilter<"QuestionBankItem"> | string
-  sourceData?: Prisma.JsonFilter<"QuestionBankItem">
   topic?: Prisma.XOR<Prisma.DomainTopicScalarRelationFilter, Prisma.DomainTopicWhereInput>
   indicator?: Prisma.XOR<Prisma.DomainIndicatorScalarRelationFilter, Prisma.DomainIndicatorWhereInput>
   items?: Prisma.AssessmentItemListRelationFilter
@@ -318,8 +306,6 @@ export type QuestionBankItemOrderByWithRelationInput = {
   practiceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  validationStatus?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   topic?: Prisma.DomainTopicOrderByWithRelationInput
   indicator?: Prisma.DomainIndicatorOrderByWithRelationInput
   items?: Prisma.AssessmentItemOrderByRelationAggregateInput
@@ -347,8 +333,6 @@ export type QuestionBankItemWhereUniqueInput = Prisma.AtLeast<{
   practiceNumber?: Prisma.IntNullableFilter<"QuestionBankItem"> | number | null
   sourcePdf?: Prisma.StringFilter<"QuestionBankItem"> | string
   sourcePages?: Prisma.StringFilter<"QuestionBankItem"> | string
-  validationStatus?: Prisma.StringFilter<"QuestionBankItem"> | string
-  sourceData?: Prisma.JsonFilter<"QuestionBankItem">
   topic?: Prisma.XOR<Prisma.DomainTopicScalarRelationFilter, Prisma.DomainTopicWhereInput>
   indicator?: Prisma.XOR<Prisma.DomainIndicatorScalarRelationFilter, Prisma.DomainIndicatorWhereInput>
   items?: Prisma.AssessmentItemListRelationFilter
@@ -371,8 +355,6 @@ export type QuestionBankItemOrderByWithAggregationInput = {
   practiceNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  validationStatus?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
   _count?: Prisma.QuestionBankItemCountOrderByAggregateInput
   _avg?: Prisma.QuestionBankItemAvgOrderByAggregateInput
   _max?: Prisma.QuestionBankItemMaxOrderByAggregateInput
@@ -398,8 +380,6 @@ export type QuestionBankItemScalarWhereWithAggregatesInput = {
   practiceNumber?: Prisma.IntNullableWithAggregatesFilter<"QuestionBankItem"> | number | null
   sourcePdf?: Prisma.StringWithAggregatesFilter<"QuestionBankItem"> | string
   sourcePages?: Prisma.StringWithAggregatesFilter<"QuestionBankItem"> | string
-  validationStatus?: Prisma.StringWithAggregatesFilter<"QuestionBankItem"> | string
-  sourceData?: Prisma.JsonWithAggregatesFilter<"QuestionBankItem">
 }
 
 export type QuestionBankItemCreateInput = {
@@ -414,8 +394,6 @@ export type QuestionBankItemCreateInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
@@ -438,8 +416,6 @@ export type QuestionBankItemUncheckedCreateInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -456,8 +432,6 @@ export type QuestionBankItemUpdateInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
@@ -480,8 +454,6 @@ export type QuestionBankItemUncheckedUpdateInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -501,8 +473,6 @@ export type QuestionBankItemCreateManyInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemUpdateManyMutationInput = {
@@ -517,8 +487,6 @@ export type QuestionBankItemUpdateManyMutationInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemUncheckedUpdateManyInput = {
@@ -536,8 +504,6 @@ export type QuestionBankItemUncheckedUpdateManyInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemListRelationFilter = {
@@ -576,8 +542,6 @@ export type QuestionBankItemCountOrderByAggregateInput = {
   practiceNumber?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  validationStatus?: Prisma.SortOrder
-  sourceData?: Prisma.SortOrder
 }
 
 export type QuestionBankItemAvgOrderByAggregateInput = {
@@ -598,7 +562,6 @@ export type QuestionBankItemMaxOrderByAggregateInput = {
   practiceNumber?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  validationStatus?: Prisma.SortOrder
 }
 
 export type QuestionBankItemMinOrderByAggregateInput = {
@@ -615,7 +578,6 @@ export type QuestionBankItemMinOrderByAggregateInput = {
   practiceNumber?: Prisma.SortOrder
   sourcePdf?: Prisma.SortOrder
   sourcePages?: Prisma.SortOrder
-  validationStatus?: Prisma.SortOrder
 }
 
 export type QuestionBankItemSumOrderByAggregateInput = {
@@ -793,8 +755,6 @@ export type QuestionBankItemCreateWithoutCourseInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
@@ -815,8 +775,6 @@ export type QuestionBankItemUncheckedCreateWithoutCourseInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -865,8 +823,6 @@ export type QuestionBankItemScalarWhereInput = {
   practiceNumber?: Prisma.IntNullableFilter<"QuestionBankItem"> | number | null
   sourcePdf?: Prisma.StringFilter<"QuestionBankItem"> | string
   sourcePages?: Prisma.StringFilter<"QuestionBankItem"> | string
-  validationStatus?: Prisma.StringFilter<"QuestionBankItem"> | string
-  sourceData?: Prisma.JsonFilter<"QuestionBankItem">
 }
 
 export type QuestionBankItemCreateWithoutTopicInput = {
@@ -881,8 +837,6 @@ export type QuestionBankItemCreateWithoutTopicInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
   practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
@@ -903,8 +857,6 @@ export type QuestionBankItemUncheckedCreateWithoutTopicInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -947,8 +899,6 @@ export type QuestionBankItemCreateWithoutIndicatorInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
   practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
@@ -969,8 +919,6 @@ export type QuestionBankItemUncheckedCreateWithoutIndicatorInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
@@ -1013,8 +961,6 @@ export type QuestionBankItemCreateWithoutItemsInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   practiceSessions?: Prisma.PracticeSessionCreateNestedManyWithoutQuestionInput
@@ -1036,8 +982,6 @@ export type QuestionBankItemUncheckedCreateWithoutItemsInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   practiceSessions?: Prisma.PracticeSessionUncheckedCreateNestedManyWithoutQuestionInput
 }
 
@@ -1069,8 +1013,6 @@ export type QuestionBankItemUpdateWithoutItemsInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
@@ -1092,8 +1034,6 @@ export type QuestionBankItemUncheckedUpdateWithoutItemsInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1109,8 +1049,6 @@ export type QuestionBankItemCreateWithoutPracticeSessionsInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic: Prisma.DomainTopicCreateNestedOneWithoutQuestionsInput
   indicator: Prisma.DomainIndicatorCreateNestedOneWithoutQuestionsInput
   items?: Prisma.AssessmentItemCreateNestedManyWithoutQuestionInput
@@ -1132,8 +1070,6 @@ export type QuestionBankItemUncheckedCreateWithoutPracticeSessionsInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedCreateNestedManyWithoutQuestionInput
 }
 
@@ -1165,8 +1101,6 @@ export type QuestionBankItemUpdateWithoutPracticeSessionsInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
@@ -1188,8 +1122,6 @@ export type QuestionBankItemUncheckedUpdateWithoutPracticeSessionsInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
 }
 
@@ -1207,8 +1139,6 @@ export type QuestionBankItemCreateManyCourseInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemUpdateWithoutCourseInput = {
@@ -1223,8 +1153,6 @@ export type QuestionBankItemUpdateWithoutCourseInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
@@ -1245,8 +1173,6 @@ export type QuestionBankItemUncheckedUpdateWithoutCourseInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -1265,8 +1191,6 @@ export type QuestionBankItemUncheckedUpdateManyWithoutCourseInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemCreateManyTopicInput = {
@@ -1283,8 +1207,6 @@ export type QuestionBankItemCreateManyTopicInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemUpdateWithoutTopicInput = {
@@ -1299,8 +1221,6 @@ export type QuestionBankItemUpdateWithoutTopicInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   indicator?: Prisma.DomainIndicatorUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
   practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
@@ -1321,8 +1241,6 @@ export type QuestionBankItemUncheckedUpdateWithoutTopicInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -1341,8 +1259,6 @@ export type QuestionBankItemUncheckedUpdateManyWithoutTopicInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemCreateManyIndicatorInput = {
@@ -1359,8 +1275,6 @@ export type QuestionBankItemCreateManyIndicatorInput = {
   practiceNumber?: number | null
   sourcePdf: string
   sourcePages: string
-  validationStatus: string
-  sourceData: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 export type QuestionBankItemUpdateWithoutIndicatorInput = {
@@ -1375,8 +1289,6 @@ export type QuestionBankItemUpdateWithoutIndicatorInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   topic?: Prisma.DomainTopicUpdateOneRequiredWithoutQuestionsNestedInput
   items?: Prisma.AssessmentItemUpdateManyWithoutQuestionNestedInput
   practiceSessions?: Prisma.PracticeSessionUpdateManyWithoutQuestionNestedInput
@@ -1397,8 +1309,6 @@ export type QuestionBankItemUncheckedUpdateWithoutIndicatorInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
   items?: Prisma.AssessmentItemUncheckedUpdateManyWithoutQuestionNestedInput
   practiceSessions?: Prisma.PracticeSessionUncheckedUpdateManyWithoutQuestionNestedInput
 }
@@ -1417,8 +1327,6 @@ export type QuestionBankItemUncheckedUpdateManyWithoutIndicatorInput = {
   practiceNumber?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   sourcePdf?: Prisma.StringFieldUpdateOperationsInput | string
   sourcePages?: Prisma.StringFieldUpdateOperationsInput | string
-  validationStatus?: Prisma.StringFieldUpdateOperationsInput | string
-  sourceData?: Prisma.JsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -1476,8 +1384,6 @@ export type QuestionBankItemSelect<ExtArgs extends runtime.Types.Extensions.Inte
   practiceNumber?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  validationStatus?: boolean
-  sourceData?: boolean
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   indicator?: boolean | Prisma.DomainIndicatorDefaultArgs<ExtArgs>
   items?: boolean | Prisma.QuestionBankItem$itemsArgs<ExtArgs>
@@ -1501,8 +1407,6 @@ export type QuestionBankItemSelectCreateManyAndReturn<ExtArgs extends runtime.Ty
   practiceNumber?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  validationStatus?: boolean
-  sourceData?: boolean
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   indicator?: boolean | Prisma.DomainIndicatorDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -1523,8 +1427,6 @@ export type QuestionBankItemSelectUpdateManyAndReturn<ExtArgs extends runtime.Ty
   practiceNumber?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  validationStatus?: boolean
-  sourceData?: boolean
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   indicator?: boolean | Prisma.DomainIndicatorDefaultArgs<ExtArgs>
   course?: boolean | Prisma.CourseDefaultArgs<ExtArgs>
@@ -1545,11 +1447,9 @@ export type QuestionBankItemSelectScalar = {
   practiceNumber?: boolean
   sourcePdf?: boolean
   sourcePages?: boolean
-  validationStatus?: boolean
-  sourceData?: boolean
 }
 
-export type QuestionBankItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "courseId" | "topicId" | "indicatorId" | "kind" | "question" | "options" | "correctOption" | "explanation" | "cognitiveLevel" | "practiceNumber" | "sourcePdf" | "sourcePages" | "validationStatus" | "sourceData", ExtArgs["result"]["questionBankItem"]>
+export type QuestionBankItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "code" | "courseId" | "topicId" | "indicatorId" | "kind" | "question" | "options" | "correctOption" | "explanation" | "cognitiveLevel" | "practiceNumber" | "sourcePdf" | "sourcePages", ExtArgs["result"]["questionBankItem"]>
 export type QuestionBankItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   topic?: boolean | Prisma.DomainTopicDefaultArgs<ExtArgs>
   indicator?: boolean | Prisma.DomainIndicatorDefaultArgs<ExtArgs>
@@ -1593,8 +1493,6 @@ export type $QuestionBankItemPayload<ExtArgs extends runtime.Types.Extensions.In
     practiceNumber: number | null
     sourcePdf: string
     sourcePages: string
-    validationStatus: string
-    sourceData: runtime.JsonValue
   }, ExtArgs["result"]["questionBankItem"]>
   composites: {}
 }
@@ -2037,8 +1935,6 @@ export interface QuestionBankItemFieldRefs {
   readonly practiceNumber: Prisma.FieldRef<"QuestionBankItem", 'Int'>
   readonly sourcePdf: Prisma.FieldRef<"QuestionBankItem", 'String'>
   readonly sourcePages: Prisma.FieldRef<"QuestionBankItem", 'String'>
-  readonly validationStatus: Prisma.FieldRef<"QuestionBankItem", 'String'>
-  readonly sourceData: Prisma.FieldRef<"QuestionBankItem", 'Json'>
 }
     
 
