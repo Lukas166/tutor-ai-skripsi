@@ -28,6 +28,7 @@ export default function MahasiswaCourseDetailPage() {
   const [sessions, setSessions] = useState<SessionItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingSessions, setLoadingSessions] = useState(true);
+  const [tutorAllowed, setTutorAllowed] = useState(false);
 
   const fetchCourse = useCallback(() => {
     setLoading(true);
@@ -201,7 +202,7 @@ export default function MahasiswaCourseDetailPage() {
         )}
       </div>
 
-      <CourseAssessmentCard courseId={courseId} />
+      <CourseAssessmentCard courseId={courseId} onTutorAccessChange={setTutorAllowed} />
 
       <div id="materi" className="flex flex-col gap-5">
         <div>
@@ -236,7 +237,7 @@ export default function MahasiswaCourseDetailPage() {
         )}
       </div>
 
-      <TutorFloatingButton href={`/courses/${courseId}/tutor`} />
+      {tutorAllowed && <TutorFloatingButton href={`/courses/${courseId}/tutor`} />}
     </div>
   );
 }

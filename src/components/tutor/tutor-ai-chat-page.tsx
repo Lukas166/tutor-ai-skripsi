@@ -52,7 +52,6 @@ import type { TutorAiChatPageProps } from "./tutor-chat-types";
 import { useTutorChat } from "./hooks/use-tutor-chat";
 import { useTutorSpeech } from "./hooks/use-tutor-speech";
 import Link from "next/link";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { TutorPracticeCard, practiceIdFrom } from "./tutor-practice-card";
 
 const CHAT_INPUT_MIN_HEIGHT = 44;
@@ -345,6 +344,23 @@ export function TutorAiChatPage({
     );
   }
 
+  if (overview?.pretestRequired) {
+    return (
+      <main className="flex min-h-svh items-center justify-center bg-background px-6 py-12">
+        <div className="max-w-lg space-y-5 text-center">
+          <p className="text-sm text-muted-foreground">{overview.course.title}</p>
+          <h1 className="text-3xl font-semibold tracking-tight">Mulai dari pre-test</h1>
+          <p className="leading-relaxed text-muted-foreground">
+            Selesaikan pre-test terlebih dahulu agar AI Tutor dapat menyesuaikan pembelajaran dengan hasil awal Anda.
+          </p>
+          <Button asChild variant="brand">
+            <Link href={`/mahasiswa/courses/${courseId}/student-profile`}>Lihat panduan pre-test</Link>
+          </Button>
+        </div>
+      </main>
+    );
+  }
+
   return (
     <div className="flex h-svh overflow-hidden bg-background">
       {/* ==================== SIDEBAR ==================== */}
@@ -443,10 +459,6 @@ export function TutorAiChatPage({
             </TooltipContent>
           </Tooltip>
         </header>
-        {overview?.pretestRequired && <Alert><AlertTitle>Mulai dengan pre-test</AlertTitle><AlertDescription>
-          Profil awal diperlukan agar tutor menyesuaikan bantuan.
-          <Button asChild size="sm"><Link href={`/mahasiswa/courses/${courseId}/pretest`}>Kerjakan Pre-test</Link></Button>
-        </AlertDescription></Alert>}
         {panelMode === "avatar" && latestPracticeId && <Button variant="outline" className="mx-5 self-start" onClick={() => setPracticeOpen(true)}>Buka Latihan Konsep</Button>}
 
         {/* Messages area */}

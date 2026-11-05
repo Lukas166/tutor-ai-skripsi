@@ -7,7 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { assessmentRequest, type AssessmentOverview } from "./types";
 
-export function CourseAssessmentCard({ courseId }: { courseId: string }) {
+export function CourseAssessmentCard({
+  courseId,
+  onTutorAccessChange,
+}: {
+  courseId: string;
+  onTutorAccessChange?: (allowed: boolean) => void;
+}) {
   const [overview, setOverview] = useState<AssessmentOverview | null>(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -22,10 +28,14 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
         if (active) {
           setOverview(data);
           setError("");
+          onTutorAccessChange?.(!data.available || data.status === "SUBMITTED");
         }
       })
       .catch((cause) => {
-        if (active) setError(cause.message);
+        if (active) {
+          setError(cause.message);
+          onTutorAccessChange?.(false);
+        }
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -33,7 +43,7 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
     return () => {
       active = false;
     };
-  }, [courseId, retryCount]);
+  }, [courseId, retryCount, onTutorAccessChange]);
 
   if (!loading && !error && !overview?.available) return null;
 
@@ -112,8 +122,8 @@ export function CourseAssessmentCard({ courseId }: { courseId: string }) {
               </>
             ) : (
               <Button asChild variant="brand">
-                <Link href={`/mahasiswa/courses/${courseId}/pretest`}>
-                  {inProgress ? "Lanjutkan Pre-test" : "Mulai Pre-test"}
+                <Link href={`/mahasiswa/courses/${courseId}/${inProgress ? "pretest" : "student-profile"}`}>
+                  {inProgress ? "Lanjutkan Pre-test" : "Lihat Panduan Pre-test"}
                   <ArrowRight data-icon="inline-end" />
                 </Link>
               </Button>

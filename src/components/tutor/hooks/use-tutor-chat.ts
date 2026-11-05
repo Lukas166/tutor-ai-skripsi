@@ -152,7 +152,7 @@ export function useTutorChat({
       setOverview(data);
       setChatSessions(data.chatSessions);
 
-      if (initialSessionId && activeSessionIdRef.current !== initialSessionId) {
+      if (!data.pretestRequired && initialSessionId && activeSessionIdRef.current !== initialSessionId) {
         void loadSession(initialSessionId);
       }
     } catch (err) {

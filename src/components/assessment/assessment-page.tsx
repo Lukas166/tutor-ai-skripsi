@@ -7,7 +7,6 @@ import {
   ArrowLeft,
   ArrowRight,
   Check,
-  ClipboardList,
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -16,16 +15,20 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
-import { assessmentRequest, type Attempt, type Option } from "./types";
+import { assessmentDeadline, clearAssessmentDeadline, formatAssessmentTime } from "@/lib/assessment/timer";
+import { AssessmentGuide } from "./assessment-guide";
+import { assessmentRequest, type AssessmentOverview, type Attempt, type Option } from "./types";
 
 const OPTIONS: Option[] = ["A", "B", "C", "D"];
 
 export function AssessmentPage({
   courseId,
   kind = "pretest",
+  autoStart = false,
 }: {
   courseId: string;
   kind?: "pretest" | "posttest";
+  autoStart?: boolean;
 }) {
   const router = useRouter();
   const label = kind === "posttest" ? "Post-test" : "Pre-test";
@@ -40,8 +43,11 @@ export function AssessmentPage({
   const [saveError, setSaveError] = useState("");
   const [saving, setSaving] = useState(0);
   const [index, setIndex] = useState(0);
+  const [questionCount, setQuestionCount] = useState(0);
+  const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
   const queue = useRef<Promise<void>>(Promise.resolve());
   const pending = useRef<Record<string, Option | null>>({});
+  const expirationSubmitted = useRef(false);
 
   const persistLocal = useCallback((id: string) => {
     try {
@@ -83,10 +89,20 @@ export function AssessmentPage({
   const acceptAttempt = useCallback(
     (data: Attempt | null) => {
       if (data?.status === "SUBMITTED") {
+        clearAssessmentDeadline(kind, data.id);
+        try {
+          localStorage.removeItem(`pretest:${data.id}`);
+        } catch {
+          // Hasil permanen sudah tersimpan di backend.
+        }
         router.replace(resultUrl);
         return;
       }
       if (data) {
+        if (data.remainingSeconds === 0) {
+          setAttempt(data);
+          return;
+        }
         let local: Record<string, Option | null> = {};
         try {
           local = JSON.parse(
@@ -115,14 +131,24 @@ export function AssessmentPage({
       }
       setAttempt(data);
     },
-    [resultUrl, router, save],
+    [kind, resultUrl, router, save],
   );
 
   useEffect(() => {
     let active = true;
-    assessmentRequest<Attempt | null>(url)
-      .then((data) => {
-        if (active) acceptAttempt(data);
+    Promise.all([
+      assessmentRequest<Attempt | null>(url),
+      assessmentRequest<AssessmentOverview>(`/api/mahasiswa/courses/${courseId}/assessment`),
+    ])
+      .then(async ([current, overview]) => {
+        if (!active) return;
+        const data = autoStart && !current
+          ? await assessmentRequest<Attempt>(url, "POST")
+          : current;
+        if (active) {
+          setQuestionCount(overview.totalQuestions);
+          acceptAttempt(data);
+        }
       })
       .catch((cause) => {
         if (active) setError(cause.message);
@@ -133,7 +159,19 @@ export function AssessmentPage({
     return () => {
       active = false;
     };
-  }, [url, acceptAttempt]);
+  }, [url, courseId, autoStart, acceptAttempt]);
+
+  useEffect(() => {
+    if (!attempt || attempt.status !== "IN_PROGRESS") return;
+    expirationSubmitted.current = false;
+    const deadline = assessmentDeadline(kind, attempt.id, attempt.remainingSeconds);
+    const update = () => {
+      setRemainingSeconds(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
+    };
+    update();
+    const interval = window.setInterval(update, 1000);
+    return () => window.clearInterval(interval);
+  }, [attempt?.id, attempt?.remainingSeconds, kind]);
 
   async function start() {
     setBusy(true);
@@ -151,11 +189,11 @@ export function AssessmentPage({
     }
   }
 
-  async function submit() {
-    if (!attempt || attempt.questions.some((item) => !item.selectedOption)) return;
+  const submit = useCallback(async (timedOut = false) => {
+    if (!attempt || (!timedOut && attempt.questions.some((item) => !item.selectedOption))) return;
     setBusy(true);
     await queue.current;
-    if (Object.keys(pending.current).length) {
+    if (!timedOut && Object.keys(pending.current).length) {
       setBusy(false);
       toast.error("Simpan seluruh draf sebelum mengirim.");
       return;
@@ -169,16 +207,21 @@ export function AssessmentPage({
       } catch {
         /* Hasil permanen sudah disimpan backend. */
       }
+      clearAssessmentDeadline(kind, attempt.id);
       router.replace(resultUrl);
     } catch (cause) {
-      toast.error(
-        cause instanceof Error
-          ? cause.message
-          : "Pengiriman gagal. Silakan coba lagi.",
-      );
+      const message = cause instanceof Error ? cause.message : "Pengiriman gagal. Silakan coba lagi.";
+      setError(message);
+      toast.error(message);
       setBusy(false);
     }
-  }
+  }, [attempt, kind, resultUrl, router, url]);
+
+  useEffect(() => {
+    if (remainingSeconds !== 0 || !attempt || busy || expirationSubmitted.current) return;
+    expirationSubmitted.current = true;
+    void submit(true);
+  }, [remainingSeconds, attempt, busy, submit]);
 
   if (loading) {
     return (
@@ -204,41 +247,39 @@ export function AssessmentPage({
         </Link>
       </Button>
 
-      <div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-3xl font-bold tracking-tight">{label}</h1>
+        {attempt && remainingSeconds !== null && (
+          <p role="timer" className={cn("text-sm tabular-nums", remainingSeconds <= 60 && "text-destructive")}>
+            {remainingSeconds === 0 ? "Waktu habis" : "Waktu tersisa"}{" "}
+            <span className="font-semibold">{formatAssessmentTime(remainingSeconds)}</span>
+          </p>
+        )}
       </div>
 
       {error && (
         <Alert variant="destructive">
-          <AlertTitle>{label} belum dapat dibuka</AlertTitle>
+          <AlertTitle>{attempt ? "Hasil belum terkirim" : `${label} belum dapat dibuka`}</AlertTitle>
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
 
-      {!attempt ? (
-        <section className="overflow-hidden rounded-xl border border-border/70 bg-card shadow-sm">
-          <div className="flex flex-col gap-5 p-6">
-            <div className="flex items-center gap-3">
-              <span className="flex size-10 items-center justify-center rounded-lg bg-brand/10 text-brand">
-                <ClipboardList className="size-5" />
-              </span>
-              <h2 className="text-xl font-bold">Sebelum mulai</h2>
-            </div>
-            <p className="max-w-3xl leading-relaxed text-muted-foreground">
-              Pilih satu jawaban per soal. Jawaban tersimpan otomatis dan tidak
-              dapat diubah setelah dikirim.
-            </p>
+      {!attempt ? questionCount > 0 && (
+        <AssessmentGuide
+          kind={kind}
+          questionCount={questionCount}
+          action={
             <Button variant="brand" className="self-start" onClick={start} disabled={busy}>
               {busy && <Loader2 className="animate-spin" />}
               Mulai {label}
               <ArrowRight data-icon="inline-end" />
             </Button>
-          </div>
-        </section>
+          }
+        />
       ) : (
         question && (
           <>
-            {saveError && (
+            {saveError && remainingSeconds !== 0 && (
               <Alert variant="destructive">
                 <AlertTitle>Jawaban belum tersimpan</AlertTitle>
                 <AlertDescription className="flex flex-col gap-3">
@@ -275,7 +316,7 @@ export function AssessmentPage({
                         "text-destructive hover:bg-destructive/10 hover:text-destructive",
                         !question.selectedOption && "invisible",
                       )}
-                      disabled={busy || !question.selectedOption}
+                      disabled={busy || remainingSeconds === 0 || !question.selectedOption}
                       aria-hidden={!question.selectedOption}
                       onClick={() => {
                         setAttempt((current) =>
@@ -319,7 +360,7 @@ export function AssessmentPage({
                       save(attempt.id, question.id, option);
                     }}
                     aria-label={`Jawaban soal ${index + 1}`}
-                    disabled={busy}
+                    disabled={busy || remainingSeconds === 0}
                   >
                     {OPTIONS.filter((option) => question.options[option]).map(
                       (option) => {
@@ -350,7 +391,7 @@ export function AssessmentPage({
                 <div className="mt-8 flex justify-between gap-3">
                   <Button
                     variant="outline"
-                    disabled={index === 0 || busy}
+                    disabled={index === 0 || busy || remainingSeconds === 0}
                     onClick={() => setIndex(index - 1)}
                   >
                     <ArrowLeft data-icon="inline-start" />
@@ -358,7 +399,7 @@ export function AssessmentPage({
                   </Button>
                   <Button
                     variant="outline"
-                    disabled={index === attempt.questions.length - 1 || busy}
+                    disabled={index === attempt.questions.length - 1 || busy || remainingSeconds === 0}
                     onClick={() => setIndex(index + 1)}
                   >
                     Berikutnya
@@ -391,7 +432,7 @@ export function AssessmentPage({
                         aria-label={`Soal ${position + 1}${item.selectedOption ? ", sudah dijawab" : ", belum dijawab"}`}
                         aria-current={position === index ? "step" : undefined}
                         onClick={() => setIndex(position)}
-                        disabled={busy}
+                        disabled={busy || remainingSeconds === 0}
                       >
                         {position + 1}
                       </Button>
@@ -412,15 +453,15 @@ export function AssessmentPage({
                   <Button
                     variant="brand"
                     className="w-full"
-                    disabled={!allAnswered || busy}
-                    onClick={submit}
+                    disabled={(!allAnswered && remainingSeconds !== 0) || busy}
+                    onClick={() => void submit(remainingSeconds === 0)}
                   >
                     {busy ? (
                       <Loader2 data-icon="inline-start" className="animate-spin" />
                     ) : (
                       <Check data-icon="inline-start" />
                     )}
-                    {busy ? "Mengirim…" : "Kirim Jawaban"}
+                    {busy ? "Mengirim…" : remainingSeconds === 0 ? "Kirim Hasil" : "Kirim Jawaban"}
                   </Button>
                 </div>
               </aside>

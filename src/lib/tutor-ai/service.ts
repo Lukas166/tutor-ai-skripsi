@@ -145,7 +145,7 @@ function toReadyMaterial(material: {
   };
 }
 
-async function getTutorAccess(courseId: string, userId: string) {
+async function getTutorAccess(courseId: string, userId: string, allowPretest = false) {
   const user = await prisma.user.findUnique({
     where: { id: userId },
     select: { id: true, name: true, role: true, academicLevel: true },
@@ -177,7 +177,15 @@ async function getTutorAccess(courseId: string, userId: string) {
     throw new TutorAiServiceError("Course tidak ditemukan atau Anda belum enroll.", 404);
   }
 
+  if (!allowPretest && await needsPretest(courseId, userId)) {
+    throw new TutorAiServiceError("Selesaikan pre-test sebelum membuka AI Tutor.", 409);
+  }
+
   return { user: user as TutorUser, course };
+}
+
+export async function requireTutorCourseAccess(courseId: string, userId: string) {
+  await getTutorAccess(courseId, userId);
 }
 
 async function listReadyMaterialsForCourse(courseId: string) {
@@ -543,11 +551,16 @@ async function createAiMessage(input: {
 }
 
 export async function getTutorOverview(courseId: string, userId: string) {
-  const { user, course } = await getTutorAccess(courseId, userId);
-  const [readyMaterials, chatSessions] = await Promise.all([
-    listReadyMaterialsForCourse(courseId),
-    listTutorChatSessions(courseId, userId),
-  ]);
+  const { user, course } = await getTutorAccess(courseId, userId, true);
+  const pretestRequired = await needsPretest(courseId, userId);
+  let readyMaterials: Awaited<ReturnType<typeof listReadyMaterialsForCourse>> = [];
+  let chatSessions: Awaited<ReturnType<typeof listTutorChatSessions>> = [];
+  if (!pretestRequired) {
+    [readyMaterials, chatSessions] = await Promise.all([
+      listReadyMaterialsForCourse(courseId),
+      listTutorChatSessions(courseId, userId),
+    ]);
+  }
 
   return {
     course,
@@ -559,7 +572,7 @@ export async function getTutorOverview(courseId: string, userId: string) {
     },
     readyMaterials,
     chatSessions,
-    pretestRequired: await needsPretest(courseId, userId),
+    pretestRequired,
   };
 }
 

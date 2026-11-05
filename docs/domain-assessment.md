@@ -75,12 +75,18 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 1. Jalankan ulang `pnpm dev` setelah perubahan backend Python ini. Next.js dan API
    Python menggunakan konfigurasi URL, port, serta token yang sudah ada.
 2. Login sebagai mahasiswa yang memiliki enrollment aktif pada course tujuan.
-3. Buka mata kuliah, lalu pilih **Mulai Pre-test**.
+3. Buka mata kuliah dan baca panduan pre-test sebelum memilih **Mulai Pre-test**.
 4. Pilih satu dari opsi yang tersedia untuk setiap soal. Jawaban tersimpan otomatis ke
    database; draf yang belum terkonfirmasi juga dipertahankan pada perangkat.
 5. Setelah semua jawaban terisi, pilih **Kirim Jawaban**.
+   Pre-test dan post-test masing-masing berdurasi 15 menit. Tenggat disimpan pada
+   `localStorage` berdasarkan waktu mulai sesi. Saat waktu habis atau halaman dibuka
+   kembali setelah tenggat, jawaban tersimpan dinilai dan soal kosong dihitung salah.
+   Backend juga menolak perubahan
+   jawaban setelah tenggat, tanpa perubahan skema database.
 6. Setelah dikirim, Profil Belajar langsung menampilkan skor pre-test, ringkasan
-   materi dan indikator, serta akses ke materi dan AI Tutor.
+   materi dan indikator, serta akses ke materi dan AI Tutor. AI Tutor tidak dapat
+   dibuka sebelum pre-test selesai.
 7. Pilih **Buka AI Tutor**. Atur PDF melalui Context Materi; pilihan
    satu materi membatasi retrieval ke PDF tersebut, pilihan semua materi tetap
    dibatasi course yang diakses. Tanyakan konsep spesifik, misalnya pengumpulan data.

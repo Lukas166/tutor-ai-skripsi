@@ -7,6 +7,7 @@ export type Attempt = {
   correctCount: number | null;
   totalQuestions: number;
   percentage: number | null;
+  remainingSeconds: number;
   questions: {
     id: string;
     number: number;
@@ -31,6 +32,7 @@ export type AssessmentOverview = {
 export type StudentProfile = {
   course: { id: string; title: string };
   attempt: Attempt | null;
+  totalQuestions: number;
   assessedCount: number;
   positiveCount: number;
   reinforcementCount: number;

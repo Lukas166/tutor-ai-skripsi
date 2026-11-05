@@ -1,3 +1,5 @@
+from datetime import UTC, datetime, timedelta
+from math import ceil
 from typing import Any
 from uuid import uuid4
 
@@ -7,6 +9,8 @@ from psycopg.types.json import Jsonb
 
 from tutor_rag.assessment.scoring import POSITIVE, REINFORCEMENT, grade_responses, has_four_options
 from tutor_rag.learning.profile import operational_status
+
+ASSESSMENT_DURATION = timedelta(minutes=15)
 
 
 class AssessmentService:
@@ -45,6 +49,18 @@ class AssessmentService:
             "AND kind=%s" + (" FOR UPDATE" if locked else ""),
             (self.student_id, self.course_id, self.kind),
         ).fetchone()
+
+    @staticmethod
+    def remaining_seconds(attempt: dict) -> int:
+        started_at = attempt["startedAt"]
+        if started_at.tzinfo is None:
+            started_at = started_at.replace(tzinfo=UTC)
+        remaining = (started_at + ASSESSMENT_DURATION) - datetime.now(UTC)
+        return max(0, ceil(remaining.total_seconds()))
+
+    @classmethod
+    def time_expired(cls, attempt: dict) -> bool:
+        return cls.remaining_seconds(attempt) == 0
 
     def overview(self) -> dict:
         self.require_access()
@@ -123,6 +139,9 @@ class AssessmentService:
                 "percentage",
             ]
         }
+        result["remainingSeconds"] = (
+            self.remaining_seconds(attempt) if attempt["status"] == "IN_PROGRESS" else 0
+        )
         result["questions"] = []
         if attempt["status"] == "IN_PROGRESS":
             items = self.connection.execute(
@@ -216,6 +235,8 @@ class AssessmentService:
             attempt = self.owned_attempt(attempt_id)
             if attempt["status"] != "IN_PROGRESS":
                 raise HTTPException(409, "Pre-test sudah difinalisasi dan tidak dapat diubah.")
+            if self.time_expired(attempt):
+                raise HTTPException(409, "Waktu pengerjaan habis. Kirim hasil untuk melihat nilai.")
             row = self.connection.execute(
                 'SELECT "questionSnapshot" FROM assessment_item '
                 'WHERE "attemptId"=%s AND "questionId"=%s',
@@ -248,7 +269,11 @@ class AssessmentService:
                 (attempt_id,),
             ).fetchall()
             try:
-                correct, percentage, scores = grade_responses(items, attempt["totalQuestions"])
+                correct, percentage, scores = grade_responses(
+                    items,
+                    attempt["totalQuestions"],
+                    allow_unanswered=self.time_expired(attempt),
+                )
             except ValueError as error:
                 raise HTTPException(409, str(error)) from None
             for item, score in zip(items, scores, strict=True):
@@ -330,6 +355,7 @@ class AssessmentService:
         return {
             "course": course,
             "attempt": self.public_attempt(attempt) if attempt else None,
+            "totalQuestions": config["pretestQuestionCount"],
             "topics": topics,
             "assessedCount": sum(r["initialScore"] is not None for r in rows),
             "positiveCount": sum(int(r["initialScore"] or 0) for r in rows),

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Groq from "groq-sdk";
 import { requireTutorUser, tutorErrorResponse } from "@/lib/tutor-ai/route-helpers";
+import { requireTutorCourseAccess } from "@/lib/tutor-ai/service";
 
 const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25MB (Groq free tier limit)
 
@@ -24,10 +25,10 @@ export async function POST(request: NextRequest, context: TranscribeRouteContext
   const { userId, error } = await requireTutorUser(request);
   if (error) return error;
 
-  // courseId available for future logging/analytics
-  await context.params;
+  const { courseId } = await context.params;
 
   try {
+    await requireTutorCourseAccess(courseId, userId!);
     const formData = await request.formData();
     const file = formData.get("file");
 

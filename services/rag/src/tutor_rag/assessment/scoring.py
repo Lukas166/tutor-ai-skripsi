@@ -10,7 +10,9 @@ def has_four_options(question: dict) -> bool:
     )
 
 
-def grade_responses(items: list[dict], expected_total: int) -> tuple[int, float, list[int]]:
+def grade_responses(
+    items: list[dict], expected_total: int, *, allow_unanswered: bool = False
+) -> tuple[int, float, list[int]]:
     # Penilaian deterministik, tanpa LLM dan tanpa menerima nilai/kunci dari browser.
     if (
         expected_total <= 0
@@ -20,7 +22,11 @@ def grade_responses(items: list[dict], expected_total: int) -> tuple[int, float,
         raise ValueError("Paket pre-test harus mencakup satu soal per indikator.")
     if any(not has_four_options(item["questionSnapshot"]) for item in items):
         raise ValueError("Paket soal lama perlu diperbarui menjadi empat opsi A-D.")
-    if any(item["selectedOption"] not in QUESTION_OPTIONS for item in items):
+    if any(
+        item["selectedOption"] not in QUESTION_OPTIONS
+        and not (allow_unanswered and item["selectedOption"] is None)
+        for item in items
+    ):
         raise ValueError("Lengkapi seluruh jawaban sebelum mengirim.")
     scores = [int(i["selectedOption"] == i["questionSnapshot"]["correctOption"]) for i in items]
     correct = sum(scores)

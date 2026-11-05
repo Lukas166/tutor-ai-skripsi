@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { assessmentRequest, type StudentProfile } from "./types";
+import { AssessmentGuide } from "./assessment-guide";
 
 const statusLabels = {
   NOT_ASSESSED: "Belum dinilai",
@@ -263,7 +264,9 @@ export function StudentProfilePage({ courseId }: { courseId: string }) {
           <p className="mb-2 text-sm font-medium text-muted-foreground">
             {profile.course.title}
           </p>
-          <h1 className="text-3xl font-bold tracking-tight">Profil Belajar</h1>
+          <h1 className="text-3xl font-bold tracking-tight">
+            {completed ? "Profil Belajar" : "Panduan Pre-test"}
+          </h1>
         </div>
         {completed && (
           <Button asChild variant="brand" className="self-start sm:self-auto">
@@ -276,16 +279,22 @@ export function StudentProfilePage({ courseId }: { courseId: string }) {
       </header>
 
       {!completed ? (
-        <section className="flex flex-col items-start gap-5 rounded-xl border border-border/70 bg-card p-6 shadow-sm">
-          <h2 className="text-xl font-bold">Profil belum tersedia</h2>
-          <p>Selesaikan pre-test untuk melihat peta kemampuan awal Anda.</p>
-          <Button asChild variant="brand">
-            <Link href={"/mahasiswa/courses/" + courseId + "/pretest"}>
-              {profile.attempt ? "Lanjutkan Pre-test" : "Mulai Pre-test"}
-              <ArrowRight data-icon="inline-end" />
-            </Link>
-          </Button>
-        </section>
+        <AssessmentGuide
+          kind="pretest"
+          questionCount={profile.totalQuestions}
+          inProgress={profile.attempt?.status === "IN_PROGRESS"}
+          action={
+            <Button asChild variant="brand">
+              <Link href={
+                "/mahasiswa/courses/" + courseId + "/pretest" +
+                (profile.attempt ? "" : "?start=1")
+              }>
+                {profile.attempt ? "Lanjutkan Pre-test" : "Mulai Pre-test"}
+                <ArrowRight data-icon="inline-end" />
+              </Link>
+            </Button>
+          }
+        />
       ) : (
         <ProfileSummary profile={profile} />
       )}

@@ -3,6 +3,7 @@ import { ElevenLabsClient, type ElevenLabs } from "@elevenlabs/elevenlabs-js";
 import { z } from "zod/v4";
 
 import { requireTutorUser, tutorErrorResponse } from "@/lib/tutor-ai/route-helpers";
+import { requireTutorCourseAccess } from "@/lib/tutor-ai/service";
 
 type TutorTtsRouteContext = {
   params: Promise<{ courseId: string }>;
@@ -43,10 +44,10 @@ function getElevenLabsOutputFormat(): ElevenLabs.TextToSpeechConvertRequestOutpu
 }
 
 export async function POST(request: NextRequest, context: TutorTtsRouteContext) {
-  const { error } = await requireTutorUser(request);
+  const { userId, error } = await requireTutorUser(request);
   if (error) return error;
 
-  await context.params;
+  const { courseId } = await context.params;
 
   const parsed = ttsSchema.safeParse(await readJsonBody(request));
   if (!parsed.success) {
@@ -54,6 +55,7 @@ export async function POST(request: NextRequest, context: TutorTtsRouteContext) 
   }
 
   try {
+    await requireTutorCourseAccess(courseId, userId!);
     const client = getElevenLabsClient();
     const audio = await client.textToSpeech.convert(
       process.env.ELEVENLABS_VOICE_ID || DEFAULT_ELEVENLABS_VOICE_ID,
