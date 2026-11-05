@@ -16,6 +16,22 @@ export type Attempt = {
     selectedOption: Option | null;
   }[];
 };
+export type AssessmentReview = {
+  kind: "PRE" | "POST";
+  totalQuestions: number;
+  correctCount: number;
+  answersRevealed: boolean;
+  questions: {
+    number: number;
+    question: string;
+    options: Record<Option, string>;
+    selectedOption: Option | null;
+    isCorrect: boolean;
+    correctOption: Option | null;
+    explanation: string | null;
+    topicTitle: string;
+  }[];
+};
 export type AssessmentOverview = {
   available: boolean;
   status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED";

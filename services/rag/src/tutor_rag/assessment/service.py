@@ -361,3 +361,52 @@ class AssessmentService:
             "positiveCount": sum(int(r["initialScore"] or 0) for r in rows),
             "reinforcementCount": sum(r["initialStatus"] == REINFORCEMENT for r in rows),
         }
+
+    def review(self) -> dict:
+        self.require_access()
+        attempt = self.attempt()
+        if attempt is None or attempt["status"] != "SUBMITTED":
+            raise HTTPException(409, "Selesaikan tes sebelum meninjau jawaban.")
+
+        posttest = self.connection.execute(
+            'SELECT id FROM assessment_attempt WHERE "studentId"=%s '
+            'AND "courseId"=%s AND kind=\'POST\' AND status=\'SUBMITTED\'',
+            (self.student_id, self.course_id),
+        ).fetchone()
+        answers_revealed = posttest is not None
+        items = self.connection.execute(
+            'SELECT a."orderNumber",a."selectedOption",a."isCorrect",'
+            'a."questionSnapshot",t.title AS "topicTitle" FROM assessment_item a '
+            'JOIN domain_indicator i ON i.id=a."indicatorId" '
+            'JOIN domain_topic t ON t.id=i."topicId" '
+            'WHERE a."attemptId"=%s ORDER BY a."orderNumber"',
+            (attempt["id"],),
+        ).fetchall()
+        if any(not has_four_options(item["questionSnapshot"]) for item in items):
+            raise HTTPException(409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D.")
+
+        return {
+            "kind": self.kind,
+            "totalQuestions": attempt["totalQuestions"],
+            "correctCount": attempt["correctCount"],
+            "answersRevealed": answers_revealed,
+            "questions": [
+                {
+                    "number": item["orderNumber"],
+                    "question": item["questionSnapshot"]["question"],
+                    "options": item["questionSnapshot"]["options"],
+                    "selectedOption": item["selectedOption"],
+                    "isCorrect": item["isCorrect"],
+                    "correctOption": (
+                        item["questionSnapshot"]["correctOption"]
+                        if answers_revealed else None
+                    ),
+                    "explanation": (
+                        item["questionSnapshot"]["explanation"]
+                        if answers_revealed else None
+                    ),
+                    "topicTitle": item["topicTitle"],
+                }
+                for item in items
+            ],
+        }

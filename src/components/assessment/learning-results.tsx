@@ -181,6 +181,12 @@ export function LearningResults({ courseId }: { courseId: string }) {
           </section>
 
           <div className="flex flex-wrap gap-3">
+            <Button asChild variant="outline">
+              <Link href={`/mahasiswa/courses/${courseId}/posttest/review`}>
+                Tinjau jawaban post-test
+                <ArrowRight data-icon="inline-end" />
+              </Link>
+            </Button>
             <Button asChild variant="brand">
               <Link href={"/courses/" + courseId + "/tutor"}>
                 <MessageCircle data-icon="inline-start" />

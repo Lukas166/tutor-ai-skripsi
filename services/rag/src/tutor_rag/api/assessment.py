@@ -46,6 +46,7 @@ def assessment(
         "save",
         "submit",
         "profile",
+        "review",
         "comparison",
         "practice-current",
         "practice-accept",

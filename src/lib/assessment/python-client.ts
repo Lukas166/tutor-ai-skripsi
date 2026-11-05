@@ -3,7 +3,7 @@ import { requireMahasiswa } from "@/lib/api-utils";
 import prisma from "@/lib/prisma";
 
 type Operation =
-  "overview" | "current" | "start" | "save" | "submit" | "profile";
+  "overview" | "current" | "start" | "save" | "submit" | "profile" | "review";
 type LearningOperation =
   | "comparison"
   | "practice-current"

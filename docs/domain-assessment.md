@@ -86,7 +86,9 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
    jawaban setelah tenggat, tanpa perubahan skema database.
 6. Setelah dikirim, Profil Belajar langsung menampilkan skor pre-test, ringkasan
    materi dan indikator, serta akses ke materi dan AI Tutor. AI Tutor tidak dapat
-   dibuka sebelum pre-test selesai.
+   dibuka sebelum pre-test selesai. **Tinjau jawaban** membuka halaman ulasan
+   per soal. Sebelum post-test selesai, halaman ini hanya menampilkan pilihan
+   mahasiswa dan status benar/salah/kosong.
 7. Pilih **Buka AI Tutor**. Atur PDF melalui Context Materi; pilihan
    satu materi membatasi retrieval ke PDF tersebut, pilihan semua materi tetap
    dibatasi course yang diakses. Tanyakan konsep spesifik, misalnya pengumpulan data.
@@ -98,13 +100,16 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
    Paket disalin dari snapshot pre-test, termasuk ID soal, urutan dan opsi yang sama.
 10. Setelah post-test dikirim, **Lihat Perbandingan Hasil** menampilkan skor,
     perubahan poin persentase, jumlah benar, serta perubahan per indikator/materi.
+    Ulasan pre-test dan post-test kini juga membuka kunci serta pembahasan soal.
 
 Alamat halaman bersifat generik:
 
 - `/mahasiswa/courses/{courseId}/pretest`
+- `/mahasiswa/courses/{courseId}/pretest/review`
 - `/mahasiswa/courses/{courseId}/student-profile`
 - `/mahasiswa/courses/{courseId}/posttest`
 - `/mahasiswa/courses/{courseId}/posttest/result`
+- `/mahasiswa/courses/{courseId}/posttest/review`
 
 URL lama `/mahasiswa/courses/{courseId}/pretest/result` diarahkan ke Profil Belajar.
 

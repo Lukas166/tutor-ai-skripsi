@@ -26,21 +26,29 @@ const statusLabels = {
   READY_TO_ADVANCE: "Siap lanjut",
 };
 
-function ProfileSummary({ profile }: { profile: StudentProfile }) {
+function ProfileSummary({ profile, courseId }: { profile: StudentProfile; courseId: string }) {
   const attempt = profile.attempt!;
   return (
     <section>
-      <div className="mb-3">
-        <h2 className="text-sm font-medium">Hasil Pre-test</h2>
-        {attempt.submittedAt && (
-          <time dateTime={attempt.submittedAt} className="mt-1 block text-xs text-muted-foreground">
-            {new Date(attempt.submittedAt).toLocaleString("id-ID", {
-              dateStyle: "long",
-              timeStyle: "short",
-              timeZone: "Asia/Jakarta",
-            })}
-          </time>
-        )}
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-medium">Hasil Pre-test</h2>
+          {attempt.submittedAt && (
+            <time dateTime={attempt.submittedAt} className="mt-1 block text-xs text-muted-foreground">
+              {new Date(attempt.submittedAt).toLocaleString("id-ID", {
+                dateStyle: "long",
+                timeStyle: "short",
+                timeZone: "Asia/Jakarta",
+              })}
+            </time>
+          )}
+        </div>
+        <Button asChild variant="outline" size="sm">
+          <Link href={`/mahasiswa/courses/${courseId}/pretest/review`}>
+            Tinjau jawaban
+            <ArrowRight data-icon="inline-end" />
+          </Link>
+        </Button>
       </div>
       <div className="grid gap-3 sm:grid-cols-3">
         <div className="flex flex-col rounded-xl border border-border/70 bg-card p-5 shadow-sm">
@@ -296,7 +304,7 @@ export function StudentProfilePage({ courseId }: { courseId: string }) {
           }
         />
       ) : (
-        <ProfileSummary profile={profile} />
+        <ProfileSummary profile={profile} courseId={courseId} />
       )}
 
       {completed && (
