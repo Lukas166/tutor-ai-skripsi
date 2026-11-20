@@ -8,8 +8,6 @@ from pydantic import BaseModel
 from tutor_rag.contracts.rag import GenerateRequest
 from tutor_rag.core.config import EMBEDDING_DIMENSIONS, EMBEDDING_MODEL, Settings
 
-EMPTY_ANSWER = "Materi yang tersedia belum cukup untuk menjawab dengan pasti."
-
 
 def validate_vector(values: list[float]) -> list[float]:
     # Tolak dimensi salah, NaN, dan infinity sebelum vektor masuk ke indeks PostgreSQL.
@@ -72,7 +70,10 @@ class GeminiProvider:
                 contents=request.prompt,
                 config=self._generation_config(request),
             )
-        return (response.text or "").strip() or EMPTY_ANSWER
+        answer = (response.text or "").strip()
+        if not answer:
+            raise RuntimeError("Model tidak menghasilkan jawaban.")
+        return answer
 
     def generate_structured(self, prompt: str, instruction: str, schema: type[BaseModel]) -> str:
         # Output terstruktur membatasi kontrak klasifikasi; validasi ID tetap milik domain.
@@ -87,7 +88,9 @@ class GeminiProvider:
                     temperature=0,
                 ),
             )
-        return response.text or "{}"
+        if not response.text:
+            raise RuntimeError("Model tidak menghasilkan klasifikasi.")
+        return response.text
 
     def stream(self, request: GenerateRequest) -> Iterator[str]:
         # Generator mengirim teks bertahap; instruksi gaya chat/avatar sudah ada pada prompt.

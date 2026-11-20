@@ -90,29 +90,31 @@ export function useTutorChat({
     creatingChat || sending || activeSession === null || activeSession.messages.length === 0;
 
   const loadSession = useCallback(
-    async (sessionId: string) => {
+    async (sessionId: string, refresh = false) => {
       if (sendingRef.current) {
         toast("Harap tunggu Tutor AI membalas sebelum pindah chat");
         return;
       }
 
-      if (activeSessionIdRef.current === sessionId && !loadingSessionRef.current) return;
+      if (activeSessionIdRef.current === sessionId && !loadingSessionRef.current && !refresh) return;
 
       const requestId = loadSessionRequestIdRef.current + 1;
       loadSessionRequestIdRef.current = requestId;
       const previousSession = activeSessionRef.current;
       const sessionSummary = chatSessionsRef.current.find((session) => session.id === sessionId);
 
-      onSessionChange?.(sessionId);
-      setActiveSession({
-        id: sessionId,
-        courseId,
-        selectedMaterialIds: readyMaterialsRef.current.map((material) => material.id),
-        startedAt: sessionSummary?.startedAt ?? new Date().toISOString(),
-        lastActiveAt: sessionSummary?.lastActiveAt ?? new Date().toISOString(),
-        messages: [],
-      });
-      setLoadingSession(true);
+      if (!refresh) {
+        onSessionChange?.(sessionId);
+        setActiveSession({
+          id: sessionId,
+          courseId,
+          selectedMaterialIds: readyMaterialsRef.current.map((material) => material.id),
+          startedAt: sessionSummary?.startedAt ?? new Date().toISOString(),
+          lastActiveAt: sessionSummary?.lastActiveAt ?? new Date().toISOString(),
+          messages: [],
+        });
+        setLoadingSession(true);
+      }
 
       try {
         const response = await fetch(`/api/courses/${courseId}/tutor/sessions/${sessionId}`);
@@ -125,6 +127,7 @@ export function useTutorChat({
         if (loadSessionRequestIdRef.current === requestId) {
           setActiveSession(previousSession ?? null);
           toast.error(err instanceof Error ? err.message : "Gagal memuat chat");
+          if (refresh) return;
           if (previousSession) {
             onSessionChange?.(previousSession.id);
           } else {
@@ -133,15 +136,15 @@ export function useTutorChat({
         }
       } finally {
         if (loadSessionRequestIdRef.current === requestId) {
-          setLoadingSession(false);
+          if (!refresh) setLoadingSession(false);
         }
       }
     },
     [courseId, onNewChat, onSessionChange]
   );
 
-  const loadOverview = useCallback(async () => {
-    setLoadingOverview(true);
+  const loadOverview = useCallback(async (silent = false) => {
+    if (!silent) setLoadingOverview(true);
     try {
       const response = await fetch(`/api/courses/${courseId}/tutor`);
       const data = await response.json();
@@ -152,14 +155,20 @@ export function useTutorChat({
       setOverview(data);
       setChatSessions(data.chatSessions);
 
-      if (!data.pretestRequired && initialSessionId && activeSessionIdRef.current !== initialSessionId) {
-        void loadSession(initialSessionId);
+      const sessionToOpen = initialSessionId || data.welcomeSessionId;
+      if (!data.pretestRequired && sessionToOpen && !activeSessionIdRef.current) {
+        void loadSession(sessionToOpen);
+      } else if (silent && !data.welcomePending && data.welcomeSessionId === activeSessionIdRef.current) {
+        // Ganti pesan pending dengan jawaban LLM tanpa mengosongkan area chat.
+        void loadSession(data.welcomeSessionId, true);
       }
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Gagal memuat Tutor AI");
-      setOverview(null);
+      if (!silent) {
+        toast.error(err instanceof Error ? err.message : "Gagal memuat Tutor AI");
+        setOverview(null);
+      }
     } finally {
-      setLoadingOverview(false);
+      if (!silent) setLoadingOverview(false);
     }
   }, [courseId, initialSessionId, loadSession]);
 

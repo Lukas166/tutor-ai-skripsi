@@ -425,6 +425,8 @@ export type TutorChatMessagesProps = {
   sending: boolean;
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
+  onPracticeAnswered?: () => void;
+  welcomePending?: boolean;
 };
 
 export const TutorChatMessages = memo(function TutorChatMessages({
@@ -433,6 +435,8 @@ export const TutorChatMessages = memo(function TutorChatMessages({
   sending,
   scrollContainerRef,
   messagesEndRef,
+  onPracticeAnswered,
+  welcomePending = false,
 }: TutorChatMessagesProps) {
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const speechRequestIdRef = useRef(0);
@@ -574,6 +578,12 @@ export const TutorChatMessages = memo(function TutorChatMessages({
             const isUser = message.senderType === "user";
             const sources = getUniqueSources(getMessageSources(message));
             const isStreaming = sending && message.id.startsWith("streaming-");
+            const isTutorReplyPending = !message.content.trim()
+              && typeof message.ragSources === "object"
+              && message.ragSources !== null
+              && (message.ragSources as { pending?: boolean }).pending === true;
+            const isWelcomePending = isTutorReplyPending
+              && (message.ragSources as { welcome?: boolean }).welcome === true;
             const practiceId = practiceIdFrom(message.ragSources);
             const showPractice = practiceId && !activeSession.messages.slice(messageIndex + 1)
               .some((later) => practiceIdFrom(later.ragSources) === practiceId);
@@ -603,7 +613,14 @@ export const TutorChatMessages = memo(function TutorChatMessages({
                         id={`markdown-content-${message.id}`}
                         className="prose prose-base max-w-none break-words dark:prose-invert"
                       >
-                        <ReactMarkdown
+                        {isTutorReplyPending ? (
+                          <div className="not-prose flex items-center gap-3 text-sm text-muted-foreground" role="status">
+                            <Loader2 className="size-4 animate-spin" />
+                            <span>{isWelcomePending
+                              ? "Tutor AI sedang menyiapkan panduan belajar dari Student Profile Anda..."
+                              : "Tutor AI sedang membahas jawaban latihan Anda..."}</span>
+                          </div>
+                        ) : <ReactMarkdown
                           remarkPlugins={[remarkGfm, remarkMath, remarkBreaks]}
                           rehypePlugins={[rehypeRaw, rehypeKatex]}
                           components={{
@@ -612,11 +629,21 @@ export const TutorChatMessages = memo(function TutorChatMessages({
                           }}
                         >
                           {message.content}
-                        </ReactMarkdown>
+                        </ReactMarkdown>}
                         {isStreaming && (
                           <span className="inline-block h-4 w-0.5 animate-pulse bg-brand align-text-bottom" />
                         )}
                       </div>
+
+                      {welcomePending && !isWelcomePending && message.content.trim()
+                        && typeof message.ragSources === "object"
+                        && message.ragSources !== null
+                        && (message.ragSources as { welcome?: boolean }).welcome === true && (
+                          <div className="mt-3 flex items-center gap-2 text-sm text-muted-foreground" role="status">
+                            <Loader2 className="size-4 animate-spin" />
+                            Tutor AI sedang melengkapi peta belajar Anda...
+                          </div>
+                        )}
 
                       {!isStreaming && message.content.trim() && (
                         <div className="mt-3 flex items-center gap-1">
@@ -679,7 +706,7 @@ export const TutorChatMessages = memo(function TutorChatMessages({
                   )}
 
                   {!isUser && !isStreaming && <MessageSources sources={sources} />}
-                  {!isUser && !isStreaming && showPractice && <TutorPracticeCard courseId={activeSession.courseId} practiceId={practiceId} />}
+                  {!isUser && !isStreaming && showPractice && <TutorPracticeCard courseId={activeSession.courseId} practiceId={practiceId} onAnswered={onPracticeAnswered} />}
                 </div>
               </div>
             );

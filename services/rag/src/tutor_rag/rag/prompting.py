@@ -1,8 +1,16 @@
-import re
-
 from tutor_rag.contracts.rag import PrepareRequest, RetrievedChunk
-from tutor_rag.core.config import MAX_CONTEXT_CHARS, MAX_HISTORY_MESSAGES
-from tutor_rag.rag.templates import AVATAR_INSTRUCTION, CHAT_INSTRUCTION, SYSTEM_TEMPLATE
+from tutor_rag.core.config import (
+    MAX_CONTEXT_CHARS,
+    MAX_HISTORY_MESSAGE_CHARS,
+    MAX_HISTORY_MESSAGES,
+)
+from tutor_rag.rag.templates import (
+    AVATAR_INSTRUCTION,
+    CHAT_INSTRUCTION,
+    FOLLOWUP_INSTRUCTION,
+    SYSTEM_INSTRUCTION,
+    WELCOME_INSTRUCTION,
+)
 
 
 def truncate_text(value: str, limit: int) -> str:
@@ -11,20 +19,21 @@ def truncate_text(value: str, limit: int) -> str:
 
 
 def build_system_instruction(request: PrepareRequest) -> str:
-    # Gaya akademik berasal dari admin LMS; arahan adaptif ditambahkan oleh pipeline Python.
-    level = request.user.academic_level if request.user.academic_level in ("S2", "S3") else "S1"
-    replacements = {
-        "{{user_name}}": request.user.name or "Mahasiswa",
-        "{{user_role}}": request.user.role,
-        "{{academic_level}}": level,
-        "{{response_instruction}}": (
-            AVATAR_INSTRUCTION if request.response_mode == "avatar" else CHAT_INSTRUCTION
+    instruction = SYSTEM_INSTRUCTION.format(
+        course_title=request.course.title,
+        student_context=(
+            f"Mahasiswa bernama {request.user.name}."
+            if request.purpose == "welcome" and request.user.name else ""
         ),
-        "{{academic_style}}": request.academic_style,
-    }
-    # Substitusi satu kali menjaga teks pengguna/LaTeX tidak dianggap placeholder baru.
-    pattern = "|".join(re.escape(key) for key in replacements)
-    return re.sub(pattern, lambda match: replacements[match.group()], SYSTEM_TEMPLATE)
+    )
+    instruction += "\n\n" + (
+        AVATAR_INSTRUCTION if request.response_mode == "avatar" else CHAT_INSTRUCTION
+    )
+    if request.purpose == "welcome":
+        instruction += "\n\n" + WELCOME_INSTRUCTION
+    elif request.purpose == "practice_followup":
+        instruction += "\n\n" + FOLLOWUP_INSTRUCTION
+    return instruction
 
 
 def build_context(chunks: list[RetrievedChunk]) -> str:
@@ -51,7 +60,7 @@ def build_prompt(request: PrepareRequest, chunks: list[RetrievedChunk]) -> str:
     history = (
         "\n".join(
             f"{'User' if message.sender_type == 'user' else 'Tutor AI'}: "
-            f"{truncate_text(message.content, 700)}"
+            f"{truncate_text(message.content, MAX_HISTORY_MESSAGE_CHARS)}"
             for message in request.history[-MAX_HISTORY_MESSAGES:]
         )
         or "Belum ada riwayat sebelumnya."
@@ -63,15 +72,7 @@ def build_prompt(request: PrepareRequest, chunks: list[RetrievedChunk]) -> str:
         )
         or "Tidak ada materi aktif."
     )
-    # Mode avatar hanya mengubah penyajian jawaban; sumber retrieval tetap sama.
-    answer_instruction = (
-        "Tulis jawaban Tutor AI yang natural, singkat, maksimal 45 kata, "
-        "jujur terhadap batas konteks, dan tidak bertele-tele."
-        if request.response_mode == "avatar"
-        else "Tulis jawaban Tutor AI yang jelas, lengkap, terstruktur, "
-        "jujur terhadap batas konteks, dan sertakan rujukan sumber jika relevan."
-    )
-    # Urutan prompt: course → daftar materi → riwayat → sumber → pertanyaan → arahan jawaban.
+    # Materi dan riwayat menjadi konteks; pesan terakhir tetap menjadi fokus jawaban.
     lines = [f"Course: {request.course.title}"]
     if request.course.description:
         lines.append(f"Deskripsi course: {request.course.description}")
@@ -84,13 +85,15 @@ def build_prompt(request: PrepareRequest, chunks: list[RetrievedChunk]) -> str:
             "Riwayat percakapan terakhir:",
             history,
             "",
-            "Konteks retrieved dari PDF:",
-            build_context(chunks),
+            "Konteks PDF yang ditemukan:",
+            build_context(chunks) or "Tidak ada potongan PDF yang relevan.",
             "",
-            "Pertanyaan user saat ini:",
+            (
+                "Pesan mahasiswa yang harus dijawab:"
+                if request.purpose == "answer"
+                else "Peristiwa aplikasi yang perlu ditanggapi:"
+            ),
             request.question,
-            "",
-            answer_instruction,
         ]
     )
     return "\n".join(lines)

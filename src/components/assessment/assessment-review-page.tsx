@@ -161,7 +161,7 @@ export function AssessmentReviewPage({
                   className={cn(position !== index && (
                     !item.selectedOption ? "border-dashed text-muted-foreground"
                       : item.isCorrect ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
-                        : "border-destructive text-destructive",
+                        : "border-destructive text-destructive"
                   ))}
                   aria-label={`Soal ${item.number}, ${answerStatus(item)}`}
                   aria-current={position === index ? "step" : undefined}

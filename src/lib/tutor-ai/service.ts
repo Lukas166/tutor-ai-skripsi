@@ -8,7 +8,6 @@ import {
   getPythonAvatarExpression,
   type RetrievedChunk,
 } from "@/lib/rag/python-client";
-import { getPromptContent } from "@/lib/services/tutor-prompt.service";
 
 type AcademicLevel = "S1" | "S2" | "S3";
 type TutorResponseMode = "chat" | "avatar";
@@ -471,18 +470,6 @@ function buildAvatarRagSources(
   };
 }
 
-function getInsufficientContextAnswer(responseMode: TutorResponseMode, hasReadyMaterials: boolean) {
-  if (responseMode === "avatar") {
-    return hasReadyMaterials
-      ? "Konteks materi yang dipilih belum cukup. Pilih atau unggah materi yang relevan dulu."
-      : "Belum ada materi PDF siap, jadi aku belum bisa jawab dari materi course ini.";
-  }
-
-  return hasReadyMaterials
-    ? "Materi yang dipilih sebagai konteks belum cukup untuk menjawab dengan pasti. Aktifkan materi PDF yang relevan atau unggah materi yang sudah diproses."
-    : "Belum ada materi PDF yang sudah ready untuk course ini, jadi materi yang tersedia belum cukup untuk menjawab dengan pasti.";
-}
-
 async function prepareTutorAnswer(input: {
   course: TutorCourse;
   user: TutorUser;
@@ -517,9 +504,6 @@ async function prepareTutorAnswer(input: {
     activeMaterials,
     history: chronologicalHistory,
     responseMode: input.responseMode,
-    academicStyle: await getPromptContent(
-      normalizeAcademicLevel(input.user.academicLevel), input.responseMode
-    ),
   }, input.signal);
 }
 
@@ -550,29 +534,254 @@ async function createAiMessage(input: {
   return message;
 }
 
+const welcomeJobs = new Map<string, Promise<void>>();
+
+async function findTutorWelcome(courseId: string, userId: string) {
+  return prisma.aiChatMessage.findFirst({
+    where: {
+      senderType: "ai",
+      ragSources: { path: ["welcome"], equals: true },
+      aiChatSession: { courseId, userId },
+    },
+    select: { id: true, aiChatSessionId: true, content: true },
+    orderBy: { createdAt: "asc" },
+  });
+}
+
+async function welcomeIndicatorCodes(courseId: string, userId: string) {
+  const profiles = await prisma.studentIndicatorProfile.findMany({
+    where: { courseId, studentId: userId },
+    select: { indicator: { select: { code: true } } },
+  });
+  return profiles.map((profile) => profile.indicator.code);
+}
+
+function coversIndicators(answer: string, codes: string[]) {
+  return !!answer.trim() && codes.length > 0 && codes.every((code) => answer.includes(code));
+}
+
+export async function ensureTutorWelcomeSession(courseId: string, userId: string) {
+  const existing = await findTutorWelcome(courseId, userId);
+  if (existing) return existing;
+  await getTutorAccess(courseId, userId);
+  const profileCount = await prisma.studentIndicatorProfile.count({
+    where: { courseId, studentId: userId },
+  });
+  if (!profileCount) throw new TutorAiServiceError("Student Profile awal belum tersedia.", 409);
+
+  const sessionId = crypto.randomUUID();
+  const messageId = crypto.randomUUID();
+  const courseSessionId = await getCourseAnchorSessionId(courseId);
+  // Sesi dan pesan kosong tercatat lebih dulu agar LMS dapat menampilkan loading
+  // di tempat balasan Tutor AI, tanpa menunggu generasi LLM selesai.
+  return prisma.$transaction(async (tx) => {
+    await tx.$queryRaw`SELECT id FROM assessment_attempt WHERE "studentId"=${userId} AND "courseId"=${courseId} AND kind='PRE' FOR UPDATE`;
+    const found = await tx.aiChatMessage.findFirst({
+      where: { senderType: "ai", ragSources: { path: ["welcome"], equals: true },
+        aiChatSession: { courseId, userId } },
+      select: { id: true, aiChatSessionId: true, content: true },
+    });
+    if (found) return found;
+    await tx.aiChatSession.create({
+      data: { id: sessionId, userId, courseId, courseSessionId,
+        customTitle: "Rencana belajar awal" },
+    });
+    return tx.aiChatMessage.create({
+      data: { id: messageId, aiChatSessionId: sessionId, senderType: "ai",
+        content: "", ragSources: { welcome: true, pending: true } },
+      select: { id: true, aiChatSessionId: true, content: true },
+    });
+  });
+}
+
+async function createTutorWelcome(courseId: string, userId: string) {
+  const marker = await ensureTutorWelcomeSession(courseId, userId);
+  const knownCodes = await welcomeIndicatorCodes(courseId, userId);
+  if (coversIndicators(marker.content, knownCodes)) return;
+  const { course, user } = await getTutorAccess(courseId, userId);
+
+  const readyMaterials = await listReadyMaterialsForCourse(courseId);
+  // LLM melengkapi pesan yang sudah terlihat sebagai balasan sedang diproses.
+  const prepared = await preparePythonRag({
+    course, user, purpose: "welcome",
+    question: "Mulai pembelajaran terpandu dari hasil pre-test dan Student Profile awal.",
+    selectedMaterialIds: readyMaterials.map((material) => material.id),
+    activeMaterials: readyMaterials, history: [], responseMode: "chat",
+  });
+  const requiredCodes = prepared.adaptive?.requiredWelcomeCodes ?? knownCodes;
+  let answer = await generatePythonAnswer(prepared);
+  if (!coversIndicators(answer, requiredCodes)) {
+    // Model mendapat kesempatan memperbaiki daftar yang terpotong tanpa teks buatan server.
+    answer = await generatePythonAnswer({
+      systemInstruction: prepared.systemInstruction +
+        `\nRespons sebelumnya belum mencakup seluruh indikator. Tulis ulang jawaban lengkap dan sebut setiap kode berikut tepat sekali: ${requiredCodes.join(", ")}.`,
+      prompt: prepared.prompt,
+    });
+  }
+  if (!coversIndicators(answer, requiredCodes))
+    throw new Error("Tutor AI belum mencakup seluruh indikator Student Profile.");
+  const metadata = {
+    ...buildAvatarRagSources(prepared.chunks, "neutral", "chat", undefined, undefined,
+      prepared.adaptive as Prisma.InputJsonValue | null),
+    welcome: true,
+  };
+  // Hanya worker pertama yang berhasil mengisi pesan pending; tetap satu pembukaan.
+  await prisma.aiChatMessage.updateMany({
+    where: { id: marker.id },
+    data: { content: answer, ragSources: metadata },
+  });
+}
+
+export async function prepareTutorWelcome(courseId: string, userId: string) {
+  const key = `${courseId}:${userId}`;
+  const existing = welcomeJobs.get(key);
+  if (existing) return existing;
+  const job = createTutorWelcome(courseId, userId).finally(() => welcomeJobs.delete(key));
+  welcomeJobs.set(key, job);
+  return job;
+}
+
+const practiceFollowupJobs = new Map<string, Promise<void>>();
+
+export async function ensurePracticeFollowup(input: {
+  courseId: string; userId: string; practiceId: string; requestId: string;
+}) {
+  const practice = await prisma.practiceSession.findUnique({
+    where: { id: input.practiceId },
+    select: { courseId: true, studentId: true, chatSessionId: true },
+  });
+  if (!practice?.chatSessionId || practice.courseId !== input.courseId
+    || practice.studentId !== input.userId) return null;
+  const event = await prisma.practiceEvent.findUnique({
+    where: { practiceSessionId_requestId: {
+      practiceSessionId: input.practiceId, requestId: input.requestId,
+    } },
+    select: { id: true, kind: true },
+  });
+  if (!event || event.kind !== "ANSWER") return null;
+  const existing = await prisma.aiChatMessage.findFirst({
+    where: { aiChatSessionId: practice.chatSessionId,
+      ragSources: { path: ["practiceEventId"], equals: event.id } },
+    select: { id: true },
+  });
+  if (existing) return { eventId: event.id, chatSessionId: practice.chatSessionId };
+
+  await prisma.$transaction(async (tx) => {
+    // Kunci event agar retry HTTP tidak membuat dua balasan untuk jawaban yang sama.
+    await tx.$queryRaw`SELECT id FROM practice_event WHERE id=${event.id} FOR UPDATE`;
+    const found = await tx.aiChatMessage.findFirst({
+      where: { aiChatSessionId: practice.chatSessionId!,
+        ragSources: { path: ["practiceEventId"], equals: event.id } },
+      select: { id: true },
+    });
+    if (found) return;
+    await tx.aiChatMessage.create({
+      data: { id: crypto.randomUUID(), aiChatSessionId: practice.chatSessionId!,
+        senderType: "ai", content: "",
+        ragSources: { practiceEventId: event.id, pending: true } },
+    });
+  });
+  return { eventId: event.id, chatSessionId: practice.chatSessionId };
+}
+
+async function createPracticeFollowup(courseId: string, userId: string, eventId: string) {
+  const event = await prisma.practiceEvent.findUnique({
+    where: { id: eventId },
+    select: { practiceSession: { select: {
+      studentId: true, courseId: true, chatSessionId: true,
+    } } },
+  });
+  const practice = event?.practiceSession;
+  if (!practice?.chatSessionId || practice.studentId !== userId || practice.courseId !== courseId)
+    return;
+  const pending = await prisma.aiChatMessage.findFirst({
+    where: { aiChatSessionId: practice.chatSessionId,
+      ragSources: { path: ["practiceEventId"], equals: eventId } },
+    select: { id: true, content: true },
+  });
+  if (!pending || pending.content.trim()) return;
+
+  const { course, user } = await getTutorAccess(courseId, userId);
+  const [readyMaterials, history, lastAiMessage] = await Promise.all([
+    listReadyMaterialsForCourse(courseId),
+    prisma.aiChatMessage.findMany({
+      where: { aiChatSessionId: practice.chatSessionId,
+        senderType: { in: VISIBLE_SENDER_TYPES }, content: { not: "" } },
+      select: { senderType: true, content: true },
+      orderBy: { createdAt: "desc" }, take: MAX_HISTORY_MESSAGES,
+    }),
+    prisma.aiChatMessage.findFirst({
+      where: { aiChatSessionId: practice.chatSessionId,
+        senderType: "ai", content: { not: "" } },
+      select: { ragSources: true }, orderBy: { createdAt: "desc" },
+    }),
+  ]);
+  const responseMode = (
+    lastAiMessage?.ragSources as { responseMode?: string } | null
+  )?.responseMode === "avatar" ? "avatar" : "chat";
+  const prepared = await preparePythonRag({
+    course, user, purpose: "practice_followup", practiceEventId: eventId,
+    chatSessionId: practice.chatSessionId,
+    question: "Berikan tanggapan singkat atas jawaban latihan dan arah belajar berikutnya.",
+    selectedMaterialIds: readyMaterials.map((material) => material.id),
+    activeMaterials: readyMaterials, history: history.reverse(), responseMode,
+  });
+  const answer = await generatePythonAnswer(prepared);
+  const avatarExpression = await getPythonAvatarExpression({
+    answer, question: "Tanggapan atas hasil latihan", responseMode,
+  });
+  const metadata = {
+    ...buildAvatarRagSources(prepared.chunks, avatarExpression, responseMode,
+      undefined, responseMode === "avatar" ? answer : undefined,
+      prepared.adaptive as Prisma.InputJsonValue | null),
+    practiceEventId: eventId,
+  };
+  await prisma.aiChatMessage.updateMany({
+    where: { id: pending.id, content: "" },
+    data: { content: answer, ragSources: metadata },
+  });
+  await prisma.aiChatSession.update({
+    where: { id: practice.chatSessionId }, data: { lastActiveAt: new Date() },
+  });
+}
+
+export async function preparePracticeFollowup(courseId: string, userId: string, eventId: string) {
+  const existing = practiceFollowupJobs.get(eventId);
+  if (existing) return existing;
+  const job = createPracticeFollowup(courseId, userId, eventId)
+    .finally(() => practiceFollowupJobs.delete(eventId));
+  practiceFollowupJobs.set(eventId, job);
+  return job;
+}
+
 export async function getTutorOverview(courseId: string, userId: string) {
   const { user, course } = await getTutorAccess(courseId, userId, true);
   const pretestRequired = await needsPretest(courseId, userId);
   let readyMaterials: Awaited<ReturnType<typeof listReadyMaterialsForCourse>> = [];
   let chatSessions: Awaited<ReturnType<typeof listTutorChatSessions>> = [];
+  let welcomeSessionId: string | null = null;
+  let welcomePending = false;
   if (!pretestRequired) {
+    const config = await prisma.courseLearningConfig.findUnique({
+      where: { courseId }, select: { courseId: true },
+    });
+    if (config) {
+      const welcome = await ensureTutorWelcomeSession(courseId, userId);
+      welcomeSessionId = welcome.aiChatSessionId;
+      welcomePending = !coversIndicators(
+        welcome.content, await welcomeIndicatorCodes(courseId, userId)
+      );
+    }
     [readyMaterials, chatSessions] = await Promise.all([
-      listReadyMaterialsForCourse(courseId),
-      listTutorChatSessions(courseId, userId),
+      listReadyMaterialsForCourse(courseId), listTutorChatSessions(courseId, userId),
     ]);
   }
 
   return {
     course,
-    user: {
-      id: user.id,
-      name: user.name,
-      academicLevel: normalizeAcademicLevel(user.academicLevel),
-      role: user.role,
-    },
-    readyMaterials,
-    chatSessions,
-    pretestRequired,
+    user: { id: user.id, name: user.name,
+      academicLevel: normalizeAcademicLevel(user.academicLevel), role: user.role },
+    readyMaterials, chatSessions, welcomeSessionId, welcomePending, pretestRequired,
   };
 }
 
@@ -756,34 +965,6 @@ export async function askTutor(input: {
       content: question,
     },
   });
-  const insufficientContextAnswer = getInsufficientContextAnswer(
-    responseMode,
-    readyMaterials.length > 0
-  );
-
-  if (readyMaterials.length === 0 || selectedMaterialIds.length === 0) {
-    const avatarExpression = "neutral" satisfies AvatarExpression;
-
-    await createAiMessage({
-      aiChatSessionId: input.sessionId,
-      content: insufficientContextAnswer,
-      ragSources: buildAvatarRagSources(
-        [],
-        avatarExpression,
-        responseMode,
-        "no_selected_materials",
-        responseMode === "avatar" ? insufficientContextAnswer : undefined
-      ),
-      responseTimeMs: Date.now() - startTime,
-    });
-    await prisma.aiChatSession.update({
-      where: { id: input.sessionId },
-      data: { lastActiveAt: new Date() },
-    });
-
-    return getTutorChatSession(input);
-  }
-
 
   let answer: string;
   let chunks: RetrievedChunk[];
@@ -796,7 +977,7 @@ export async function askTutor(input: {
     });
     chunks = prepared.chunks;
     adaptive = prepared.adaptive ?? null;
-    answer = prepared.directAnswer || await generatePythonAnswer(prepared);
+    answer = await generatePythonAnswer(prepared);
   } catch (error) {
     // Hapus pesan user yang terlanjur disimpan jika ADA step yang gagal (embedding, RAG, atau chat)
     await prisma.aiChatMessage.delete({ where: { id: userMessage.id } });
@@ -884,54 +1065,11 @@ export async function askTutorStream(input: {
     );
   }
 
-  const insufficientContextAnswer = getInsufficientContextAnswer(
-    responseMode,
-    readyMaterials.length > 0
-  );
-
-  if (readyMaterials.length === 0 || selectedMaterialIds.length === 0) {
-    if (input.signal?.aborted) {
-      await prisma.aiChatMessage.delete({ where: { id: userMessage.id } }).catch(() => {});
-      return new ReadableStream({ start(controller) { controller.close(); } });
-    }
-
-    const avatarExpression = "neutral" satisfies AvatarExpression;
-    const ragSources = buildAvatarRagSources(
-      [],
-      avatarExpression,
-      responseMode,
-      "no_selected_materials",
-      responseMode === "avatar" ? insufficientContextAnswer : undefined
-    );
-    const responseTimeMs = Date.now() - startTime;
-
-    await createAiMessage({
-      aiChatSessionId: input.sessionId,
-      content: insufficientContextAnswer,
-      ragSources: ragSources as unknown as Prisma.InputJsonValue,
-      responseTimeMs,
-    });
-    await prisma.aiChatSession.update({
-      where: { id: input.sessionId },
-      data: { lastActiveAt: new Date() },
-    });
-
-    return new ReadableStream({
-      start(controller) {
-        controller.enqueue(sseEvent("text", { text: insufficientContextAnswer }));
-        controller.enqueue(sseEvent("metadata", { ragSources, responseTimeMs }));
-        controller.enqueue(sseEvent("done", { sessionId: input.sessionId }));
-        controller.close();
-      },
-    });
-  }
-
   // --- Embedding + RAG retrieval (same as askTutor) ---
   let chunks: RetrievedChunk[];
   let systemInstruction: string;
   let prompt: string;
   let adaptive: Prisma.InputJsonValue | null = null;
-  let directAnswer: string | null = null;
 
   try {
     throwIfAborted();
@@ -943,7 +1081,6 @@ export async function askTutorStream(input: {
     systemInstruction = prepared.systemInstruction;
     prompt = prepared.prompt;
     adaptive = prepared.adaptive ?? null;
-    directAnswer = prepared.directAnswer ?? null;
     throwIfAborted();
   } catch (error) {
     await prisma.aiChatMessage.delete({ where: { id: userMessage.id } });
@@ -969,9 +1106,7 @@ export async function askTutorStream(input: {
 
       try {
         throwIfAborted();
-        const stream = directAnswer
-          ? (async function* () { yield directAnswer!; })()
-          : streamPythonAnswer({ systemInstruction, prompt, signal: input.signal });
+        const stream = streamPythonAnswer({ systemInstruction, prompt, signal: input.signal });
         for await (const textChunk of stream) {
           throwIfAborted();
           fullAnswer += textChunk;
@@ -981,12 +1116,7 @@ export async function askTutorStream(input: {
         }
         throwIfAborted();
 
-        if (!fullAnswer.trim()) {
-          fullAnswer = "Materi yang tersedia belum cukup untuk menjawab dengan pasti.";
-          if (!closed) {
-            controller.enqueue(sseEvent("text", { text: fullAnswer }));
-          }
-        }
+        if (!fullAnswer.trim()) throw new Error("Tutor AI tidak menghasilkan jawaban.");
 
         const avatarExpression = await getPythonAvatarExpression({
           answer: fullAnswer.trim(),

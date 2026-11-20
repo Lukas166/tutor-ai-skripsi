@@ -4,9 +4,10 @@ from uuid import uuid4
 from fastapi import HTTPException
 from psycopg import Connection
 from psycopg.types.json import Jsonb
+from pydantic import BaseModel
 
-from tutor_rag.assessment.service import AssessmentService
 from tutor_rag.assessment.scoring import has_four_options
+from tutor_rag.assessment.service import AssessmentService
 from tutor_rag.contracts.rag import GenerateRequest
 from tutor_rag.core.config import Settings
 from tutor_rag.infrastructure.gemini import GeminiProvider
@@ -22,6 +23,10 @@ def record_study(connection: Connection[dict[str, Any]], student_id: str, course
         'ON CONFLICT ("studentId","courseId") DO UPDATE SET "lastStudiedAt"=NOW()',
         (student_id, course_id),
     )
+
+
+class HintSafety(BaseModel):
+    reveals_answer: bool
 
 
 class PracticeService:
@@ -164,67 +169,70 @@ class PracticeService:
                 )
         return self.current(practice_id)
 
-    def guidance(self, row: dict, hint_number: int) -> tuple[str, list[dict]]:
-        # LLM hanya menerima konsep dan PDF, bukan opsi/kunci/penjelasan bank soal.
-        # Dengan demikian penilaian sepenuhnya deterministik dan terpisah dari generasi.
+    def guidance(self, row: dict) -> tuple[str, list[dict]]:
+        # Generator melihat teks soal agar petunjuk tepat sasaran, tetapi tidak melihat kunci.
         context = self.connection.execute(
             'SELECT i.description,t."courseSessionId" FROM domain_indicator i '
             'JOIN domain_topic t ON t.id=i."topicId" WHERE i.id=%s AND i."courseId"=%s',
             (row["indicatorId"], self.course_id),
         ).fetchone()
-        fallback = (
-            "Sumber PDF belum mendukung petunjuk ini. Tinjau materi terkait sebelum mencoba lagi."
-        )
         if not context:
-            return fallback, []
+            raise HTTPException(409, "Indikator latihan tidak ditemukan.")
         materials = self.connection.execute(
             'SELECT id FROM material WHERE "courseSessionId"=%s AND "isActive"=true '
             'AND "processingStatus"=\'ready\' AND "isProcessed"=true',
             (context["courseSessionId"],),
         ).fetchall()
-        try:
-            provider = GeminiProvider(self.settings)
-            chunks = (
-                ChunkRepository(self.settings).retrieve(
-                    self.course_id,
-                    [m["id"] for m in materials],
-                    provider.embed_question(f"{row['concept']}: {context['description']}"),
-                )
-                if materials
-                else []
+        provider = GeminiProvider(self.settings)
+        question = row["questionSnapshot"]["question"]
+        chunks = (
+            ChunkRepository(self.settings).retrieve(
+                self.course_id,
+                [m["id"] for m in materials],
+                provider.embed_question(
+                    f"{question}\n{row['concept']}: {context['description']}"
+                ),
             )
-            if not chunks:
-                return fallback, []
-            instruction = (
-                "Anda memberi petunjuk konsep bertahap dalam bahasa Indonesia berdasarkan PDF. "
-                "Jangan menyebut huruf opsi, memilih jawaban, menilai, membuat soal baru, atau "
-                "membocorkan jawaban. Sebutkan file dan halaman sumber. "
-                "Jika sumber tidak cukup, akui keterbatasannya. Maksimal 120 kata."
+            if materials else []
+        )
+        chunks = chunks[:3]
+        if not chunks:
+            # Ketiadaan rujukan tidak boleh diganti dengan tebakan atau hint generik.
+            raise HTTPException(409, "PDF terkait belum menyediakan petunjuk untuk soal ini.")
+        instruction = (
+            "Anda pembimbing latihan berbasis PDF. Beri SATU petunjuk pendek, "
+            "spesifik terhadap pertanyaan yang sedang dikerjakan. Arahkan satu langkah "
+            "berpikir atau bagian sumber yang perlu diperiksa. Jangan mengulang materi "
+            "secara umum. Jangan sebut jawaban akhir, daftar/urutan yang diminta soal, "
+            "isi opsi, huruf opsi, atau kunci. Maksimal 45 kata. "
+            "Jika PDF tidak cukup, akui keterbatasan sumber."
+        )
+        source_context = build_context(chunks)
+        correct_text = row["questionSnapshot"]["options"][row["questionSnapshot"]["correctOption"]]
+        for _ in range(2):
+            feedback = provider.generate(GenerateRequest(
+                system_instruction=instruction,
+                prompt=f"Soal latihan: {question}\nIndikator: {context['description']}\n"
+                f"Konsep: {row['concept']}\n\nPotongan PDF:\n{source_context}",
+            )).strip()
+            # Pemeriksa terpisah melihat kunci hanya untuk menolak petunjuk yang bocor.
+            review = HintSafety.model_validate_json(provider.generate_structured(
+                f"Soal: {question}\nJawaban benar: {correct_text}\nPetunjuk: {feedback}",
+                "Nilai apakah petunjuk menyebut jawaban benar, sinonim tepatnya, "
+                "atau komponen/urutan lengkap yang diminta soal. Jika ya, "
+                "reveals_answer=true. Hanya kembalikan penilaian keamanan.",
+                HintSafety,
+            ))
+            if not review.reveals_answer:
+                return feedback, [
+                    chunk.model_dump(by_alias=True, exclude={"content"})
+                    for chunk in chunks
+                ]
+            instruction += (
+                " Petunjuk sebelumnya terlalu membocorkan jawaban; "
+                "buat lebih tidak langsung."
             )
-            feedback = provider.generate(
-                GenerateRequest(
-                    system_instruction=instruction,
-                    prompt=f"Konsep: {row['concept']}\nIndikator: {context['description']}\n"
-                    f"Tingkat petunjuk: {hint_number}. "
-                    + (
-                        "Uraikan dasar konsep untuk remediasi."
-                        if hint_number == 0
-                        else {
-                            1: "Ingatkan definisi dan prinsip dasar konsep.",
-                            2: "Uraikan penerapan prinsip pada situasi sejenis, tanpa jawaban.",
-                            3: "Berikan langkah pemeriksaan dan kesalahan umum, tanpa jawaban.",
-                        }[hint_number]
-                    )
-                    + "\n\n"
-                    + build_context(chunks),
-                )
-            )
-            return feedback, [
-                chunk.model_dump(by_alias=True, exclude={"content"}) for chunk in chunks
-            ]
-        except Exception:
-            # Gangguan LLM tidak membatalkan jawaban/penilaian yang sudah valid.
-            return fallback, []
+        raise HTTPException(502, "Petunjuk aman belum dapat dibuat. Coba lagi nanti.")
 
     def interact(
         self, practice_id: str, request_id: str, kind: str, selected_option: str | None = None
@@ -252,12 +260,12 @@ class PracticeService:
             hints = row["hintCount"]
             sources: list[dict] = []
             if kind == "HINT":
-                if hints >= 3:
+                if hints >= 1:
                     raise HTTPException(
-                        409, "Tiga petunjuk sudah tersedia. Tinjau kembali atau lanjut ke materi."
+                        409, "Satu petunjuk sudah digunakan. Coba jawab atau lanjut ke materi."
                     )
                 hints += 1
-                feedback, sources = self.guidance(row, hints)
+                feedback, sources = self.guidance(row)
                 self.connection.execute(
                     'UPDATE practice_session SET "hintCount"=%s,"updatedAt"=NOW() WHERE id=%s',
                     (hints, practice_id),
@@ -300,16 +308,9 @@ class PracticeService:
                     'status=%s,"updatedAt"=NOW() WHERE id=%s',
                     ("COMPLETED" if correct else "ACTIVE", practice_id),
                 )
-                if correct:
-                    feedback = "Jawaban benar. " + row["questionSnapshot"]["explanation"]
-                else:
-                    remediation, sources = self.guidance(row, 0)
-                    feedback = "Jawaban belum tepat. " + remediation
-                feedback += (
-                    " Bukti mandiri dicatat pada profil."
-                    if independent
-                    else " Latihan berbantuan/ulang; EMA tidak berubah."
-                )
+                # Penilaian kartu selesai tanpa menunggu LLM. Pembahasan jawaban
+                # diberikan oleh balasan Tutor AI berikutnya di luar transaksi ini.
+                feedback = "Jawaban tepat." if correct else "Jawaban belum tepat."
             self.connection.execute(
                 'INSERT INTO practice_event (id,"practiceSessionId","requestId",kind,'
                 '"selectedOption","isCorrect",independent,"hintCount","scoreBefore",'

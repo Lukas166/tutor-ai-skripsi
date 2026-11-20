@@ -1,10 +1,11 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod/v4";
 import {
   getTutorChatSession,
   updateTutorSessionContext,
   renameTutorChatSession,
   deleteTutorChatSession,
+  preparePracticeFollowup,
 } from "@/lib/tutor-ai/service";
 import { requireTutorUser, tutorErrorResponse } from "@/lib/tutor-ai/route-helpers";
 
@@ -25,6 +26,16 @@ export async function GET(request: NextRequest, context: TutorSessionRouteContex
 
   try {
     const session = await getTutorChatSession({ courseId, sessionId, userId: userId! });
+    for (const message of session.messages) {
+      const metadata = message.ragSources;
+      if (message.content || !metadata || typeof metadata !== "object") continue;
+      const eventId = (metadata as { practiceEventId?: unknown }).practiceEventId;
+      if (typeof eventId !== "string") continue;
+      after(async () => {
+        await preparePracticeFollowup(courseId, userId!, eventId).catch((error) =>
+          console.error("Tutor practice follow-up generation failed", error));
+      });
+    }
     return NextResponse.json(session);
   } catch (err) {
     return tutorErrorResponse(err, "Gagal memuat chat session");

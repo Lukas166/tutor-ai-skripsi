@@ -1,7 +1,8 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assessmentProxy } from "@/lib/assessment/python-client";
-import type { RouteContext } from "@/lib/api-utils";
+import { requireMahasiswa, type RouteContext } from "@/lib/api-utils";
+import { ensurePracticeFollowup, preparePracticeFollowup } from "@/lib/tutor-ai/service";
 
 const schema = z
   .object({
@@ -26,7 +27,31 @@ export async function POST(request: NextRequest, context: RouteContext) {
       { status: 400 },
     );
   const { operation, ...body } = parsed.data;
-  return assessmentProxy(request, (await context.params).id, operation, body);
+  const courseId = (await context.params).id;
+  const response = await assessmentProxy(request, courseId, operation, body);
+  if (response.ok && operation === "practice-answer" && body.requestId) {
+    const { session } = await requireMahasiswa(request);
+    if (session) {
+      const studentId = session.user.id;
+      const followupInput = {
+        courseId, userId: studentId, practiceId: body.practiceId,
+        requestId: body.requestId,
+      };
+      const pending = await ensurePracticeFollowup(followupInput).catch((error) => {
+        console.error("Tutor practice follow-up could not be queued", error);
+        return null;
+      });
+      after(async () => {
+        try {
+          const item = pending ?? await ensurePracticeFollowup(followupInput);
+          if (item) await preparePracticeFollowup(courseId, studentId, item.eventId);
+        } catch (error) {
+          console.error("Tutor practice follow-up generation failed", error);
+        }
+      });
+    }
+  }
+  return response;
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {

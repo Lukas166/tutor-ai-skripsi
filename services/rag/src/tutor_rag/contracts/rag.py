@@ -45,8 +45,9 @@ class PrepareRequest(ContractModel):
     active_materials: list[Material] = Field(max_length=1000)
     history: list[HistoryMessage] = Field(default_factory=list, max_length=8)
     response_mode: Literal["chat", "avatar"] = "chat"
-    academic_style: str
     chat_session_id: str | None = None
+    purpose: Literal["answer", "welcome", "practice_followup"] = "answer"
+    practice_event_id: str | None = None
 
 
 class RetrievedChunk(ContractModel):
@@ -69,7 +70,6 @@ class PreparedAnswer(ContractModel):
     system_instruction: str
     prompt: str
     adaptive: dict | None = None
-    direct_answer: str | None = None
 
 
 class GenerateRequest(ContractModel):

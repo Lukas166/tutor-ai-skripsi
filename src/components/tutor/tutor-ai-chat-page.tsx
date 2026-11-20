@@ -215,12 +215,35 @@ export function TutorAiChatPage({
     !loadingOverview &&
     !loadingSession &&
     !sending &&
+    !overview?.welcomePending &&
     (!activeSession || activeSession.messages.length === 0);
   const activeSessionId = activeSession?.id;
+  const practiceReplyPending = activeSession?.messages.some((message) => {
+    const metadata = message.ragSources;
+    return !message.content && !!metadata && typeof metadata === "object"
+      && typeof (metadata as { practiceEventId?: unknown }).practiceEventId === "string";
+  }) ?? false;
+
+  const refreshAfterPractice = useCallback(() => {
+    if (activeSessionId && !activeSessionId.startsWith("new-"))
+      void loadSession(activeSessionId, true);
+  }, [activeSessionId, loadSession]);
 
   useEffect(() => {
     void loadOverview();
   }, [loadOverview]);
+
+  useEffect(() => {
+    if (!overview?.welcomePending) return;
+    const timer = window.setInterval(() => void loadOverview(true), 2500);
+    return () => window.clearInterval(timer);
+  }, [overview?.welcomePending, loadOverview]);
+
+  useEffect(() => {
+    if (!practiceReplyPending || !activeSessionId) return;
+    const timer = window.setInterval(() => void loadSession(activeSessionId, true), 2500);
+    return () => window.clearInterval(timer);
+  }, [practiceReplyPending, activeSessionId, loadSession]);
 
   useEffect(() => {
     try {
@@ -370,7 +393,7 @@ export function TutorAiChatPage({
         chatSessions={chatSessions}
         activeSession={activeSession}
         creatingChat={creatingChat}
-        isNewChatDisabled={loadingOverview || isNewChatDisabled}
+        isNewChatDisabled={loadingOverview || !!overview?.welcomePending || practiceReplyPending || isNewChatDisabled}
         loadingSessions={loadingOverview}
         setSearchOpen={setSearchOpen}
         setSearchQuery={setSearchQuery}
@@ -446,7 +469,7 @@ export function TutorAiChatPage({
                   }
                   setSettingsOpen(true);
                 }}
-                disabled={loadingOverview || creatingChat}
+                disabled={loadingOverview || !!overview?.welcomePending || practiceReplyPending || creatingChat}
                 className="text-muted-foreground hover:text-foreground"
                 aria-label="Context Materi"
               >
@@ -495,13 +518,15 @@ export function TutorAiChatPage({
               />
             </div>
           </div>
-        ) : panelMode === "chat" ? (
+        ) : panelMode === "chat" || overview?.welcomePending ? (
           <TutorChatMessages
             activeSession={activeSession}
             loadingSession={loadingSession}
             sending={sending}
             scrollContainerRef={scrollContainerRef}
             messagesEndRef={messagesEndRef}
+            onPracticeAnswered={refreshAfterPractice}
+            welcomePending={overview?.welcomePending}
           />
         ) : (
           <TutorAvatarPanel
@@ -509,14 +534,14 @@ export function TutorAiChatPage({
             customization={avatarCustomization}
             courseId={courseId}
             loadingSession={loadingSession}
-            sending={sending}
+            sending={sending || practiceReplyPending}
             recording={recording}
             transcribing={transcribing}
           />
         )}
 
         {/* ==================== FLOATING INPUT AREA ==================== */}
-        {!loadingOverview && !isChatLanding && (
+        {!loadingOverview && !isChatLanding && !overview?.welcomePending && !practiceReplyPending && (
           <TutorChatInput
             input={input}
             setInput={setInput}
@@ -537,7 +562,7 @@ export function TutorAiChatPage({
       </main>
 
       {/* ==================== SEARCH DIALOG ==================== */}
-      <Dialog open={practiceOpen} onOpenChange={setPracticeOpen}><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Latihan di Tutor</DialogTitle><DialogDescription>Gunakan bank soal untuk mencoba pemahaman konsep.</DialogDescription></DialogHeader>{latestPracticeId && <TutorPracticeCard courseId={courseId} practiceId={latestPracticeId} />}</DialogContent></Dialog>
+      <Dialog open={practiceOpen} onOpenChange={setPracticeOpen}><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Latihan di Tutor</DialogTitle><DialogDescription>Gunakan bank soal untuk mencoba pemahaman konsep.</DialogDescription></DialogHeader>{latestPracticeId && <TutorPracticeCard courseId={courseId} practiceId={latestPracticeId} onAnswered={refreshAfterPractice} />}</DialogContent></Dialog>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>

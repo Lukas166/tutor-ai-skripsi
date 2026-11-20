@@ -51,3 +51,4 @@ MIN_SIMILARITY = 0.5
 # Batas konteks dan riwayat menjaga ukuran prompt; ini bukan batas tokenisasi model.
 MAX_CONTEXT_CHARS = 1400
 MAX_HISTORY_MESSAGES = 8
+MAX_HISTORY_MESSAGE_CHARS = 1600

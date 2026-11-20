@@ -37,6 +37,8 @@ export type TutorChatSession = {
 
 export type TutorOverview = {
   pretestRequired: boolean;
+  welcomeSessionId: string | null;
+  welcomePending: boolean;
   course: {
     id: string;
     title: string;

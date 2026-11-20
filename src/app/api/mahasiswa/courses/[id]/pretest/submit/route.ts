@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assessmentProxy } from "@/lib/assessment/python-client";
 import type { RouteContext } from "@/lib/api-utils";
+import { requireMahasiswa } from "@/lib/api-utils";
+import { ensureTutorWelcomeSession, prepareTutorWelcome } from "@/lib/tutor-ai/service";
 
 export async function POST(request: NextRequest, context: RouteContext) {
   const parsed = z
@@ -13,10 +15,24 @@ export async function POST(request: NextRequest, context: RouteContext) {
       { error: "ID sesi tidak valid." },
       { status: 400 },
     );
-  return assessmentProxy(
+  const courseId = (await context.params).id;
+  const response = await assessmentProxy(
     request,
-    (await context.params).id,
+    courseId,
     "submit",
     parsed.data,
   );
+  if (response.ok) {
+    const { session } = await requireMahasiswa(request);
+    if (session) {
+      // Hanya pembuatan chat/pesan pending yang ditunggu; generasi LLM berjalan sesudah respons.
+      await ensureTutorWelcomeSession(courseId, session.user.id).catch((error) =>
+        console.error("Tutor welcome session could not be created", error));
+      after(async () => {
+        await prepareTutorWelcome(courseId, session.user.id).catch((error) =>
+          console.error("Tutor welcome generation failed", error));
+      });
+    }
+  }
+  return response;
 }

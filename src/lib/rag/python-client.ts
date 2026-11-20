@@ -11,11 +11,11 @@ const preparedSchema = z.object({
   chunks: z.array(chunkSchema), systemInstruction: z.string(), prompt: z.string(),
   adaptive: z.object({
     action: z.string(), indicatorId: z.string().nullable(),
-    indicatorCode: z.string().optional(), concept: z.string().optional(),
-    status: z.string().optional(), currentScore: z.number().nullable().optional(),
+    indicatorCode: z.string().nullable().optional(), concept: z.string().nullable().optional(),
+    status: z.string().nullable().optional(), currentScore: z.number().nullable().optional(),
     practiceId: z.string().nullable(),
+    requiredWelcomeCodes: z.array(z.string()).optional(),
   }).nullable().optional(),
-  directAnswer: z.string().nullable().optional(),
 });
 
 export type RetrievedChunk = z.infer<typeof chunkSchema>;
@@ -23,13 +23,14 @@ export type RetrievedChunk = z.infer<typeof chunkSchema>;
 export type PrepareRagInput = {
   course: { id: string; title: string; description: string | null };
   user: { id: string; name: string | null; role: string; academicLevel: string | null };
-  chatSessionId: string;
+  chatSessionId?: string;
   question: string;
   selectedMaterialIds: string[];
   activeMaterials: { id: string; title: string; fileName: string }[];
   history: { senderType: string; content: string }[];
   responseMode: "chat" | "avatar";
-  academicStyle: string;
+  purpose?: "answer" | "welcome" | "practice_followup";
+  practiceEventId?: string;
 };
 
 type GenerateInput = { systemInstruction: string; prompt: string; signal?: AbortSignal };
