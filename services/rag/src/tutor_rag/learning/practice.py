@@ -12,17 +12,33 @@ from tutor_rag.contracts.rag import GenerateRequest
 from tutor_rag.core.config import Settings
 from tutor_rag.infrastructure.gemini import GeminiProvider
 from tutor_rag.learning.profile import operational_status
+from tutor_rag.learning.progress import learner_progress
 from tutor_rag.rag.prompting import build_context
 from tutor_rag.repositories.chunks import ChunkRepository
 
 
 def record_study(connection: Connection[dict[str, Any]], student_id: str, course_id: str) -> None:
-    # Waktu belajar dimulai oleh interaksi server, bukan timestamp yang dikirim browser.
-    connection.execute(
-        'INSERT INTO student_learning_progress ("studentId","courseId") VALUES (%s,%s) '
-        'ON CONFLICT ("studentId","courseId") DO UPDATE SET "lastStudiedAt"=NOW()',
-        (student_id, course_id),
-    )
+    # Python tetap menghitung tahap adaptif; LMS hanya membaca snapshot hasilnya.
+    with connection.transaction():
+        # Kunci baris dahulu; dua respons serentak tidak saling menimpa snapshot.
+        connection.execute(
+            'INSERT INTO student_learning_progress ("studentId","courseId") '
+            'VALUES (%s,%s) ON CONFLICT ("studentId","courseId") '
+            'DO UPDATE SET "lastStudiedAt"=NOW()',
+            (student_id, course_id),
+        )
+        config = connection.execute(
+            'SELECT "developingThreshold" FROM course_learning_config WHERE "courseId"=%s',
+            (course_id,),
+        ).fetchone()
+        snapshot = learner_progress(
+            connection, student_id, course_id, config["developingThreshold"]
+        ) if config else None
+        connection.execute(
+            'UPDATE student_learning_progress SET "progressSnapshot"=%s '
+            'WHERE "studentId"=%s AND "courseId"=%s',
+            (Jsonb(snapshot), student_id, course_id),
+        )
 
 
 class HintSafety(BaseModel):

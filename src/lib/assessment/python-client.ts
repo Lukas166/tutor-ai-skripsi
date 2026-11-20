@@ -2,10 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireMahasiswa } from "@/lib/api-utils";
 import prisma from "@/lib/prisma";
 
-type Operation =
-  "overview" | "current" | "start" | "save" | "submit" | "profile" | "review";
 type LearningOperation =
-  | "comparison"
   | "practice-current"
   | "practice-accept"
   | "practice-dismiss"
@@ -15,7 +12,7 @@ type LearningOperation =
 export async function assessmentProxy(
   request: NextRequest,
   courseId: string,
-  operation: Operation | LearningOperation,
+  operation: LearningOperation,
   body: Record<string, string | null | undefined> = {},
 ) {
   const { error, session } = await requireMahasiswa(request);
@@ -65,7 +62,7 @@ export async function assessmentProxy(
       return NextResponse.json(
         {
           error:
-            "Backend AI yang berjalan belum memuat fitur pre-test. Jalankan ulang pnpm dev, lalu coba lagi.",
+            "Backend AI yang berjalan belum memuat fitur latihan. Jalankan ulang layanan AI, lalu coba lagi.",
         },
         { status: 503 },
       );
@@ -76,7 +73,7 @@ export async function assessmentProxy(
           error:
             typeof data.detail === "string"
               ? data.detail
-              : "Permintaan pre-test tidak valid.",
+              : "Permintaan latihan tidak valid.",
         },
         { status: response.status },
       );

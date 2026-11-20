@@ -582,6 +582,7 @@ model StudentLearningProgress {
   courseId      String
   startedAt     DateTime @default(now())
   lastStudiedAt DateTime @default(now())
+  progressSnapshot Json?
   student       User @relation(fields: [studentId], references: [id], onDelete: Cascade)
   course        Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
   @@id([studentId, courseId])

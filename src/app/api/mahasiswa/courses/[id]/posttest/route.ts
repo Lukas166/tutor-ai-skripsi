@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assessmentProxy } from "@/lib/assessment/python-client";
+import { lmsAssessmentRequest } from "@/lib/assessment/lms-request";
 import type { RouteContext } from "@/lib/api-utils";
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  return assessmentProxy(request, (await context.params).id, "current", {
-    kind: "POST",
-  });
+  return lmsAssessmentRequest(request, (await context.params).id, "current", "POST");
 }
 export async function POST(request: NextRequest, context: RouteContext) {
-  return assessmentProxy(request, (await context.params).id, "start", {
-    kind: "POST",
-  });
+  return lmsAssessmentRequest(request, (await context.params).id, "start", "POST");
 }
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const parsed = z
@@ -27,8 +23,5 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       { error: "Jawaban tidak valid." },
       { status: 400 },
     );
-  return assessmentProxy(request, (await context.params).id, "save", {
-    ...parsed.data,
-    kind: "POST",
-  });
+  return lmsAssessmentRequest(request, (await context.params).id, "save", "POST", parsed.data);
 }

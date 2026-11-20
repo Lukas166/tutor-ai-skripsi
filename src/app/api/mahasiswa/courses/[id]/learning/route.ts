@@ -1,6 +1,7 @@
 import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assessmentProxy } from "@/lib/assessment/python-client";
+import { lmsAssessmentRequest } from "@/lib/assessment/lms-request";
 import { requireMahasiswa, type RouteContext } from "@/lib/api-utils";
 import { ensurePracticeFollowup, preparePracticeFollowup } from "@/lib/tutor-ai/service";
 
@@ -55,5 +56,5 @@ export async function POST(request: NextRequest, context: RouteContext) {
 }
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  return assessmentProxy(request, (await context.params).id, "comparison");
+  return lmsAssessmentRequest(request, (await context.params).id, "comparison");
 }

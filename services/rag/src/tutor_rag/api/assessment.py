@@ -6,7 +6,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.encoders import jsonable_encoder
 
 from tutor_rag.api.dependencies import authorize, get_settings
-from tutor_rag.assessment.posttest import PosttestService
 from tutor_rag.assessment.service import AssessmentService
 from tutor_rag.contracts.rag import ContractModel
 from tutor_rag.core.config import Settings
@@ -20,10 +19,7 @@ logger = logging.getLogger(__name__)
 class StudentContext(ContractModel):
     student_id: str
     course_id: str
-    attempt_id: str | None = None
-    question_id: str | None = None
     selected_option: Literal["A", "B", "C", "D"] | None = None
-    kind: Literal["PRE", "POST"] = "PRE"
     practice_id: str | None = None
     request_id: str | None = None
     chat_session_id: str | None = None
@@ -40,14 +36,6 @@ def utc_timestamp(value: datetime) -> str:
 @router.post("/{operation}")
 def assessment(
     operation: Literal[
-        "overview",
-        "current",
-        "start",
-        "save",
-        "submit",
-        "profile",
-        "review",
-        "comparison",
         "practice-current",
         "practice-accept",
         "practice-dismiss",
@@ -60,11 +48,7 @@ def assessment(
 ):
     try:
         with connect_database(settings) as connection:
-            service = (
-                PosttestService(connection, request.student_id, request.course_id)
-                if request.kind == "POST"
-                else AssessmentService(connection, request.student_id, request.course_id)
-            )
+            service = AssessmentService(connection, request.student_id, request.course_id)
             if operation == "study":
                 service.require_access()
                 # Belajar dicatat setelah jawaban AI bersumber benar-benar tersimpan di LMS.
@@ -109,27 +93,11 @@ def assessment(
                         "HINT" if operation == "practice-hint" else "ANSWER",
                         request.selected_option,
                     )
-            elif operation == "comparison":
-                result = PosttestService(
-                    connection, request.student_id, request.course_id
-                ).comparison()
-            elif operation == "save":
-                if not request.attempt_id or not request.question_id:
-                    raise HTTPException(422, "Sesi dan soal wajib diisi.")
-                result = service.save(
-                    request.attempt_id, request.question_id, request.selected_option
-                )
-            elif operation == "submit":
-                if not request.attempt_id:
-                    raise HTTPException(422, "ID sesi wajib diisi.")
-                result = service.submit(request.attempt_id)
-            else:
-                result = getattr(service, operation)()
             return jsonable_encoder(result, custom_encoder={datetime: utc_timestamp})
     except HTTPException:
         raise
     except Exception as error:
         logger.error("Assessment %s gagal (%s)", operation, type(error).__name__)
         raise HTTPException(
-            503, "Layanan pre-test belum dapat memproses permintaan. Coba lagi."
+            503, "Layanan latihan belum dapat memproses permintaan. Coba lagi."
         ) from None

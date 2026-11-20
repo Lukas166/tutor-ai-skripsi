@@ -27,6 +27,7 @@ export type TutorChatInputProps = {
   setPanelMode: (mode: TutorPanelMode) => void;
   placement?: "floating" | "inline";
   sending: boolean;
+  pendingPracticeReply?: boolean;
   recording: boolean;
   transcribing: boolean;
   recordingLevels: number[];
@@ -79,6 +80,7 @@ export function TutorChatInput({
   setPanelMode,
   placement = "floating",
   sending,
+  pendingPracticeReply = false,
   recording,
   transcribing,
   recordingLevels,
@@ -89,7 +91,7 @@ export function TutorChatInput({
   handleConfirmRecording,
   textareaRef,
 }: TutorChatInputProps) {
-  const submitDisabled = (!input.trim() && !recording) || transcribing;
+  const submitDisabled = (!input.trim() && !recording) || transcribing || pendingPracticeReply;
   const visualLevels =
     recordingLevels.length === RECORDING_BAR_COUNT ? recordingLevels : EMPTY_RECORDING_LEVELS;
 
@@ -178,7 +180,7 @@ export function TutorChatInput({
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
-                    if (sending) return;
+                    if (sending || pendingPracticeReply) return;
                     void handleSend();
                   }
                 }}
@@ -241,7 +243,7 @@ export function TutorChatInput({
                 variant="ghost"
                 className="size-10 shrink-0 rounded-xl border-0 bg-transparent text-black shadow-none hover:bg-muted hover:text-black"
                 onClick={recording ? handleCancelRecording : () => void handleStartRecording()}
-                disabled={sending || transcribing}
+                disabled={sending || pendingPracticeReply || transcribing}
                 aria-label={transcribing ? "Memproses rekaman" : recording ? "Cancel" : "Voice input"}
               >
                 {transcribing ? (
@@ -266,7 +268,7 @@ export function TutorChatInput({
               </InputButtonTooltip>
             ) : (
               <InputButtonTooltip
-                label={recording ? "Finish" : "Send Prompt"}
+                label={pendingPracticeReply ? "Tunggu pembahasan latihan" : recording ? "Finish" : "Send Prompt"}
                 shortcut={recording ? "Enter" : "Enter"}
               >
                 <Button
@@ -289,7 +291,12 @@ export function TutorChatInput({
           </div>
         </div>
 
-        {isFloating && (
+        {pendingPracticeReply && (
+          <p className="mt-2.5 text-center text-xs text-muted-foreground" role="status">
+            Anda bisa menulis pesan berikutnya sambil menunggu pembahasan latihan.
+          </p>
+        )}
+        {isFloating && !pendingPracticeReply && (
           <p className="mt-2.5 text-center text-xs text-muted-foreground">
             Tutor AI bisa saja melakukan kesalahan. Cek kembali materimu.
           </p>

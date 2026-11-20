@@ -1,6 +1,6 @@
 import { after, NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assessmentProxy } from "@/lib/assessment/python-client";
+import { lmsAssessmentRequest } from "@/lib/assessment/lms-request";
 import type { RouteContext } from "@/lib/api-utils";
 import { requireMahasiswa } from "@/lib/api-utils";
 import { ensureTutorWelcomeSession, prepareTutorWelcome } from "@/lib/tutor-ai/service";
@@ -16,10 +16,11 @@ export async function POST(request: NextRequest, context: RouteContext) {
       { status: 400 },
     );
   const courseId = (await context.params).id;
-  const response = await assessmentProxy(
+  const response = await lmsAssessmentRequest(
     request,
     courseId,
     "submit",
+    "PRE",
     parsed.data,
   );
   if (response.ok) {

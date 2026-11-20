@@ -319,6 +319,7 @@ export function TutorAiChatPage({
   }, [activeSessionId, loadingSession, scrollToMessages]);
 
   const handleSendWithScroll = async () => {
+    if (practiceReplyPending) return;
     // First, let handleSend execute to add the new message to the state and set sending=true
     await handleSend();
     
@@ -559,13 +560,14 @@ export function TutorAiChatPage({
         )}
 
         {/* ==================== FLOATING INPUT AREA ==================== */}
-        {!loadingOverview && !isChatLanding && !overview?.welcomePending && !practiceReplyPending && (
+        {!loadingOverview && !isChatLanding && !overview?.welcomePending && (
           <TutorChatInput
             input={input}
             setInput={setInput}
             panelMode={panelMode}
             setPanelMode={setPanelMode}
             sending={sending}
+            pendingPracticeReply={practiceReplyPending}
             recording={recording}
             transcribing={transcribing}
             recordingLevels={recordingLevels}

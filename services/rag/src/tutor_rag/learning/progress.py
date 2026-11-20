@@ -117,6 +117,9 @@ def learner_progress(
     return {
         "totalIndicators": len(progress),
         "completedIndicators": sum(item["stage"] == "COMPLETED" for item in progress),
+        "posttestReady": bool(progress) and all(
+            item["stage"] == "COMPLETED" for item in progress
+        ),
         "reviewPendingCount": sum(item["stage"] == "REVIEW_REQUIRED" for item in progress),
         "nextIndicatorId": next_indicator["indicatorId"] if next_indicator else None,
         "nextIndicatorCode": next_indicator["indicatorCode"] if next_indicator else None,

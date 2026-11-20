@@ -72,8 +72,8 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 
 ## Menggunakan fitur
 
-1. Jalankan ulang `pnpm dev` setelah perubahan backend Python ini. Next.js dan API
-   Python menggunakan konfigurasi URL, port, serta token yang sudah ada.
+1. Terapkan migrasi database dengan `pnpm exec prisma migrate deploy`, lalu jalankan
+   ulang `pnpm dev`. Halaman assessment memakai API Next.js; Tutor AI tetap memakai Python.
 2. Login sebagai mahasiswa yang memiliki enrollment aktif pada course tujuan.
 3. Buka mata kuliah dan baca panduan pre-test sebelum memilih **Mulai Pre-test**.
 4. Pilih satu dari opsi yang tersedia untuk setiap soal. Jawaban tersimpan otomatis ke
@@ -96,7 +96,8 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
    panel Mahasiswa; alias lama `/mahasiswa/courses/{courseId}/tutor` diarahkan ke sana.
 8. Terima atau lewati tawaran latihan pada balasan tutor. Dalam mode avatar,
    gunakan **Buka Latihan Konsep**. Jawaban, hint, remediasi dan riwayat disimpan.
-9. Kembali ke mata kuliah dan pilih **Mulai Post-test** setelah interaksi belajar.
+9. Kembali ke mata kuliah dan pilih **Mulai Post-test** setelah seluruh indikator
+   menyelesaikan dua kartu latihan dan tinjauan ulang yang diperlukan.
    Paket disalin dari snapshot pre-test, termasuk ID soal, urutan dan opsi yang sama.
 10. Setelah post-test dikirim, **Lihat Perbandingan Hasil** menampilkan skor,
     perubahan poin persentase, jumlah benar, serta perubahan per indikator/materi.
@@ -114,8 +115,9 @@ Alamat halaman bersifat generik:
 URL lama `/mahasiswa/courses/{courseId}/pretest/result` diarahkan ke Profil Belajar.
 
 Course yang belum memiliki konfigurasi domain tidak menampilkan CTA pre-test.
-Login, enrollment aktif, dan role mahasiswa tetap diperiksa di server Next.js
-dan backend Python. Identitas mahasiswa tidak pernah diterima bebas dari browser.
+Login, enrollment aktif, dan role mahasiswa diperiksa di server Next.js untuk semua
+halaman assessment. Python memeriksa lagi akses mahasiswa untuk latihan dan Tutor AI.
+Identitas mahasiswa tidak pernah diterima bebas dari browser.
 
 ## Integritas penilaian dan profil
 
@@ -162,8 +164,9 @@ serta satu event mandiri per sesi mencegah pembaruan ganda. Hint/ulang tetap dic
 tetapi tidak menaikkan jumlah bukti dan tidak mengubah EMA. Riwayat ini tetap ada
 jika chat dihapus karena relasi chat memakai `SET NULL`, bukan cascade penilaian.
 Tawaran yang dilewati sebelum dibuka dapat ditawarkan kembali dan tidak dianggap
-bukti/soal yang telah dikerjakan. Setelah menjawab atau memakai hint, mahasiswa
-dapat mengakhiri latihan tanpa harus menjawab benar; riwayat dan bukti tetap utuh.
+bukti/soal yang telah dikerjakan. Setelah jawaban salah, Tutor AI membahasnya di
+chat dan mahasiswa dapat mencoba soal yang sama sampai benar. Jawaban ulang tidak
+mengubah EMA; riwayat tetap utuh.
 Ketika soal masih terbuka tanpa jawaban/hint, permintaan penjelasan untuk indikator
 yang sama diarahkan ke tombol hint. Ini mencegah bantuan lewat chat biasa dianggap
 sebagai jawaban mandiri; setelah hint tercatat, diskusi konsep dapat dilanjutkan.
@@ -175,14 +178,16 @@ Konfigurasi ada pada `course_learning_config` per course, tanpa tambahan env waj
 | emaAlpha | 0.3 | Bobot bukti latihan baru |
 | developingThreshold | 0.5 | Batas sinyal berkembang setelah ada latihan mandiri |
 | readyThreshold | 0.8 | Batas sinyal siap lanjut setelah ada latihan mandiri |
-| minimumStudySeconds | 0 | Durasi minimum sejak interaksi belajar pertama |
+| minimumStudySeconds | 0 | Data konfigurasi lama; tidak membuka post-test |
 
 Angka default adalah pengaturan aplikasi, bukan standar ilmiah. Tidak ada batas
 waktu pre/post yang dipaksakan. Status operasional diturunkan dari skor dan jumlah
 bukti yang tersimpan: NOT_ASSESSED, NEEDS_REINFORCEMENT, INITIAL_POSITIVE_EVIDENCE,
 DEVELOPING, READY_TO_ADVANCE. Nilai ringkasan materi dihitung dari indikator.
-`currentStatus` menyimpan sinyal saat pembaruan bukti; status yang dikirim ke tutor/UI
-dihitung kembali dengan konfigurasi course terkini agar perubahan threshold terbaca.
+`currentStatus` menyimpan sinyal saat pembaruan bukti. Learner Model Python menghitung
+tahap indikator dan kelayakan post-test, lalu menyimpannya sebagai `progressSnapshot`
+di `student_learning_progress`. API Next.js membaca snapshot ini untuk halaman LMS;
+TypeScript tidak menjalankan Adaptive Engine.
 
 Python memetakan pesan ke daftar indikator resmi dalam materi terpilih, membaca
 profil terbaru, lalu memutuskan FOUNDATION, APPLICATION, CLARIFY atau REVIEW.
@@ -192,10 +197,11 @@ mengikat courseId dan materialId; konteks indikator dapat mempersempit sesi mate
 Tanpa sumber, respons mengakui keterbatasannya. Soal hanya berasal dari PRACTICE,
 bukan generasi LLM. Hint/remediasi tidak menerima kunci atau opsi jawaban dari bank.
 
-Post-test tersedia setelah pre-test selesai dan ada jawaban tutor bersumber yang
-tersimpan atau interaksi latihan. `student_learning_progress` menyimpan waktu
-belajar server. Tidak ada syarat seluruh indikator harus siap lanjut. Perbandingan
-benar/salah per indikator baru dikirim setelah rangkaian post-test selesai.
+Post-test tersedia setelah pre-test selesai dan snapshot Python menyatakan seluruh
+indikator selesai. Dua kartu per indikator harus dijawab benar; EMA rendah memerlukan
+balasan tinjauan ulang bersumber PDF setelah kedua kartu. EMA rendah sendiri tidak
+menjadi nilai lulus. Perbandingan benar/salah per indikator baru dikirim setelah
+rangkaian post-test selesai.
 
 ## PDF dan OCR
 

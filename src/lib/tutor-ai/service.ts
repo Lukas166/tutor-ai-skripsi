@@ -736,10 +736,14 @@ async function createPracticeFollowup(courseId: string, userId: string, eventId:
       prepared.adaptive as Prisma.InputJsonValue | null),
     practiceEventId: eventId,
   };
-  await prisma.aiChatMessage.updateMany({
+  const updated = await prisma.aiChatMessage.updateMany({
     where: { id: pending.id, content: "" },
     data: { content: answer, ragSources: metadata },
   });
+  if (updated.count && prepared.chunks.length) {
+    await recordPythonStudy({ studentId: userId, courseId,
+      chatSessionId: practice.chatSessionId, messageId: pending.id });
+  }
   await prisma.aiChatSession.update({
     where: { id: practice.chatSessionId }, data: { lastActiveAt: new Date() },
   });

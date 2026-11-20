@@ -38,6 +38,7 @@ export function useTutorChat({
   const loadingSessionRef = useRef(false);
   const abortControllerRef = useRef<AbortController | null>(null);
   const loadSessionRequestIdRef = useRef(0);
+  const refreshInFlightRef = useRef(false);
 
   useEffect(() => {
     activeSessionIdRef.current = activeSession?.id ?? null;
@@ -96,6 +97,12 @@ export function useTutorChat({
         return;
       }
 
+      // Poll berikutnya menunggu permintaan sebelumnya selesai. Jika setiap
+      // respons lebih lambat dari interval, requestId baru tidak boleh terus
+      // membuang hasil respons yang sudah berisi balasan Tutor AI.
+      if (refresh && refreshInFlightRef.current) return;
+      if (refresh) refreshInFlightRef.current = true;
+
       if (activeSessionIdRef.current === sessionId && !loadingSessionRef.current && !refresh) return;
 
       const requestId = loadSessionRequestIdRef.current + 1;
@@ -117,7 +124,9 @@ export function useTutorChat({
       }
 
       try {
-        const response = await fetch(`/api/courses/${courseId}/tutor/sessions/${sessionId}`);
+        const response = await fetch(`/api/courses/${courseId}/tutor/sessions/${sessionId}`, {
+          cache: "no-store",
+        });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error ?? "Gagal memuat chat");
         if (loadSessionRequestIdRef.current === requestId) {
@@ -135,6 +144,7 @@ export function useTutorChat({
           }
         }
       } finally {
+        if (refresh) refreshInFlightRef.current = false;
         if (loadSessionRequestIdRef.current === requestId) {
           if (!refresh) setLoadingSession(false);
         }

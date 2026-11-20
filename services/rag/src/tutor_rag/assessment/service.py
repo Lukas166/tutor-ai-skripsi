@@ -1,34 +1,21 @@
-from datetime import UTC, datetime, timedelta
-from math import ceil
+"""Akses assessment yang masih dibutuhkan oleh Adaptive Engine Python."""
+
 from typing import Any
-from uuid import uuid4
 
 from fastapi import HTTPException
 from psycopg import Connection
-from psycopg.types.json import Jsonb
 
-from tutor_rag.assessment.scoring import POSITIVE, REINFORCEMENT, grade_responses, has_four_options
-from tutor_rag.learning.profile import operational_status
 from tutor_rag.learning.progress import learner_progress
-
-ASSESSMENT_DURATION = timedelta(minutes=15)
 
 
 class AssessmentService:
-    def __init__(
-        self,
-        connection: Connection[dict[str, Any]],
-        student_id: str,
-        course_id: str,
-        kind: str = "PRE",
-    ):
+    def __init__(self, connection: Connection[dict[str, Any]], student_id: str, course_id: str):
         self.connection = connection
         self.student_id = student_id
         self.course_id = course_id
-        self.kind = kind
 
     def require_access(self) -> None:
-        # Identitas diteruskan server LMS dari sesi Better Auth, lalu diverifikasi lagi di sini.
+        # LMS memverifikasi sesi; Python juga memeriksa enrollment sebelum beradaptasi.
         row = self.connection.execute(
             'SELECT u.id FROM "user" u JOIN enrollment e ON e."userId"=u.id '
             'JOIN course c ON c.id=e."courseId" '
@@ -41,408 +28,38 @@ class AssessmentService:
 
     def configuration(self) -> dict | None:
         return self.connection.execute(
-            'SELECT * FROM course_learning_config WHERE "courseId"=%s', (self.course_id,)
+            'SELECT * FROM course_learning_config WHERE "courseId"=%s',
+            (self.course_id,),
         ).fetchone()
 
-    def attempt(self, *, locked: bool = False) -> dict | None:
+    def attempt(self) -> dict | None:
         return self.connection.execute(
             'SELECT * FROM assessment_attempt WHERE "studentId"=%s AND "courseId"=%s '
-            "AND kind=%s" + (" FOR UPDATE" if locked else ""),
-            (self.student_id, self.course_id, self.kind),
+            "AND kind='PRE'",
+            (self.student_id, self.course_id),
         ).fetchone()
 
-    @staticmethod
-    def remaining_seconds(attempt: dict) -> int:
-        started_at = attempt["startedAt"]
-        if started_at.tzinfo is None:
-            started_at = started_at.replace(tzinfo=UTC)
-        remaining = (started_at + ASSESSMENT_DURATION) - datetime.now(UTC)
-        return max(0, ceil(remaining.total_seconds()))
-
-    @classmethod
-    def time_expired(cls, attempt: dict) -> bool:
-        return cls.remaining_seconds(attempt) == 0
-
-    def overview(self) -> dict:
-        self.require_access()
-        count = (
-            self.connection.execute(
-                'SELECT COUNT(*)::int AS count FROM domain_topic WHERE "courseId"=%s',
-                (self.course_id,),
-            ).fetchone()
-            or {"count": 0}
-        )["count"]
-        attempt = self.attempt()
-        configuration = self.configuration()
-        pre_submitted = None
-        if self.kind == "PRE":
-            pre_submitted = bool(attempt and attempt["status"] == "SUBMITTED")
-        return {
-            "available": configuration is not None,
-            "status": attempt["status"] if attempt else "NOT_STARTED",
-            "attemptId": attempt["id"] if attempt else None,
-            "topicCount": count,
-            "totalQuestions": (configuration or {}).get("pretestQuestionCount", 0),
-            "posttest": self.posttest_availability(
-                config=configuration,
-                pre_submitted=pre_submitted,
-            ),
-        }
-
-    def posttest_availability(
-        self, *, config: dict | None = None, pre_submitted: bool | None = None,
-    ) -> dict:
-        config = config if config is not None else self.configuration()
+    def posttest_availability(self) -> dict:
+        config = self.configuration()
         post = self.connection.execute(
             'SELECT id,status FROM assessment_attempt WHERE "studentId"=%s '
             "AND \"courseId\"=%s AND kind='POST'",
             (self.student_id, self.course_id),
         ).fetchone()
-        pre = pre_submitted if pre_submitted is not None else bool(self.connection.execute(
-            'SELECT id FROM assessment_attempt WHERE "studentId"=%s AND "courseId"=%s '
-            "AND kind='PRE' AND status='SUBMITTED'",
-            (self.student_id, self.course_id),
-        ).fetchone())
-        if not pre:
-            # Status pre-test tidak perlu menghitung seluruh riwayat belajar.
-            return {
-                "available": bool(post),
-                "status": post["status"] if post else "NOT_STARTED",
-                "remainingStudySeconds": 0,
-                "completedIndicators": 0,
-                "totalIndicators": (config or {}).get("pretestQuestionCount", 0),
-                "reviewPendingCount": 0,
-                "reason": None if post else "Selesaikan pre-test dahulu.",
-            }
+        pre = self.attempt()
+        if not pre or pre["status"] != "SUBMITTED":
+            return {"available": bool(post), "status": post["status"] if post else "NOT_STARTED",
+                    "reason": None if post else "Selesaikan pre-test dahulu."}
         progress = learner_progress(
             self.connection, self.student_id, self.course_id,
             (config or {}).get("developingThreshold", 0.5),
         )
-        # Post-test adalah pengukuran hasil setelah seluruh indikator selesai,
-        # bukan hadiah ketika timer berjalan atau EMA mencapai ambang tertentu.
-        allowed = bool(
-            config and progress["totalIndicators"] > 0
-            and progress["completedIndicators"] == progress["totalIndicators"]
-        )
+        complete = bool(config and progress["posttestReady"])
         return {
-            "available": allowed or bool(post),
+            "available": complete or bool(post),
             "status": post["status"] if post else "NOT_STARTED",
-            "remainingStudySeconds": 0,
             "completedIndicators": progress["completedIndicators"],
             "totalIndicators": progress["totalIndicators"],
             "reviewPendingCount": progress["reviewPendingCount"],
-            "reason": None
-            if allowed or post
-            else (
-                "Bank soal latihan indikator belum lengkap; hubungi dosen."
-                if any(item["stage"] == "UNAVAILABLE" for item in progress["indicators"])
-                else "Tinjau ulang indikator yang masih perlu penguatan bersama Tutor AI."
-                if progress["reviewPendingCount"] > 0
-                else "Selesaikan pembelajaran dan dua kartu latihan pada setiap indikator."
-                if progress["completedIndicators"] < progress["totalIndicators"]
-                else "Pembelajaran indikator belum selesai."
-            ),
-        }
-
-    def current(self) -> dict | None:
-        self.require_access()
-        attempt = self.attempt()
-        return self.public_attempt(attempt) if attempt else None
-
-    def public_attempt(self, attempt: dict) -> dict:
-        # Daftar field eksplisit: snapshot privat, kunci, pembahasan, dan isCorrect tidak keluar.
-        result = {
-            key: attempt[key]
-            for key in [
-                "id",
-                "status",
-                "startedAt",
-                "submittedAt",
-                "correctCount",
-                "totalQuestions",
-                "percentage",
-            ]
-        }
-        result["remainingSeconds"] = (
-            self.remaining_seconds(attempt) if attempt["status"] == "IN_PROGRESS" else 0
-        )
-        result["questions"] = []
-        if attempt["status"] == "IN_PROGRESS":
-            items = self.connection.execute(
-                'SELECT "questionId","orderNumber","selectedOption","questionSnapshot" '
-                'FROM assessment_item WHERE "attemptId"=%s ORDER BY "orderNumber"',
-                (attempt["id"],),
-            ).fetchall()
-            if any(not has_four_options(i["questionSnapshot"]) for i in items):
-                raise HTTPException(
-                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
-                )
-            result["questions"] = [
-                {
-                    "id": i["questionId"],
-                    "number": i["orderNumber"],
-                    "question": i["questionSnapshot"]["question"],
-                    "options": i["questionSnapshot"]["options"],
-                    "selectedOption": i["selectedOption"],
-                }
-                for i in items
-            ]
-        return result
-
-    def start(self) -> dict:
-        self.require_access()
-        with self.connection.transaction():
-            # Mengunci course yang sama dengan importer: paket tidak berubah di tengah pembentukan.
-            self.connection.execute("SELECT pg_advisory_xact_lock(hashtext(%s))", (self.course_id,))
-            existing = self.attempt()
-            if existing:
-                return self.public_attempt(existing)
-            configuration = self.configuration()
-            if configuration is None:
-                raise HTTPException(404, "Pre-test belum dikonfigurasi untuk mata kuliah ini.")
-            expected = configuration["pretestQuestionCount"]
-            questions = self.connection.execute(
-                'SELECT q.* FROM question_bank_item q JOIN domain_topic t ON t.id=q."topicId" '
-                'JOIN domain_indicator i ON i.id=q."indicatorId" '
-                'WHERE t."courseId"=%s AND q."courseId"=t."courseId" '
-                'AND i."courseId"=t."courseId" AND q.kind=\'PRE_POST\' ORDER BY i.code',
-                (self.course_id,),
-            ).fetchall()
-            if len(questions) != expected or len({q["indicatorId"] for q in questions}) != expected:
-                raise HTTPException(409, "Dataset pre-test belum lengkap. Hubungi pengampu.")
-            if any(not has_four_options(q) for q in questions):
-                raise HTTPException(
-                    409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D."
-                )
-            attempt = self.connection.execute(
-                'INSERT INTO assessment_attempt (id,"studentId","courseId","totalQuestions") '
-                "VALUES (%s,%s,%s,%s) RETURNING *",
-                (str(uuid4()), self.student_id, self.course_id, expected),
-            ).fetchone()
-            assert attempt is not None
-            for number, q in enumerate(questions, start=1):
-                # Snapshot mempertahankan soal DAN kunci asli sesi ini saat seed diulang.
-                snapshot = {
-                    key: q[key]
-                    for key in [
-                        "question",
-                        "options",
-                        "correctOption",
-                        "explanation",
-                        "sourcePdf",
-                        "sourcePages",
-                    ]
-                }
-                self.connection.execute(
-                    'INSERT INTO assessment_item (id,"attemptId","questionId","indicatorId",'
-                    '"orderNumber","questionSnapshot") VALUES (%s,%s,%s,%s,%s,%s)',
-                    (
-                        str(uuid4()),
-                        attempt["id"],
-                        q["id"],
-                        q["indicatorId"],
-                        number,
-                        Jsonb(snapshot),
-                    ),
-                )
-            return self.public_attempt(attempt)
-
-    def owned_attempt(self, attempt_id: str) -> dict:
-        attempt = self.attempt(locked=True)
-        if attempt is None or attempt["id"] != attempt_id:
-            raise HTTPException(404, "Sesi pre-test tidak ditemukan.")
-        return attempt
-
-    def save(self, attempt_id: str, question_id: str, option: str | None) -> dict:
-        self.require_access()
-        with self.connection.transaction():
-            attempt = self.owned_attempt(attempt_id)
-            if attempt["status"] != "IN_PROGRESS":
-                raise HTTPException(409, "Pre-test sudah difinalisasi dan tidak dapat diubah.")
-            if self.time_expired(attempt):
-                raise HTTPException(409, "Waktu pengerjaan habis. Kirim hasil untuk melihat nilai.")
-            row = self.connection.execute(
-                'SELECT "questionSnapshot" FROM assessment_item '
-                'WHERE "attemptId"=%s AND "questionId"=%s',
-                (attempt_id, question_id),
-            ).fetchone()
-            if row is None:
-                raise HTTPException(404, "Soal tidak berada dalam sesi ini.")
-            if option is not None and (
-                option not in ("A", "B", "C", "D")
-                or option not in row["questionSnapshot"]["options"]
-            ):
-                raise HTTPException(422, "Pilihan tidak tersedia pada soal ini.")
-            self.connection.execute(
-                'UPDATE assessment_item SET "selectedOption"=%s,'
-                '"answeredAt"=CASE WHEN %s::text IS NULL THEN NULL ELSE NOW() END '
-                'WHERE "attemptId"=%s AND "questionId"=%s',
-                (option, option, attempt_id, question_id),
-            )
-        return {"saved": True, "questionId": question_id, "selectedOption": option}
-
-    def submit(self, attempt_id: str) -> dict:
-        self.require_access()
-        with self.connection.transaction():
-            # Semua penyimpanan draf dan submit mengunci baris yang sama: submit ganda aman.
-            attempt = self.owned_attempt(attempt_id)
-            if attempt["status"] == "SUBMITTED":
-                return self.public_attempt(attempt)
-            items = self.connection.execute(
-                'SELECT * FROM assessment_item WHERE "attemptId"=%s ORDER BY "orderNumber"',
-                (attempt_id,),
-            ).fetchall()
-            try:
-                correct, percentage, scores = grade_responses(
-                    items,
-                    attempt["totalQuestions"],
-                    allow_unanswered=self.time_expired(attempt),
-                )
-            except ValueError as error:
-                raise HTTPException(409, str(error)) from None
-            for item, score in zip(items, scores, strict=True):
-                self.connection.execute(
-                    'UPDATE assessment_item SET "isCorrect"=%s WHERE id=%s',
-                    (bool(score), item["id"]),
-                )
-                # Satu bukti per indikator adalah baseline terbatas, bukan penguasaan penuh.
-                if self.kind == "POST":
-                    continue  # Post-test adalah pengukuran hasil, tidak memperbarui baseline/EMA.
-                self.connection.execute(
-                    'INSERT INTO student_indicator_profile (id,"studentId","courseId",'
-                    '"indicatorId","baselineItemId","initialScore","currentScore","initialStatus",'
-                    '"currentStatus") VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',
-                    (
-                        str(uuid4()),
-                        self.student_id,
-                        self.course_id,
-                        item["indicatorId"],
-                        item["id"],
-                        score,
-                        score,
-                        POSITIVE if score else REINFORCEMENT,
-                        POSITIVE if score else REINFORCEMENT,
-                    ),
-                )
-            completed = self.connection.execute(
-                "UPDATE assessment_attempt SET status='SUBMITTED',\"submittedAt\"=NOW(),"
-                '"correctCount"=%s,percentage=%s WHERE id=%s RETURNING *',
-                (correct, percentage, attempt_id),
-            ).fetchone()
-            # Penilaian, finalisasi, dan profil commit bersama atau seluruhnya dibatalkan.
-            assert completed is not None
-            return self.public_attempt(completed)
-
-    def profile(self) -> dict:
-        self.require_access()
-        config = self.configuration()
-        attempt = self.attempt()
-        course = self.connection.execute(
-            "SELECT id,title FROM course WHERE id=%s", (self.course_id,)
-        ).fetchone()
-        topics = self.connection.execute(
-            'SELECT id,code,title,"orderNumber","courseSessionId","cpmkCodes","subCpmkCodes",'
-            '"sourcePdf","sourcePages" FROM domain_topic WHERE "courseId"=%s '
-            'ORDER BY "orderNumber"',
-            (self.course_id,),
-        ).fetchall()
-        if config is None:
-            raise HTTPException(404, "Domain pembelajaran belum tersedia untuk mata kuliah ini.")
-        rows = self.connection.execute(
-            'SELECT i.id,i.code,i."topicId",i.description,c.name AS concept,i."subCpmkCodes",'
-            'p."initialScore",p."currentScore",p."evidenceCount",p."initialStatus",p."createdAt" '
-            'FROM domain_indicator i JOIN domain_topic t ON t.id=i."topicId" '
-            'JOIN domain_concept c ON c.id=i."conceptId" '
-            'LEFT JOIN student_indicator_profile p ON p."indicatorId"=i.id '
-            'AND p."studentId"=%s AND p."courseId"=%s '
-            'WHERE t."courseId"=%s ORDER BY i.code',
-            (self.student_id, self.course_id, self.course_id),
-        ).fetchall()
-        learning = learner_progress(
-            self.connection, self.student_id, self.course_id,
-            config["developingThreshold"],
-        )
-        stages = {item["indicatorId"]: item for item in learning["indicators"]}
-        for topic in topics:
-            topic["indicators"] = [
-                {
-                    **row,
-                    "initialStatus": row["initialStatus"] or "NOT_ASSESSED",
-                    "evidenceCount": row["evidenceCount"] or 0,
-                    "currentStatus": operational_status(row, config),
-                    "learning": stages[row["id"]],
-                }
-                for row in rows
-                if row["topicId"] == topic["id"]
-            ]
-            topic["initialPositiveCount"] = sum(
-                int(i["initialScore"] or 0) for i in topic["indicators"]
-            )
-            scored = [
-                i["currentScore"] for i in topic["indicators"] if i["currentScore"] is not None
-            ]
-            topic["currentScore"] = sum(scored) / len(scored) if scored else None
-        return {
-            "course": course,
-            "attempt": self.public_attempt(attempt) if attempt else None,
-            "totalQuestions": config["pretestQuestionCount"],
-            "topics": topics,
-            "assessedCount": sum(r["initialScore"] is not None for r in rows),
-            "positiveCount": sum(int(r["initialScore"] or 0) for r in rows),
-            "reinforcementCount": sum(r["initialStatus"] == REINFORCEMENT for r in rows),
-            "learningProgress": {
-                "completedIndicators": learning["completedIndicators"],
-                "totalIndicators": learning["totalIndicators"],
-                "reviewPendingCount": learning["reviewPendingCount"],
-                "nextIndicatorCode": learning["nextIndicatorCode"],
-            },
-        }
-
-    def review(self) -> dict:
-        self.require_access()
-        attempt = self.attempt()
-        if attempt is None or attempt["status"] != "SUBMITTED":
-            raise HTTPException(409, "Selesaikan tes sebelum meninjau jawaban.")
-
-        posttest = self.connection.execute(
-            'SELECT id FROM assessment_attempt WHERE "studentId"=%s '
-            'AND "courseId"=%s AND kind=\'POST\' AND status=\'SUBMITTED\'',
-            (self.student_id, self.course_id),
-        ).fetchone()
-        answers_revealed = posttest is not None
-        items = self.connection.execute(
-            'SELECT a."orderNumber",a."selectedOption",a."isCorrect",'
-            'a."questionSnapshot",t.title AS "topicTitle" FROM assessment_item a '
-            'JOIN domain_indicator i ON i.id=a."indicatorId" '
-            'JOIN domain_topic t ON t.id=i."topicId" '
-            'WHERE a."attemptId"=%s ORDER BY a."orderNumber"',
-            (attempt["id"],),
-        ).fetchall()
-        if any(not has_four_options(item["questionSnapshot"]) for item in items):
-            raise HTTPException(409, "Paket soal lama perlu diperbarui menjadi empat opsi A-D.")
-
-        return {
-            "kind": self.kind,
-            "totalQuestions": attempt["totalQuestions"],
-            "correctCount": attempt["correctCount"],
-            "answersRevealed": answers_revealed,
-            "questions": [
-                {
-                    "number": item["orderNumber"],
-                    "question": item["questionSnapshot"]["question"],
-                    "options": item["questionSnapshot"]["options"],
-                    "selectedOption": item["selectedOption"],
-                    "isCorrect": item["isCorrect"],
-                    "correctOption": (
-                        item["questionSnapshot"]["correctOption"]
-                        if answers_revealed else None
-                    ),
-                    "explanation": (
-                        item["questionSnapshot"]["explanation"]
-                        if answers_revealed else None
-                    ),
-                    "topicTitle": item["topicTitle"],
-                }
-                for item in items
-            ],
+            "reason": None if complete or post else "Selesaikan pembelajaran indikator dahulu.",
         }

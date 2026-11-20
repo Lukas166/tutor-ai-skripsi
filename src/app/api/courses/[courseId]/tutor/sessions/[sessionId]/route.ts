@@ -36,7 +36,9 @@ export async function GET(request: NextRequest, context: TutorSessionRouteContex
           console.error("Tutor practice follow-up generation failed", error));
       });
     }
-    return NextResponse.json(session);
+    return NextResponse.json(session, {
+      headers: { "Cache-Control": "no-store" },
+    });
   } catch (err) {
     return tutorErrorResponse(err, "Gagal memuat chat session");
   }

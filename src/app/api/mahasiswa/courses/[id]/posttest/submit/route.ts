@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assessmentProxy } from "@/lib/assessment/python-client";
+import { lmsAssessmentRequest } from "@/lib/assessment/lms-request";
 import type { RouteContext } from "@/lib/api-utils";
 
 export async function POST(request: NextRequest, context: RouteContext) {
@@ -10,8 +10,5 @@ export async function POST(request: NextRequest, context: RouteContext) {
     .safeParse(await request.json().catch(() => null));
   if (!parsed.success)
     return NextResponse.json({ error: "Sesi tidak valid." }, { status: 400 });
-  return assessmentProxy(request, (await context.params).id, "submit", {
-    ...parsed.data,
-    kind: "POST",
-  });
+  return lmsAssessmentRequest(request, (await context.params).id, "submit", "POST", parsed.data);
 }

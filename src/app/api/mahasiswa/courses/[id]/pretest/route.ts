@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assessmentProxy } from "@/lib/assessment/python-client";
+import { lmsAssessmentRequest } from "@/lib/assessment/lms-request";
 import type { RouteContext } from "@/lib/api-utils";
 
 const draftSchema = z
@@ -12,11 +12,11 @@ const draftSchema = z
   .strict();
 
 export async function GET(request: NextRequest, context: RouteContext) {
-  return assessmentProxy(request, (await context.params).id, "current");
+  return lmsAssessmentRequest(request, (await context.params).id, "current");
 }
 
 export async function POST(request: NextRequest, context: RouteContext) {
-  return assessmentProxy(request, (await context.params).id, "start");
+  return lmsAssessmentRequest(request, (await context.params).id, "start");
 }
 
 export async function PATCH(request: NextRequest, context: RouteContext) {
@@ -26,10 +26,11 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
       { error: "Sesi, soal, dan pilihan wajib valid." },
       { status: 400 },
     );
-  return assessmentProxy(
+  return lmsAssessmentRequest(
     request,
     (await context.params).id,
     "save",
+    "PRE",
     parsed.data,
   );
 }
