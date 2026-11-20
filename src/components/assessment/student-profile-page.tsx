@@ -17,14 +17,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { cn } from "@/lib/utils";
 import { assessmentRequest, type StudentProfile } from "./types";
 import { AssessmentGuide } from "./assessment-guide";
-
-const statusLabels = {
-  NOT_ASSESSED: "Belum dinilai",
-  NEEDS_REINFORCEMENT: "Perlu penguatan",
-  INITIAL_POSITIVE_EVIDENCE: "Indikasi awal baik",
-  DEVELOPING: "Sedang berkembang",
-  READY_TO_ADVANCE: "Siap lanjut",
-};
+import { abilityStatusLabels, learningStageLabels } from "./status-labels";
 
 function ProfileSummary({ profile, courseId }: { profile: StudentProfile; courseId: string }) {
   const attempt = profile.attempt!;
@@ -50,7 +43,7 @@ function ProfileSummary({ profile, courseId }: { profile: StudentProfile; course
           </Link>
         </Button>
       </div>
-      <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <div className="flex flex-col rounded-xl border border-border/70 bg-card p-5 shadow-sm">
           <p className="text-sm text-muted-foreground">Skor</p>
           <p className="mt-2 text-3xl font-semibold tracking-tight">
@@ -75,6 +68,17 @@ function ProfileSummary({ profile, courseId }: { profile: StudentProfile; course
           <p className="mt-2 text-3xl font-semibold tracking-tight">{profile.reinforcementCount}</p>
           <p className="mt-auto pt-2 text-xs text-muted-foreground">
             dari {profile.assessedCount} indikator
+          </p>
+        </div>
+        <div className="flex flex-col rounded-xl border border-border/70 bg-card p-5 shadow-sm">
+          <p className="text-sm text-muted-foreground">Alur belajar selesai</p>
+          <p className="mt-2 text-3xl font-semibold tracking-tight">
+            {profile.learningProgress.completedIndicators}/{profile.learningProgress.totalIndicators}
+          </p>
+          <p className="mt-auto pt-2 text-xs text-muted-foreground">
+            {profile.learningProgress.reviewPendingCount > 0
+              ? `${profile.learningProgress.reviewPendingCount} perlu tinjauan ulang`
+              : "Indikator dipelajari melalui Tutor AI dan latihan"}
           </p>
         </div>
       </div>
@@ -183,9 +187,16 @@ function ProfileTopic({
                       {indicator.evidenceCount} kali
                     </dd>
                   </div>
+                  <div className="flex gap-1">
+                    <dt>Kartu selesai</dt>
+                    <dd className="font-semibold text-foreground">
+                      {indicator.learning.completedQuestions}/{indicator.learning.requiredQuestions}
+                    </dd>
+                  </div>
                 </dl>
               </div>
-              <p className="flex shrink-0 items-center gap-2 text-xs font-medium sm:pt-1">
+              <div className="flex shrink-0 flex-col gap-1 text-xs font-medium sm:items-end sm:pt-1">
+              <p className="flex items-center gap-2">
                 <span
                   className={cn(
                     "size-2 shrink-0 rounded-full",
@@ -196,8 +207,10 @@ function ProfileTopic({
                         : "bg-foreground",
                   )}
                 />
-                {statusLabels[indicator.currentStatus]}
+                {abilityStatusLabels[indicator.currentStatus]}
               </p>
+              <p className="text-muted-foreground">{learningStageLabels[indicator.learning.stage]}</p>
+              </div>
             </li>
           ))}
         </ul>
@@ -336,6 +349,10 @@ export function StudentProfilePage({ courseId }: { courseId: string }) {
                   <div>
                     <dt className="font-semibold">Bukti penilaian</dt>
                     <dd>Jumlah jawaban yang dihitung: satu dari pre-test, lalu bertambah dari jawaban pertama latihan tanpa petunjuk.</dd>
+                  </div>
+                  <div>
+                    <dt className="font-semibold">Alur belajar</dt>
+                    <dd>Dua kartu latihan harus dijawab benar. Performa yang masih rendah memerlukan satu tinjauan ulang bersumber PDF sebelum post-test.</dd>
                   </div>
                 </dl>
               </TooltipContent>

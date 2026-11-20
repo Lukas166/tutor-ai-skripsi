@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Loader2 } from "lucide-react";
@@ -189,16 +188,11 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
         {practice?.status === "ACTIVE" && (
           <>
             <Button disabled={busy || !option} onClick={() => act("practice-answer")}>
-              {busy && <Loader2 className="animate-spin" />}Kirim jawaban
+              {busy && <Loader2 className="animate-spin" />}
+              {practice.answerCount > 0 ? "Coba lagi" : "Kirim jawaban"}
             </Button>
             <Button variant="outline" disabled={busy || practice.hintCount >= 1} onClick={() => act("practice-hint")}>Minta Petunjuk</Button>
-            {(practice.answerCount > 0 || practice.hintCount > 0) && (
-              <Button variant="ghost" disabled={busy} onClick={() => act("practice-dismiss")}>Akhiri latihan</Button>
-            )}
           </>
-        )}
-        {finished && (
-          <Button asChild variant="outline"><Link href={`/mahasiswa/courses/${courseId}#materi`}>Lanjut ke materi</Link></Button>
         )}
       </CardFooter>
     </Card>

@@ -72,7 +72,9 @@ export function CourseAssessmentCard({
             ) : (
               <p className="mt-1 max-w-xl text-sm leading-relaxed text-muted-foreground">
                 {finished
-                  ? "Lihat materi prioritas atau lanjutkan bersama AI Tutor."
+                  ? overview?.posttest?.available
+                    ? "Seluruh indikator telah dilalui. Post-test tersedia."
+                    : `Lanjutkan bersama AI Tutor. ${overview?.posttest?.completedIndicators ?? 0}/${overview?.posttest?.totalIndicators ?? 0} indikator selesai dipelajari.`
                   : inProgress
                     ? "Lanjutkan soal yang belum selesai."
                     : "Kenali pemahaman awal sebelum mulai belajar."}

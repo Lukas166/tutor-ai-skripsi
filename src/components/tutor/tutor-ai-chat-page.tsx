@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import {
   Loader2,
+  ListChecks,
   MessageCircle,
   Search,
   Settings2,
@@ -41,6 +42,7 @@ import { TutorChatInput, type TutorPanelMode } from "./tutor-chat-input";
 import { TutorChatContextDialog } from "./tutor-chat-context-dialog";
 import { TutorAvatarPanel } from "./tutor-avatar-panel";
 import { TutorAvatarCustomizationDialog } from "./tutor-avatar-customization-dialog";
+import { TutorLearningProgressDialog } from "./tutor-learning-progress-dialog";
 import {
   DEFAULT_TUTOR_AVATAR_CUSTOMIZATION,
   TUTOR_AVATAR_CUSTOMIZATION_STORAGE_KEY,
@@ -124,6 +126,7 @@ export function TutorAiChatPage({
   const [avatarCustomizationHydrated, setAvatarCustomizationHydrated] =
     useState(false);
   const [avatarCustomizationOpen, setAvatarCustomizationOpen] = useState(false);
+  const [learningProgressOpen, setLearningProgressOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [practiceOpen, setPracticeOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -462,6 +465,21 @@ export function TutorAiChatPage({
               <Button
                 variant="ghost"
                 size="icon-sm"
+                onClick={() => setLearningProgressOpen(true)}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Lihat progres belajar"
+              >
+                <ListChecks className="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Progres belajar</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
                 onClick={async () => {
                   if (!activeSession) {
                     const session = await createNewChat();
@@ -616,6 +634,17 @@ export function TutorAiChatPage({
         onCustomizationChange={setAvatarCustomization}
         onOpenChange={setAvatarCustomizationOpen}
         open={avatarCustomizationOpen}
+      />
+
+      <TutorLearningProgressDialog
+        courseId={courseId}
+        open={learningProgressOpen}
+        onOpenChange={setLearningProgressOpen}
+        onRequestReview={(code, concept) => {
+          setInput(`Tolong tinjau ulang ${code} (${concept}) berdasarkan materi PDF, lalu bantu saya memahami bagian yang masih keliru.`);
+          setLearningProgressOpen(false);
+          window.setTimeout(() => textareaRef.current?.focus(), 0);
+        }}
       />
 
       {/* ==================== CONTEXT MATERI DIALOG ==================== */}

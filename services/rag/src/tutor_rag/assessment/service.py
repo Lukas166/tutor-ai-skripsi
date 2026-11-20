@@ -9,6 +9,7 @@ from psycopg.types.json import Jsonb
 
 from tutor_rag.assessment.scoring import POSITIVE, REINFORCEMENT, grade_responses, has_four_options
 from tutor_rag.learning.profile import operational_status
+from tutor_rag.learning.progress import learner_progress
 
 ASSESSMENT_DURATION = timedelta(minutes=15)
 
@@ -73,50 +74,73 @@ class AssessmentService:
         )["count"]
         attempt = self.attempt()
         configuration = self.configuration()
+        pre_submitted = None
+        if self.kind == "PRE":
+            pre_submitted = bool(attempt and attempt["status"] == "SUBMITTED")
         return {
             "available": configuration is not None,
             "status": attempt["status"] if attempt else "NOT_STARTED",
             "attemptId": attempt["id"] if attempt else None,
             "topicCount": count,
             "totalQuestions": (configuration or {}).get("pretestQuestionCount", 0),
-            "posttest": self.posttest_availability(),
+            "posttest": self.posttest_availability(
+                config=configuration,
+                pre_submitted=pre_submitted,
+            ),
         }
 
-    def posttest_availability(self) -> dict:
-        config = self.configuration()
+    def posttest_availability(
+        self, *, config: dict | None = None, pre_submitted: bool | None = None,
+    ) -> dict:
+        config = config if config is not None else self.configuration()
         post = self.connection.execute(
             'SELECT id,status FROM assessment_attempt WHERE "studentId"=%s '
             "AND \"courseId\"=%s AND kind='POST'",
             (self.student_id, self.course_id),
         ).fetchone()
-        pre = self.connection.execute(
+        pre = pre_submitted if pre_submitted is not None else bool(self.connection.execute(
             'SELECT id FROM assessment_attempt WHERE "studentId"=%s AND "courseId"=%s '
             "AND kind='PRE' AND status='SUBMITTED'",
             (self.student_id, self.course_id),
-        ).fetchone()
-        progress = self.connection.execute(
-            'SELECT EXTRACT(EPOCH FROM (NOW()-"startedAt")) AS elapsed '
-            'FROM student_learning_progress WHERE "studentId"=%s AND "courseId"=%s',
-            (self.student_id, self.course_id),
-        ).fetchone()
-        remaining = max(
-            0,
-            (config or {}).get("minimumStudySeconds", 0)
-            - int(progress["elapsed"] if progress else 0),
+        ).fetchone())
+        if not pre:
+            # Status pre-test tidak perlu menghitung seluruh riwayat belajar.
+            return {
+                "available": bool(post),
+                "status": post["status"] if post else "NOT_STARTED",
+                "remainingStudySeconds": 0,
+                "completedIndicators": 0,
+                "totalIndicators": (config or {}).get("pretestQuestionCount", 0),
+                "reviewPendingCount": 0,
+                "reason": None if post else "Selesaikan pre-test dahulu.",
+            }
+        progress = learner_progress(
+            self.connection, self.student_id, self.course_id,
+            (config or {}).get("developingThreshold", 0.5),
         )
-        allowed = bool(pre and progress and remaining == 0)
+        # Post-test adalah pengukuran hasil setelah seluruh indikator selesai,
+        # bukan hadiah ketika timer berjalan atau EMA mencapai ambang tertentu.
+        allowed = bool(
+            config and progress["totalIndicators"] > 0
+            and progress["completedIndicators"] == progress["totalIndicators"]
+        )
         return {
             "available": allowed or bool(post),
             "status": post["status"] if post else "NOT_STARTED",
-            "remainingStudySeconds": remaining,
+            "remainingStudySeconds": 0,
+            "completedIndicators": progress["completedIndicators"],
+            "totalIndicators": progress["totalIndicators"],
+            "reviewPendingCount": progress["reviewPendingCount"],
             "reason": None
             if allowed or post
             else (
-                "Selesaikan pre-test dahulu."
-                if not pre
-                else "Lakukan pembelajaran dengan AI Tutor atau latihan terlebih dahulu."
-                if not progress
-                else "Durasi belajar minimal belum tercapai."
+                "Bank soal latihan indikator belum lengkap; hubungi dosen."
+                if any(item["stage"] == "UNAVAILABLE" for item in progress["indicators"])
+                else "Tinjau ulang indikator yang masih perlu penguatan bersama Tutor AI."
+                if progress["reviewPendingCount"] > 0
+                else "Selesaikan pembelajaran dan dua kartu latihan pada setiap indikator."
+                if progress["completedIndicators"] < progress["totalIndicators"]
+                else "Pembelajaran indikator belum selesai."
             ),
         }
 
@@ -334,6 +358,11 @@ class AssessmentService:
             'WHERE t."courseId"=%s ORDER BY i.code',
             (self.student_id, self.course_id, self.course_id),
         ).fetchall()
+        learning = learner_progress(
+            self.connection, self.student_id, self.course_id,
+            config["developingThreshold"],
+        )
+        stages = {item["indicatorId"]: item for item in learning["indicators"]}
         for topic in topics:
             topic["indicators"] = [
                 {
@@ -341,6 +370,7 @@ class AssessmentService:
                     "initialStatus": row["initialStatus"] or "NOT_ASSESSED",
                     "evidenceCount": row["evidenceCount"] or 0,
                     "currentStatus": operational_status(row, config),
+                    "learning": stages[row["id"]],
                 }
                 for row in rows
                 if row["topicId"] == topic["id"]
@@ -360,6 +390,12 @@ class AssessmentService:
             "assessedCount": sum(r["initialScore"] is not None for r in rows),
             "positiveCount": sum(int(r["initialScore"] or 0) for r in rows),
             "reinforcementCount": sum(r["initialStatus"] == REINFORCEMENT for r in rows),
+            "learningProgress": {
+                "completedIndicators": learning["completedIndicators"],
+                "totalIndicators": learning["totalIndicators"],
+                "reviewPendingCount": learning["reviewPendingCount"],
+                "nextIndicatorCode": learning["nextIndicatorCode"],
+            },
         }
 
     def review(self) -> dict:

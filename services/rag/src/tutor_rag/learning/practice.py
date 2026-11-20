@@ -80,19 +80,24 @@ class PracticeService:
                 (self.course_id, indicator_id, self.student_id, self.course_id),
             ).fetchone()
             if not question:
-                # Tawaran yang dilewati sebelum soal dibuka tidak menghabiskan bank soal.
+                # Kartu lama yang dihentikan dapat dilanjutkan tanpa soal baru.
+                # Jawaban ulang tetap tidak dihitung sebagai bukti mandiri.
                 ignored = self.connection.execute(
-                    'SELECT id FROM practice_session WHERE "studentId"=%s AND "courseId"=%s '
-                    'AND "indicatorId"=%s AND status=\'DISMISSED\' AND "answerCount"=0 '
-                    'AND "hintCount"=0 ORDER BY "updatedAt" LIMIT 1 FOR UPDATE',
+                    'SELECT id,"answerCount","hintCount" FROM practice_session '
+                    'WHERE "studentId"=%s AND "courseId"=%s '
+                    'AND "indicatorId"=%s AND status=\'DISMISSED\' '
+                    'ORDER BY "createdAt" LIMIT 1 FOR UPDATE',
                     (self.student_id, self.course_id, indicator_id),
                 ).fetchone()
                 if not ignored:
                     return None
                 self.connection.execute(
-                    "UPDATE practice_session SET status='OFFERED',\"chatSessionId\"=%s,"
+                    'UPDATE practice_session SET status=%s,"chatSessionId"=%s,'
                     '"updatedAt"=NOW() WHERE id=%s',
-                    (chat_session_id, ignored["id"]),
+                    (
+                        "ACTIVE" if ignored["answerCount"] or ignored["hintCount"] else "OFFERED",
+                        chat_session_id, ignored["id"],
+                    ),
                 )
                 return ignored["id"]
             if not has_four_options(question):

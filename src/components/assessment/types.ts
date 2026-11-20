@@ -43,6 +43,9 @@ export type AssessmentOverview = {
     status: "NOT_STARTED" | "IN_PROGRESS" | "SUBMITTED";
     reason: string | null;
     remainingStudySeconds: number;
+    completedIndicators: number;
+    totalIndicators: number;
+    reviewPendingCount: number;
   };
 };
 export type StudentProfile = {
@@ -52,6 +55,12 @@ export type StudentProfile = {
   assessedCount: number;
   positiveCount: number;
   reinforcementCount: number;
+  learningProgress: {
+    completedIndicators: number;
+    totalIndicators: number;
+    reviewPendingCount: number;
+    nextIndicatorCode: string | null;
+  };
   topics: {
     id: string;
     code: string;
@@ -76,6 +85,14 @@ export type StudentProfile = {
         | "NEEDS_REINFORCEMENT"
         | "INITIAL_POSITIVE_EVIDENCE";
       currentStatus: "NOT_ASSESSED" | "NEEDS_REINFORCEMENT" | "INITIAL_POSITIVE_EVIDENCE" | "DEVELOPING" | "READY_TO_ADVANCE";
+      learning: {
+        lessonDelivered: boolean;
+        completedQuestions: number;
+        requiredQuestions: number;
+        reviewRequired: boolean;
+        reviewDone: boolean;
+        stage: "UNAVAILABLE" | "NOT_STARTED" | "LESSON_REQUIRED" | "PRACTICING" | "REVIEW_REQUIRED" | "COMPLETED";
+      };
     }[];
   }[];
 };

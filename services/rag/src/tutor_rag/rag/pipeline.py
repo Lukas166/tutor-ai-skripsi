@@ -21,7 +21,9 @@ class RagPipeline:
             # Pertanyaan profil mengambil PDF yang terhubung ke indikator walau
             # mahasiswa sedang memilih materi lain di kontrol konteks chat.
             with connect_database(self.provider.settings) as connection:
-                if adaptive["action"] in ("PROFILE", "WELCOME", "PRACTICE_FOLLOWUP"):
+                if adaptive["action"] in (
+                    "PROFILE", "WELCOME", "LEARN", "PRACTICE", "PRACTICE_FOLLOWUP"
+                ):
                     rows = connection.execute(
                         'SELECT m.id FROM material m JOIN course_session s '
                         'ON s.id=m."courseSessionId" WHERE s."courseId"=%s '
@@ -47,7 +49,11 @@ class RagPipeline:
             chunks = self.repository.retrieve(request.course.id, material_ids, embedding)
         # Tahap 3: gabungkan sumber, riwayat, dan instruksi jawaban menjadi konteks LLM.
         # Generasi dipisahkan dari persiapan agar konteks identik untuk chat dan streaming.
-        if adaptive and chunks and adaptive.get("offerPractice"):
+        # Permintaan latihan eksplisit boleh menampilkan soal bank yang terhubung
+        # ke materi meski pencarian semantik tidak menghasilkan potongan di atas ambang.
+        if adaptive and material_ids and adaptive.get("offerPractice") and (
+            chunks or adaptive["action"] in ("PRACTICE", "PRACTICE_FOLLOWUP")
+        ):
             adaptive_service.offer(request, adaptive)
         instruction = build_system_instruction(request)
         prompt = build_prompt(request, chunks)
@@ -57,6 +63,12 @@ class RagPipeline:
                 + json.dumps(adaptive["profile"], ensure_ascii=False)
                 + "\nUrutan prioritas belajar saat ini: "
                 + json.dumps(adaptive["priorityPlan"], ensure_ascii=False)
+                + "\nKemajuan alur belajar resmi: "
+                + json.dumps({
+                    key: adaptive["learningProgress"][key]
+                    for key in ("totalIndicators", "completedIndicators",
+                                "reviewPendingCount", "nextIndicatorCode")
+                }, ensure_ascii=False)
                 + "\nStatus post-test resmi: "
                 + json.dumps(adaptive["posttest"], ensure_ascii=False)
                 + "\n\nIndikator relevan: "
@@ -84,7 +96,26 @@ class RagPipeline:
                     "Setelah menjawab materi, tawarkan secara langsung dan singkat "
                     "untuk mencobanya atau melewatinya. Jangan meminta mahasiswa "
                     "meminta latihan lagi, mencari kartu di tempat lain, atau "
-                    "menanyakan izin sebelum kartu ditampilkan."
+                    "menanyakan izin sebelum kartu ditampilkan. Jangan menebak "
+                    "isi soal sebelum mahasiswa membuka kartu."
+                )
+            elif adaptive.get("practiceLocation") == "current_chat":
+                instruction += (
+                    "\nKartu latihan indikator ini sudah ada pada balasan sebelumnya "
+                    "di chat yang sama. Arahkan ke kartu itu bila diminta; jangan "
+                    "mengklaim kartu baru tampil di bawah balasan ini."
+                )
+            elif adaptive.get("practiceLocation") == "other_chat":
+                instruction += (
+                    "\nLatihan indikator ini masih terbuka pada chat lain. "
+                    "Jangan mengatakan kartu tersedia di balasan ini."
+                )
+            else:
+                instruction += (
+                    "\nTidak ada kartu latihan yang terlampir pada balasan ini. "
+                    "Jangan mengklaim ada kartu yang bisa langsung dikerjakan. "
+                    "Jika mahasiswa meminta latihan, katakan bahwa kartu untuk "
+                    "konteks ini belum tersedia dan lanjutkan pembelajaran dari PDF."
                 )
         return PreparedAnswer(
             chunks=chunks,

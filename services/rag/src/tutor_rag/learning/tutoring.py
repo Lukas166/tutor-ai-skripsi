@@ -11,6 +11,7 @@ from tutor_rag.infrastructure.database import connect_database
 from tutor_rag.infrastructure.gemini import GeminiProvider
 from tutor_rag.learning.practice import PracticeService
 from tutor_rag.learning.profile import operational_status
+from tutor_rag.learning.progress import learner_progress
 
 
 class LearningIntent(BaseModel):
@@ -51,7 +52,7 @@ class AdaptiveTutoring:
             # Semua indikator tersedia untuk pertanyaan profil, meski pilihan PDF di LMS terbatas.
             candidates = connection.execute(
                 'SELECT i.id,i.code,i.description,c.name AS concept,t.title AS topic,'
-                't."courseSessionId",p."initialScore",p."currentScore",'
+                't."courseSessionId",t."orderNumber",p."initialScore",p."currentScore",'
                 'p."evidenceCount",p."initialStatus" FROM domain_indicator i '
                 'JOIN domain_concept c ON c.id=i."conceptId" '
                 'JOIN domain_topic t ON t.id=i."topicId" '
@@ -71,12 +72,25 @@ class AdaptiveTutoring:
                 }
                 for row in candidates
             ]
+            learning_progress = learner_progress(
+                connection, request.user.id, request.course.id,
+                config["developingThreshold"],
+            )
+            stages = {
+                item["indicatorId"]: item for item in learning_progress["indicators"]
+            }
             priority_plan = [
                 {"code": item["code"], "topic": item["topic"],
-                 "concept": item["concept"], "description": item["description"]}
-                for status in ("NEEDS_REINFORCEMENT", "DEVELOPING")
-                for item in profile if item["currentStatus"] == status
+                 "concept": item["concept"], "description": item["description"],
+                 "stage": stages[item["id"]]["stage"]}
+                for item in profile if stages[item["id"]]["stage"] != "COMPLETED"
             ]
+            candidate_by_code = {row["code"]: row for row in candidates}
+            priority_plan.sort(key=lambda item: (
+                candidate_by_code[item["code"]]["orderNumber"],
+                candidate_by_code[item["code"]]["initialScore"],
+                item["code"],
+            ))
             if request.purpose == "practice_followup":
                 if not request.practice_event_id or not request.chat_session_id:
                     raise HTTPException(422, "Hasil latihan dan chat diperlukan.")
@@ -97,17 +111,14 @@ class AdaptiveTutoring:
                 if not practiced:
                     raise HTTPException(409, "Indikator latihan tidak tersedia.")
                 practiced_profile = next(
-                    item for item in profile if item["id"] == practiced["id"]
+                    row for row in profile if row["id"] == practiced["id"]
                 )
-                # Jika indikator masih perlu penguatan, rencana tetap di sana.
-                # Setelah cukup berkembang, beralih ke indikator prioritas berikutnya.
-                next_code = practiced["code"]
-                if event["isCorrect"] and practiced_profile["currentStatus"] != "NEEDS_REINFORCEMENT":
-                    next_code = next(
-                        (item["code"] for item in priority_plan
-                         if item["code"] != practiced["code"]),
-                        practiced["code"],
-                    )
+                practiced_stage = stages[practiced["id"]]
+                # EMA memutuskan kedalaman review, sedangkan dua kartu yang
+                # selesai menentukan perpindahan indikator secara terukur.
+                next_code = (
+                    learning_progress["nextIndicatorCode"] or practiced["code"]
+                )
                 next_indicator = next(
                     (row for row in candidates if row["code"] == next_code), practiced
                 )
@@ -128,9 +139,14 @@ class AdaptiveTutoring:
                         f"{practiced['concept']}: {practiced['description']}"
                     ),
                     "practiceId": None,
-                    "offerPractice": False,
+                    "offerPractice": bool(
+                        event["isCorrect"] and 0 < practiced_stage["completedQuestions"]
+                        < practiced_stage["requiredQuestions"]
+                    ),
+                    "practiceLocation": None,
                     "profile": profile,
                     "priorityPlan": priority_plan,
+                    "learningProgress": learning_progress,
                     "posttest": assessment.posttest_availability(),
                     "practiceEvent": {
                         "indicatorCode": practiced["code"],
@@ -146,18 +162,27 @@ class AdaptiveTutoring:
                         "concept": next_indicator["concept"],
                         "description": next_indicator["description"],
                         "sameIndicator": next_indicator["id"] == practiced["id"],
+                        "stage": practiced_stage["stage"],
                     },
                     "instruction": (
                         "Tanggapi jawaban latihan yang sudah dinilai. Jelaskan alasan "
                         "jawaban benar dengan PDF indikator yang dikerjakan; jika salah, "
                         "jelaskan singkat mengapa pilihan mahasiswa kurang tepat. "
-                        "Akhiri dengan jembatan alami ke langkah belajar berikutnya "
-                        "tanpa membacakan status atau skor profil. Jangan buat soal baru."
+                        "Jika kartu pertama selesai, ajak mencoba kartu kedua bila "
+                        "terlampir. Jika dua kartu selesai tetapi performa masih "
+                        "rendah, ajak tinjauan ulang indikator yang sama dari PDF. "
+                        "Jika indikator selesai, arahkan ke indikator berikutnya. "
+                        "Jangan membacakan kode status atau skor profil."
                     ),
                 }
             payload = json.dumps({
                 "purpose": request.purpose, "question": request.question,
-                "recentMessages": [m.content[:800] for m in request.history[-3:]],
+                # Peran pesan diperlukan agar persetujuan singkat seperti "ya"
+                # dibaca sebagai kelanjutan tawaran Tutor AI sebelumnya.
+                "recentMessages": [
+                    {"role": m.sender_type, "content": m.content[:1200]}
+                    for m in request.history[-4:]
+                ],
                 "profile": profile,
                 "priorityPlan": priority_plan,
             }, ensure_ascii=False)
@@ -167,7 +192,12 @@ class AdaptiveTutoring:
                 "inventaris/status profil atau indikator lemah; LEARN untuk konsep "
                 "termasuk permintaan mengajarkan indikator lemah, SUMMARY untuk "
                 "ringkasan, PRACTICE untuk latihan, SOCIAL hanya untuk percakapan tanpa "
-                "isi materi. Pada purpose=welcome, pilih satu indikator prioritas dari "
+                "isi materi. Baca peran dan isi recentMessages. Jika pesan saat ini "
+                "berupa persetujuan singkat atas tawaran latihan Tutor AI sebelumnya, "
+                "pilih PRACTICE dan indikator yang sedang dibahas, bukan SOCIAL. "
+                "Jika mahasiswa menyetujui ajakan tinjauan ulang, pilih LEARN untuk "
+                "indikator yang sedang ditinjau. "
+                "Pada purpose=welcome, pilih satu indikator prioritas dari "
                 "profil dan intent PROFILE. Pilih indicator_id hanya dari ID profil; "
                 "null untuk pertanyaan tentang seluruh profil atau semua indikator "
                 "agar jawaban tidak menyempit ke satu indikator. Untuk permintaan "
@@ -182,6 +212,26 @@ class AdaptiveTutoring:
                 LearningIntent,
             ))
             indicator = next((row for row in candidates if row["id"] == intent.indicator_id), None)
+            if not indicator and intent.intent == "LEARN":
+                indicator = next(
+                    (row for row in candidates
+                     if row["id"] == learning_progress["nextIndicatorId"]), None
+                )
+            if not indicator and intent.intent == "PRACTICE" and request.chat_session_id:
+                # Jika mahasiswa hanya menjawab "ya", gunakan fokus indikator
+                # tervalidasi dari balasan Tutor AI terakhir dalam chat yang sama.
+                last_focus = connection.execute(
+                    'SELECT "ragSources"->\'adaptive\'->>\'indicatorId\' AS id '
+                    'FROM ai_chat_message WHERE "aiChatSessionId"=%s '
+                    'AND "senderType"=\'ai\' AND content<>\'\' '
+                    'AND ("ragSources"->\'adaptive\'->>\'indicatorId\') IS NOT NULL '
+                    'ORDER BY "createdAt" DESC LIMIT 1',
+                    (request.chat_session_id,),
+                ).fetchone()
+                indicator = next(
+                    (row for row in candidates if row["id"] == (last_focus or {}).get("id")),
+                    None,
+                )
             if request.purpose == "welcome" and priority_plan:
                 # Sumber pembuka mengikuti prioritas resmi pertama, bukan tebakan model.
                 indicator = next(
@@ -196,6 +246,38 @@ class AdaptiveTutoring:
                     'AND "hintCount"=0 ORDER BY "createdAt" LIMIT 1',
                     (request.user.id, request.course.id, indicator["id"]),
                 ).fetchone()
+            guidance = ""
+            if active_practice and intent.intent == "PRACTICE":
+                guidance = (
+                    "Ada latihan yang sedang terbuka. Jangan memberi jawaban "
+                    "atau petunjuk soal melalui chat; arahkan ke tombol petunjuk "
+                    "pada kartu latihan di chat asalnya."
+                )
+            elif indicator and intent.intent == "LEARN" and (
+                stages[indicator["id"]]["stage"] == "REVIEW_REQUIRED"
+            ):
+                following = next(
+                    (item for item in priority_plan if item["code"] != indicator["code"]),
+                    None,
+                )
+                guidance = (
+                    "Ini tinjauan ulang setelah dua kartu selesai. Jelaskan "
+                    "indikator ini lebih lengkap dengan PDF, utamakan bagian "
+                    "yang menyebabkan jawaban mandiri keliru. Ajak mahasiswa "
+                    "melanjutkan rencana setelah tinjauan ini. Langkah berikutnya: "
+                    + (following["code"] if following else "post-test bila seluruh indikator selesai")
+                    + "."
+                )
+            elif indicator and intent.intent == "LEARN" and (
+                indicator["currentScore"] is not None
+                and indicator["currentScore"] < config["developingThreshold"]
+            ):
+                guidance = (
+                    "Performa mandiri pada indikator ini masih rendah. Jawab "
+                    "pertanyaan mahasiswa dahulu, lalu beri penjelasan bertahap "
+                    "yang cukup untuk memahami konsep dan kesalahan umum, "
+                    "dengan dukungan PDF. Jangan membacakan skor atau status."
+                )
             return {
                 "action": "PRACTICE_HINT" if active_practice and intent.intent == "PRACTICE" else (
                     "WELCOME" if request.purpose == "welcome" else intent.intent
@@ -206,8 +288,17 @@ class AdaptiveTutoring:
                 "status": operational_status(indicator, config) if indicator else None,
                 "currentScore": indicator["currentScore"] if indicator else None,
                 "sessionId": indicator["courseSessionId"] if indicator else None,
-                "retrievalQuery": intent.retrieval_query.strip() or request.question,
+                "retrievalQuery": (
+                    f"{indicator['concept']}: {indicator['description']}"
+                    if indicator and intent.intent == "PRACTICE"
+                    else intent.retrieval_query.strip() or request.question
+                ),
                 "practiceId": None,
+                "practiceLocation": (
+                    "current_chat" if active_practice
+                    and active_practice["chatSessionId"] == request.chat_session_id
+                    else "other_chat" if active_practice else None
+                ),
                 # Setelah materi indikator dibahas, kartu langsung ditawarkan.
                 # Mahasiswa tetap bebas memulai atau melewatinya di UI.
                 "offerPractice": bool(indicator and (
@@ -215,15 +306,11 @@ class AdaptiveTutoring:
                 )),
                 "profile": profile,
                 "priorityPlan": priority_plan,
+                "learningProgress": learning_progress,
                 "requiredWelcomeCodes": [item["code"] for item in profile]
                 if request.purpose == "welcome" else [],
                 "posttest": assessment.posttest_availability(),
-                "instruction": (
-                    "Ada latihan yang sedang terbuka. Jangan memberi jawaban atau petunjuk "
-                    "soal melalui chat; arahkan ke tombol petunjuk pada kartu latihan "
-                    "di chat asalnya."
-                    if active_practice and intent.intent == "PRACTICE" else ""
-                ),
+                "instruction": guidance,
             }
 
     def offer(self, request: PrepareRequest, context: dict) -> None:
@@ -233,7 +320,7 @@ class AdaptiveTutoring:
             # Satu kartu yang sudah tampil di chat tidak ditempel ulang ke bubble baru.
             # Kartu tetap di tempatnya saat hasil latihan dan balasan LLM diperbarui.
             existing = connection.execute(
-                'SELECT id,"chatSessionId" FROM practice_session '
+                'SELECT id,"chatSessionId",status FROM practice_session '
                 'WHERE "studentId"=%s AND "courseId"=%s '
                 'AND "indicatorId"=%s '
                 "AND status IN ('OFFERED','ACTIVE') LIMIT 1",
@@ -247,15 +334,24 @@ class AdaptiveTutoring:
                         (request.chat_session_id, existing["id"]),
                     ).fetchone()
                     if shown:
-                        context["instruction"] += (
-                            " Kartu latihan sudah ada pada percakapan ini; "
-                            "mahasiswa dapat melanjutkannya tanpa kartu baru."
-                        )
+                        if context["action"] == "PRACTICE" and existing["status"] == "OFFERED":
+                            # Tawaran lama yang belum dibuka boleh dipindah ke
+                            # balasan persetujuan tanpa mengganti soal atau profil.
+                            context["practiceId"] = existing["id"]
+                            context["practiceLocation"] = "attached"
+                        else:
+                            context["practiceLocation"] = "current_chat"
+                            context["instruction"] += (
+                                " Kartu latihan sudah ada pada percakapan ini; "
+                                "mahasiswa dapat melanjutkannya tanpa kartu baru."
+                            )
                     else:
                         # Generasi chat sebelumnya dapat gagal setelah soal ditawarkan.
                         # Pasang kartu yang sama pada balasan berikutnya agar tidak hilang.
                         context["practiceId"] = existing["id"]
+                        context["practiceLocation"] = "attached"
                 else:
+                    context["practiceLocation"] = "other_chat"
                     context["instruction"] += (
                         " Latihan indikator ini masih terbuka pada chat lain; "
                         "jangan mengatakan ada kartu baru di bawah balasan ini."
@@ -264,3 +360,5 @@ class AdaptiveTutoring:
             context["practiceId"] = PracticeService(
                 connection, request.user.id, request.course.id, self.settings
             ).offer(context["indicatorId"], request.chat_session_id)
+            if context["practiceId"]:
+                context["practiceLocation"] = "attached"
