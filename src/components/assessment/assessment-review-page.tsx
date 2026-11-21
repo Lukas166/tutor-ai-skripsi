@@ -13,6 +13,7 @@ const OPTIONS: Option[] = ["A", "B", "C", "D"];
 
 function answerStatus(question: AssessmentReview["questions"][number]) {
   if (!question.selectedOption) return "Tidak dijawab";
+  if (question.isCorrect === null) return "Sudah dijawab";
   return question.isCorrect ? "Benar" : "Salah";
 }
 
@@ -86,11 +87,12 @@ export function AssessmentReviewPage({
               <p className="text-sm font-medium text-muted-foreground">Soal {question.number}</p>
               <p className={cn(
                 "flex items-center gap-1.5 text-sm font-medium",
-                !question.selectedOption ? "text-muted-foreground" : question.isCorrect
+                !question.selectedOption || question.isCorrect === null ? "text-muted-foreground" : question.isCorrect
                   ? "text-emerald-700 dark:text-emerald-400" : "text-destructive",
               )}>
                 {question.selectedOption
-                  ? question.isCorrect ? <CheckCircle2 className="size-4" /> : <XCircle className="size-4" />
+                  ? question.isCorrect === null ? <CircleDot className="size-4" />
+                    : question.isCorrect ? <CheckCircle2 className="size-4" /> : <XCircle className="size-4" />
                   : <Circle className="size-4" />}
                 {answerStatus(question)}
               </p>
@@ -104,9 +106,9 @@ export function AssessmentReviewPage({
               {OPTIONS.map((option) => {
                 const selected = question.selectedOption === option;
                 const correct = review.answersRevealed && question.correctOption === option;
-                const color = correct || (selected && question.isCorrect)
+                const color = correct || (selected && question.isCorrect === true)
                   ? "text-emerald-700 dark:text-emerald-400"
-                  : selected && !question.isCorrect ? "text-destructive" : "text-foreground";
+                  : selected && question.isCorrect === false ? "text-destructive" : "text-foreground";
                 return (
                   <div key={option} role="listitem" className="flex items-start gap-5 py-3 leading-6">
                     {selected
@@ -160,8 +162,9 @@ export function AssessmentReviewPage({
                   size="icon-sm"
                   className={cn(position !== index && (
                     !item.selectedOption ? "border-dashed text-muted-foreground"
-                      : item.isCorrect ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
-                        : "border-destructive text-destructive"
+                      : item.isCorrect === null ? "border-foreground/60"
+                        : item.isCorrect ? "border-emerald-600 text-emerald-700 dark:text-emerald-400"
+                          : "border-destructive text-destructive"
                   ))}
                   aria-label={`Soal ${item.number}, ${answerStatus(item)}`}
                   aria-current={position === index ? "step" : undefined}

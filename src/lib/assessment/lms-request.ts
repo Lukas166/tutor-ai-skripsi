@@ -53,6 +53,10 @@ export async function lmsAssessmentRequest(
     if (cause instanceof AssessmentError)
       return NextResponse.json({ error: cause.message }, { status: cause.status });
     console.error("LMS assessment request failed", cause);
-    return NextResponse.json({ error: "Data pembelajaran belum dapat diproses." }, { status: 503 });
+    return NextResponse.json({
+      error: operation === "submit"
+        ? "Pengiriman hasil belum terkonfirmasi. Muat ulang halaman, lalu kirim lagi jika hasil belum muncul."
+        : "Data pembelajaran belum dapat diproses.",
+    }, { status: 503 });
   }
 }

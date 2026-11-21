@@ -196,26 +196,40 @@ export async function submitAssessment(
     const expired = remainingSeconds(attempt.startedAt) === 0;
     if (!expired && items.some((item) => !letters.includes(item.selectedOption as Option)))
       throw new AssessmentError(409, "Lengkapi seluruh jawaban sebelum mengirim.");
-    let correctCount = 0;
-    for (const item of items) {
-      const question = snapshot(item.questionSnapshot);
-      const correct = item.selectedOption === question.correctOption;
-      correctCount += Number(correct);
-      await tx.assessmentItem.update({ where: { id: item.id }, data: { isCorrect: correct } });
-      if (kind === "PRE") {
+    // Validasi snapshot sebelum perubahan apa pun; kunci tetap hanya dibaca di server.
+    items.forEach((item) => snapshot(item.questionSnapshot));
+    // Satu UPDATE menggantikan satu perjalanan database per soal. Nilai NULL pada
+    // jawaban yang kosong karena waktu habis dinilai salah.
+    const graded = await tx.$queryRaw<{ id: string; isCorrect: boolean }[]>`
+      UPDATE assessment_item
+      SET "isCorrect" = COALESCE(
+        "selectedOption" = ("questionSnapshot"->>'correctOption'), false
+      )
+      WHERE "attemptId"=${attemptId}
+      RETURNING id,"isCorrect"
+    `;
+    if (graded.length !== items.length)
+      throw new AssessmentError(409, "Paket tes berubah saat penilaian. Coba kirim ulang.");
+    const correctByItem = new Map(graded.map((item) => [item.id, item.isCorrect]));
+    const correctCount = graded.filter((item) => item.isCorrect).length;
+    if (kind === "PRE") {
+      // Profil awal berasal dari hasil resmi soal; seluruh indikator disimpan
+      // bersama-sama agar transaksi tidak kedaluwarsa pada database jarak jauh.
+      await tx.studentIndicatorProfile.createMany({ data: items.map((item) => {
+        const correct = correctByItem.get(item.id) === true;
         const status = correct ? "INITIAL_POSITIVE_EVIDENCE" : "NEEDS_REINFORCEMENT";
-        await tx.studentIndicatorProfile.create({ data: {
+        return {
           id: crypto.randomUUID(), studentId, courseId, indicatorId: item.indicatorId,
           baselineItemId: item.id, initialScore: Number(correct), currentScore: Number(correct),
           initialStatus: status, currentStatus: status,
-        } });
-      }
+        };
+      }) });
     }
     await tx.assessmentAttempt.update({ where: { id: attemptId }, data: {
       status: "SUBMITTED", submittedAt: new Date(), correctCount,
       percentage: correctCount / attempt.totalQuestions * 100,
     } });
-  });
+  }, { maxWait: 10_000, timeout: 15_000 });
   return publicAttempt(studentId, courseId, kind);
 }
 
@@ -302,7 +316,8 @@ export async function assessmentReview(studentId: string, courseId: string, kind
       const question = snapshot(item.questionSnapshot);
       return {
         number: item.orderNumber, question: question.question, options: question.options,
-        selectedOption: item.selectedOption, isCorrect: item.isCorrect,
+        selectedOption: item.selectedOption,
+        isCorrect: answersRevealed ? item.isCorrect : null,
         correctOption: answersRevealed ? question.correctOption : null,
         explanation: answersRevealed ? question.explanation : null,
         topicTitle: item.indicator.topic.title,

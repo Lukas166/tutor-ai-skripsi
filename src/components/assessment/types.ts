@@ -26,7 +26,7 @@ export type AssessmentReview = {
     question: string;
     options: Record<Option, string>;
     selectedOption: Option | null;
-    isCorrect: boolean;
+    isCorrect: boolean | null;
     correctOption: Option | null;
     explanation: string | null;
     topicTitle: string;
