@@ -51,8 +51,11 @@ class RagPipeline:
         # Generasi dipisahkan dari persiapan agar konteks identik untuk chat dan streaming.
         # Permintaan latihan eksplisit boleh menampilkan soal bank yang terhubung
         # ke materi meski pencarian semantik tidak menghasilkan potongan di atas ambang.
-        if adaptive and material_ids and adaptive.get("offerPractice") and (
-            chunks or adaptive["action"] in ("PRACTICE", "PRACTICE_FOLLOWUP")
+        if adaptive and adaptive.get("offerPractice") and (
+            adaptive["action"] == "PRACTICE_HINT"
+            or (material_ids and (
+                chunks or adaptive["action"] in ("PRACTICE", "PRACTICE_FOLLOWUP")
+            ))
         ):
             adaptive_service.offer(request, adaptive)
         instruction = build_system_instruction(request)
@@ -90,7 +93,7 @@ class RagPipeline:
                     "\nKode indikator yang wajib muncul seluruhnya pada peta awal: "
                     + ", ".join(adaptive["requiredWelcomeCodes"])
                 )
-            if adaptive.get("practiceId") and adaptive["action"] != "PRACTICE_HINT":
+            if adaptive.get("practiceId"):
                 instruction += (
                     "\nKartu latihan sudah tampil tepat di bawah balasan ini. "
                     "Setelah menjawab materi, tawarkan secara langsung dan singkat "

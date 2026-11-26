@@ -59,6 +59,8 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
   const locked = useRef(false);
   const requestIds = useRef<Record<string, string>>({});
   const url = `/api/mahasiswa/courses/${courseId}/learning`;
+  const lastAnswer = practice?.events.filter((event) => event.kind === "ANSWER").at(-1);
+  const selectedOption = option ?? lastAnswer?.selectedOption ?? null;
 
   useEffect(() => {
     let active = true;
@@ -73,13 +75,13 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
     locked.current = true;
     setBusy(true);
     setError("");
-    const key = operation + (operation === "practice-answer" ? option : "");
+    const key = operation + (operation === "practice-answer" ? selectedOption : "");
     const requestId = requestIds.current[key] ?? crypto.randomUUID();
     requestIds.current[key] = requestId;
     try {
       const data = await assessmentRequest<Practice>(url, "POST", {
         operation, practiceId, requestId,
-        ...(operation === "practice-answer" ? { selectedOption: option } : {}),
+        ...(operation === "practice-answer" ? { selectedOption } : {}),
       });
       setPractice(data);
       if (operation === "practice-answer") {
@@ -97,7 +99,6 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
 
   if (practice?.status === "DISMISSED" && !practice.answerCount && !practice.hintCount) return null;
   const finished = practice?.status === "COMPLETED" || practice?.status === "DISMISSED";
-  const lastAnswer = practice?.events.filter((event) => event.kind === "ANSWER").at(-1);
 
   return (
     <Card className="mt-5">
@@ -123,7 +124,7 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
             <h3 className="max-w-3xl text-lg font-semibold leading-relaxed sm:text-xl">{practice.question}</h3>
             <RadioGroup
               className="mt-6 gap-1"
-              value={option ?? lastAnswer?.selectedOption ?? ""}
+              value={selectedOption ?? ""}
               onValueChange={(value) => setOption(value as Option)}
               disabled={busy || finished}
               aria-label={`Jawaban soal latihan ${practice.code}`}
@@ -187,7 +188,7 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
         )}
         {practice?.status === "ACTIVE" && (
           <>
-            <Button disabled={busy || !option} onClick={() => act("practice-answer")}>
+            <Button disabled={busy || !selectedOption} onClick={() => act("practice-answer")}>
               {busy && <Loader2 className="animate-spin" />}
               {practice.answerCount > 0 ? "Coba lagi" : "Kirim jawaban"}
             </Button>

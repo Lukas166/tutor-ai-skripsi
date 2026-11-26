@@ -250,8 +250,8 @@ class AdaptiveTutoring:
             if active_practice and intent.intent == "PRACTICE":
                 guidance = (
                     "Ada latihan yang sedang terbuka. Jangan memberi jawaban "
-                    "atau petunjuk soal melalui chat; arahkan ke tombol petunjuk "
-                    "pada kartu latihan di chat asalnya."
+                    "atau petunjuk soal melalui chat; arahkan mahasiswa untuk "
+                    "menggunakan tombol pada kartu latihan."
                 )
             elif indicator and intent.intent == "LEARN" and (
                 stages[indicator["id"]]["stage"] == "REVIEW_REQUIRED"
@@ -265,7 +265,10 @@ class AdaptiveTutoring:
                     "indikator ini lebih lengkap dengan PDF, utamakan bagian "
                     "yang menyebabkan jawaban mandiri keliru. Ajak mahasiswa "
                     "melanjutkan rencana setelah tinjauan ini. Langkah berikutnya: "
-                    + (following["code"] if following else "post-test bila seluruh indikator selesai")
+                    + (
+                        following["code"]
+                        if following else "post-test bila seluruh indikator selesai"
+                    )
                     + "."
                 )
             elif indicator and intent.intent == "LEARN" and (
@@ -317,8 +320,8 @@ class AdaptiveTutoring:
         if not request.user.id or not request.chat_session_id or not context.get("offerPractice"):
             return
         with connect_database(self.settings) as connection:
-            # Satu kartu yang sudah tampil di chat tidak ditempel ulang ke bubble baru.
-            # Kartu tetap di tempatnya saat hasil latihan dan balasan LLM diperbarui.
+            # Permintaan latihan eksplisit menampilkan kembali kartu yang sama
+            # di bawah balasan terbaru tanpa membuat soal atau bukti baru.
             existing = connection.execute(
                 'SELECT id,"chatSessionId",status FROM practice_session '
                 'WHERE "studentId"=%s AND "courseId"=%s '
@@ -334,9 +337,7 @@ class AdaptiveTutoring:
                         (request.chat_session_id, existing["id"]),
                     ).fetchone()
                     if shown:
-                        if context["action"] == "PRACTICE" and existing["status"] == "OFFERED":
-                            # Tawaran lama yang belum dibuka boleh dipindah ke
-                            # balasan persetujuan tanpa mengganti soal atau profil.
+                        if context["action"] in ("PRACTICE", "PRACTICE_HINT"):
                             context["practiceId"] = existing["id"]
                             context["practiceLocation"] = "attached"
                         else:
