@@ -18,7 +18,8 @@ function IndicatorRow({ indicator, isNext, onRequestReview }: {
   isNext: boolean;
   onRequestReview: (code: string, concept: string) => void;
 }) {
-  const completed = indicator.learning.stage === "COMPLETED";
+  const pretestMet = indicator.learning.stage === "PRETEST_MET";
+  const completed = pretestMet || indicator.learning.stage === "COMPLETED";
   const required = indicator.learning.requiredQuestions;
   const done = indicator.learning.completedQuestions;
 
@@ -38,16 +39,22 @@ function IndicatorRow({ indicator, isNext, onRequestReview }: {
           </span>
         </span>
         <span className="flex shrink-0 items-center gap-2">
-          <span className="hidden h-1.5 w-16 overflow-hidden rounded-full bg-muted sm:block" aria-hidden="true">
-            <span className={cn("block h-full rounded-full", completed ? "bg-foreground" : "bg-brand")}
+          <span className="block h-1.5 w-12 overflow-hidden rounded-full bg-muted sm:w-16" aria-hidden="true">
+            <span className={cn("block h-full rounded-full", done >= required ? "bg-foreground" : "bg-brand")}
               style={{ width: `${required ? Math.min(100, done / required * 100) : 0}%` }} />
           </span>
-          <span className="w-9 text-right text-xs tabular-nums text-muted-foreground" aria-label={`${done} dari ${required} kartu selesai`}>{done}/{required}</span>
+          <span className="w-9 text-right text-xs tabular-nums text-muted-foreground"
+            aria-label={`${done} dari ${required} kartu selesai${pretestMet ? ", latihan opsional" : ""}`}>
+            {done}/{required}
+          </span>
         </span>
         <ChevronDown className="size-4 shrink-0 text-muted-foreground transition-transform group-open/indicator:rotate-180" aria-hidden="true" />
       </summary>
       <div className="pb-4">
         <p className="text-sm leading-relaxed text-muted-foreground">{indicator.description}</p>
+        {pretestMet && (
+          <p className="mt-2 text-xs text-muted-foreground">Syarat indikator terpenuhi dari pre-test. Latihan dan pembahasan materi tetap tersedia jika dibutuhkan.</p>
+        )}
         <dl className="mt-3 grid grid-cols-2 gap-x-5 gap-y-3 rounded-lg bg-muted/45 p-3 text-xs sm:grid-cols-4">
           <div>
             <dt className="text-muted-foreground">Pre-test</dt>
@@ -83,7 +90,8 @@ function TopicSection({ topic, nextIndicatorCode, initiallyOpen, onRequestReview
   initiallyOpen: boolean;
   onRequestReview: (code: string, concept: string) => void;
 }) {
-  const completed = topic.indicators.filter((item) => item.learning.stage === "COMPLETED").length;
+  const completed = topic.indicators.filter((item) =>
+    item.learning.stage === "PRETEST_MET" || item.learning.stage === "COMPLETED").length;
   const total = topic.indicators.length;
 
   return (
@@ -114,15 +122,13 @@ export function TutorLearningProgressDialog({ courseId, open, onOpenChange, onRe
   onRequestReview: (code: string, concept: string) => void;
 }) {
   const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [reload, setReload] = useState(0);
 
   useEffect(() => {
     if (!open) return;
     let active = true;
-    setLoading(true);
-    setProfile(null);
     assessmentRequest<StudentProfile>(`/api/mahasiswa/courses/${courseId}/student-profile`)
       .then((data) => { if (active) { setProfile(data); setError(""); } })
       .catch((cause) => { if (active) setError(cause.message); })
@@ -135,8 +141,17 @@ export function TutorLearningProgressDialog({ courseId, open, onOpenChange, onRe
   const percentage = total ? completed / total * 100 : 0;
   const nextIndicatorCode = profile?.learningProgress.nextIndicatorCode ?? null;
 
+  function handleOpenChange(nextOpen: boolean) {
+    if (!nextOpen) {
+      setProfile(null);
+      setError("");
+      setLoading(true);
+    }
+    onOpenChange(nextOpen);
+  }
+
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex max-h-[88vh] flex-col gap-0 overflow-hidden p-0 sm:max-w-3xl">
         <DialogHeader className="shrink-0 px-5 pb-4 pt-5 pr-14 sm:px-6 sm:pr-14">
           <div className="flex items-center gap-2">
@@ -148,7 +163,7 @@ export function TutorLearningProgressDialog({ courseId, open, onOpenChange, onRe
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-64">
-                Kartu selesai menunjukkan latihan yang sudah dilalui. EMA (0–1) dihitung dari jawaban pertama tanpa petunjuk.
+                Indikator terpenuhi jika pre-test benar atau latihan selesai. Kartu selesai menunjukkan latihan yang dikerjakan; EMA (0–1) dihitung dari jawaban pertama tanpa petunjuk.
               </TooltipContent>
             </Tooltip>
           </div>
@@ -157,18 +172,23 @@ export function TutorLearningProgressDialog({ courseId, open, onOpenChange, onRe
         <div className="shrink-0 border-b border-border/70 px-5 pb-5 sm:px-6">
           <div className="flex items-end justify-between gap-3">
             <div>
-              <p className="text-xs text-muted-foreground">Indikator selesai</p>
+              <p className="text-xs text-muted-foreground">Indikator terpenuhi</p>
               <p className="mt-1 text-2xl font-semibold leading-none tabular-nums">
                 {loading && !profile ? "—" : completed}
                 <span className="ml-1 text-sm font-normal text-muted-foreground">/ {total}</span>
               </p>
             </div>
-            <Button variant="ghost" size="sm" disabled={loading} onClick={() => setReload((value) => value + 1)}>
+            <Button variant="ghost" size="sm" disabled={loading} onClick={() => {
+              setProfile(null);
+              setError("");
+              setLoading(true);
+              setReload((value) => value + 1);
+            }}>
               <RotateCw data-icon="inline-start" />Perbarui
             </Button>
           </div>
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-muted" role="progressbar"
-            aria-label="Indikator belajar selesai" aria-valuenow={completed} aria-valuemin={0} aria-valuemax={total || 1}>
+            aria-label="Indikator terpenuhi" aria-valuenow={completed} aria-valuemin={0} aria-valuemax={total || 1}>
             <div className="h-full rounded-full bg-brand transition-[width]" style={{ width: `${percentage}%` }} />
           </div>
           {!!profile?.learningProgress.reviewPendingCount && (

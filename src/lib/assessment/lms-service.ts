@@ -126,13 +126,8 @@ export async function startAssessment(studentId: string, courseId: string, kind:
     });
     if (pre?.status !== "SUBMITTED")
       throw new AssessmentError(409, "Selesaikan pre-test dahulu.");
-    const progressRow = await tx.studentLearningProgress.findUnique({
-      where: { studentId_courseId: { studentId, courseId } },
-      select: { progressSnapshot: true },
-    });
-    const ready = (progressRow?.progressSnapshot as { posttestReady?: unknown } | null)
-      ?.posttestReady === true;
-    if (!ready)
+    const learningProgress = await readLearningProgress(studentId, courseId, tx);
+    if (!learningProgress.posttestReady)
       throw new AssessmentError(409, "Selesaikan pembelajaran indikator dahulu.");
     const id = crypto.randomUUID();
     await tx.assessmentAttempt.create({

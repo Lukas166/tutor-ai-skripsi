@@ -12,5 +12,6 @@ export const learningStageLabels = {
   LESSON_REQUIRED: "Perlu pembahasan PDF",
   PRACTICING: "Sedang berlatih",
   REVIEW_REQUIRED: "Perlu tinjauan ulang",
-  COMPLETED: "Selesai dipelajari",
+  PRETEST_MET: "Terpenuhi dari pre-test",
+  COMPLETED: "Terpenuhi dari latihan",
 } as const;

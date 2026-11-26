@@ -4,7 +4,6 @@ from typing import Any
 
 from psycopg import Connection
 
-
 PRACTICE_QUESTIONS_PER_INDICATOR = 2
 
 
@@ -73,7 +72,8 @@ def learner_progress(
         lesson_delivered = indicator["lessonDelivered"]
         practice_done = indicator["completedQuestions"] >= required
         review_required = bool(
-            practice_done and indicator["currentScore"] is not None
+            indicator["initialScore"] != 1 and practice_done
+            and indicator["currentScore"] is not None
             and indicator["currentScore"] < developing_threshold
         )
         # Tinjauan ulang memerlukan balasan belajar bersumber setelah kedua
@@ -82,7 +82,9 @@ def learner_progress(
             indicator["lastCompletedAt"] and indicator["lastLearnAt"]
             and indicator["lastLearnAt"] > indicator["lastCompletedAt"]
         )
-        if indicator["availableQuestions"] < required:
+        if indicator["initialScore"] == 1:
+            stage = "PRETEST_MET"
+        elif indicator["availableQuestions"] < required:
             stage = "UNAVAILABLE"
         elif not lesson_delivered:
             stage = "LESSON_REQUIRED" if indicator["answeredCount"] else "NOT_STARTED"
@@ -113,12 +115,13 @@ def learner_progress(
         item["initialScore"] if item["initialScore"] is not None else 2,
         item["indicatorCode"],
     ))
-    next_indicator = next((item for item in order if item["stage"] != "COMPLETED"), None)
+    met_stages = {"PRETEST_MET", "COMPLETED"}
+    next_indicator = next((item for item in order if item["stage"] not in met_stages), None)
     return {
         "totalIndicators": len(progress),
-        "completedIndicators": sum(item["stage"] == "COMPLETED" for item in progress),
+        "completedIndicators": sum(item["stage"] in met_stages for item in progress),
         "posttestReady": bool(progress) and all(
-            item["stage"] == "COMPLETED" for item in progress
+            item["stage"] in met_stages for item in progress
         ),
         "reviewPendingCount": sum(item["stage"] == "REVIEW_REQUIRED" for item in progress),
         "nextIndicatorId": next_indicator["indicatorId"] if next_indicator else None,

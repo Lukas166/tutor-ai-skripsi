@@ -83,7 +83,8 @@ class AdaptiveTutoring:
                 {"code": item["code"], "topic": item["topic"],
                  "concept": item["concept"], "description": item["description"],
                  "stage": stages[item["id"]]["stage"]}
-                for item in profile if stages[item["id"]]["stage"] != "COMPLETED"
+                for item in profile
+                if stages[item["id"]]["stage"] not in ("PRETEST_MET", "COMPLETED")
             ]
             candidate_by_code = {row["code"]: row for row in candidates}
             priority_plan.sort(key=lambda item: (
@@ -140,7 +141,8 @@ class AdaptiveTutoring:
                     ),
                     "practiceId": None,
                     "offerPractice": bool(
-                        event["isCorrect"] and 0 < practiced_stage["completedQuestions"]
+                        event["isCorrect"] and practiced_stage["stage"] != "PRETEST_MET"
+                        and 0 < practiced_stage["completedQuestions"]
                         < practiced_stage["requiredQuestions"]
                     ),
                     "practiceLocation": None,
@@ -232,11 +234,12 @@ class AdaptiveTutoring:
                     (row for row in candidates if row["id"] == (last_focus or {}).get("id")),
                     None,
                 )
-            if request.purpose == "welcome" and priority_plan:
-                # Sumber pembuka mengikuti prioritas resmi pertama, bukan tebakan model.
+            if request.purpose == "welcome":
+                # Tanpa indikator yang perlu penguatan, jangan memilih materi wajib.
                 indicator = next(
-                    row for row in candidates if row["code"] == priority_plan[0]["code"]
-                )
+                    (row for row in candidates if row["code"] == priority_plan[0]["code"]),
+                    None,
+                ) if priority_plan else None
             active_practice = None
             if indicator and request.purpose != "welcome":
                 active_practice = connection.execute(
@@ -305,7 +308,10 @@ class AdaptiveTutoring:
                 # Setelah materi indikator dibahas, kartu langsung ditawarkan.
                 # Mahasiswa tetap bebas memulai atau melewatinya di UI.
                 "offerPractice": bool(indicator and (
-                    intent.offer_practice or intent.intent in ("LEARN", "PRACTICE")
+                    intent.intent == "PRACTICE" or (
+                        stages[indicator["id"]]["stage"] != "PRETEST_MET"
+                        and (intent.offer_practice or intent.intent == "LEARN")
+                    )
                 )),
                 "profile": profile,
                 "priorityPlan": priority_plan,

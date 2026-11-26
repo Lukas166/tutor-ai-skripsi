@@ -71,14 +71,14 @@ function ProfileSummary({ profile, courseId }: { profile: StudentProfile; course
           </p>
         </div>
         <div className="flex flex-col rounded-xl border border-border/70 bg-card p-5 shadow-sm">
-          <p className="text-sm text-muted-foreground">Alur belajar selesai</p>
+          <p className="text-sm text-muted-foreground">Indikator terpenuhi</p>
           <p className="mt-2 text-3xl font-semibold tracking-tight">
             {profile.learningProgress.completedIndicators}/{profile.learningProgress.totalIndicators}
           </p>
           <p className="mt-auto pt-2 text-xs text-muted-foreground">
             {profile.learningProgress.reviewPendingCount > 0
               ? `${profile.learningProgress.reviewPendingCount} perlu tinjauan ulang`
-              : "Indikator dipelajari melalui Tutor AI dan latihan"}
+              : "Dari pre-test benar atau latihan selesai"}
           </p>
         </div>
       </div>
@@ -351,8 +351,8 @@ export function StudentProfilePage({ courseId }: { courseId: string }) {
                     <dd>Jumlah jawaban yang dihitung: satu dari pre-test, lalu bertambah dari jawaban pertama latihan tanpa petunjuk.</dd>
                   </div>
                   <div>
-                    <dt className="font-semibold">Alur belajar</dt>
-                    <dd>Dua kartu latihan harus dijawab benar. Performa yang masih rendah memerlukan satu tinjauan ulang bersumber PDF sebelum post-test.</dd>
+                    <dt className="font-semibold">Pemenuhan indikator</dt>
+                    <dd>Pre-test benar langsung memenuhi indikator. Jika pre-test salah, selesaikan dua kartu latihan dan tinjauan ulang PDF bila diperlukan. Materi yang sudah terpenuhi tetap bisa ditanyakan ke Tutor AI.</dd>
                   </div>
                 </dl>
               </TooltipContent>

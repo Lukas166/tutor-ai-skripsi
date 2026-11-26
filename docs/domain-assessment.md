@@ -97,7 +97,7 @@ file PDF palsu. Bank soal tidak dimasukkan ke tabel Material atau indeks RAG.
 8. Terima atau lewati tawaran latihan pada balasan tutor. Dalam mode avatar,
    gunakan **Buka Latihan Konsep**. Jawaban, hint, remediasi dan riwayat disimpan.
 9. Kembali ke mata kuliah dan pilih **Mulai Post-test** setelah seluruh indikator
-   menyelesaikan dua kartu latihan dan tinjauan ulang yang diperlukan.
+   terpenuhi dari pre-test benar atau dari dua kartu latihan dan tinjauan ulang yang diperlukan.
    Paket disalin dari snapshot pre-test, termasuk ID soal, urutan dan opsi yang sama.
 10. Setelah post-test dikirim, **Lihat Perbandingan Hasil** menampilkan skor,
     perubahan poin persentase, jumlah benar, serta perubahan per indikator/materi.
@@ -197,10 +197,12 @@ mengikat courseId dan materialId; konteks indikator dapat mempersempit sesi mate
 Tanpa sumber, respons mengakui keterbatasannya. Soal hanya berasal dari PRACTICE,
 bukan generasi LLM. Hint/remediasi tidak menerima kunci atau opsi jawaban dari bank.
 
-Post-test tersedia setelah pre-test selesai dan snapshot Python menyatakan seluruh
-indikator selesai. Dua kartu per indikator harus dijawab benar; EMA rendah memerlukan
-balasan tinjauan ulang bersumber PDF setelah kedua kartu. EMA rendah sendiri tidak
-menjadi nilai lulus. Perbandingan benar/salah per indikator baru dikirim setelah
+Post-test tersedia setelah pre-test selesai dan seluruh indikator terpenuhi. Indikator
+dengan pre-test benar langsung terpenuhi dan dilewati dalam prioritas pengajaran, tetapi
+materinya tetap dapat ditanyakan atau dilatih secara opsional. Indikator yang salah pada
+pre-test perlu dua kartu dijawab benar; EMA rendah memerlukan balasan tinjauan ulang
+bersumber PDF setelah kedua kartu. EMA rendah sendiri tidak menjadi nilai lulus.
+Perbandingan benar/salah per indikator baru dikirim setelah
 rangkaian post-test selesai.
 
 ## PDF dan OCR

@@ -91,7 +91,7 @@ export type StudentProfile = {
         requiredQuestions: number;
         reviewRequired: boolean;
         reviewDone: boolean;
-        stage: "UNAVAILABLE" | "NOT_STARTED" | "LESSON_REQUIRED" | "PRACTICING" | "REVIEW_REQUIRED" | "COMPLETED";
+        stage: "UNAVAILABLE" | "NOT_STARTED" | "LESSON_REQUIRED" | "PRACTICING" | "REVIEW_REQUIRED" | "PRETEST_MET" | "COMPLETED";
       };
     }[];
   }[];
