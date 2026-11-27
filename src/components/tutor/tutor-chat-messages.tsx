@@ -426,6 +426,7 @@ export type TutorChatMessagesProps = {
   scrollContainerRef: React.RefObject<HTMLDivElement | null>;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
   onPracticeAnswered?: () => void;
+  onPracticeLockChange?: (practiceId: string, locked: boolean) => void;
   welcomePending?: boolean;
 };
 
@@ -436,6 +437,7 @@ export const TutorChatMessages = memo(function TutorChatMessages({
   scrollContainerRef,
   messagesEndRef,
   onPracticeAnswered,
+  onPracticeLockChange,
   welcomePending = false,
 }: TutorChatMessagesProps) {
   const speechUtteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
@@ -706,7 +708,7 @@ export const TutorChatMessages = memo(function TutorChatMessages({
                   )}
 
                   {!isUser && !isStreaming && <MessageSources sources={sources} />}
-                  {!isUser && !isStreaming && showPractice && <TutorPracticeCard courseId={activeSession.courseId} practiceId={practiceId} onAnswered={onPracticeAnswered} />}
+                  {!isUser && !isStreaming && showPractice && <TutorPracticeCard courseId={activeSession.courseId} practiceId={practiceId} onAnswered={onPracticeAnswered} onLockChange={onPracticeLockChange} />}
                 </div>
               </div>
             );

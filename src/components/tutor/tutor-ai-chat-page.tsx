@@ -129,6 +129,7 @@ export function TutorAiChatPage({
   const [learningProgressOpen, setLearningProgressOpen] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [practiceOpen, setPracticeOpen] = useState(false);
+  const [lockedPracticeIds, setLockedPracticeIds] = useState<Record<string, boolean>>({});
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -221,6 +222,12 @@ export function TutorAiChatPage({
     !overview?.welcomePending &&
     (!activeSession || activeSession.messages.length === 0);
   const activeSessionId = activeSession?.id;
+  const practiceInputLocked = Object.values(lockedPracticeIds).some(Boolean);
+  const handlePracticeLockChange = useCallback((practiceId: string, locked: boolean) => {
+    setLockedPracticeIds((current) => current[practiceId] === locked
+      ? current : { ...current, [practiceId]: locked });
+  }, []);
+  useEffect(() => setLockedPracticeIds({}), [activeSessionId]);
   const practiceReplyPending = activeSession?.messages.some((message) => {
     const metadata = message.ragSources;
     return !message.content && !!metadata && typeof metadata === "object"
@@ -545,6 +552,7 @@ export function TutorAiChatPage({
             scrollContainerRef={scrollContainerRef}
             messagesEndRef={messagesEndRef}
             onPracticeAnswered={refreshAfterPractice}
+            onPracticeLockChange={handlePracticeLockChange}
             welcomePending={overview?.welcomePending}
           />
         ) : (
@@ -568,6 +576,7 @@ export function TutorAiChatPage({
             setPanelMode={setPanelMode}
             sending={sending}
             pendingPracticeReply={practiceReplyPending}
+            practiceLocked={practiceInputLocked}
             recording={recording}
             transcribing={transcribing}
             recordingLevels={recordingLevels}
@@ -582,7 +591,7 @@ export function TutorAiChatPage({
       </main>
 
       {/* ==================== SEARCH DIALOG ==================== */}
-      <Dialog open={practiceOpen} onOpenChange={setPracticeOpen}><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Latihan di Tutor</DialogTitle><DialogDescription>Gunakan bank soal untuk mencoba pemahaman konsep.</DialogDescription></DialogHeader>{latestPracticeId && <TutorPracticeCard courseId={courseId} practiceId={latestPracticeId} onAnswered={refreshAfterPractice} />}</DialogContent></Dialog>
+      <Dialog open={practiceOpen} onOpenChange={setPracticeOpen}><DialogContent className="max-h-[85vh] overflow-y-auto"><DialogHeader><DialogTitle>Latihan di Tutor</DialogTitle><DialogDescription>Gunakan bank soal untuk mencoba pemahaman konsep.</DialogDescription></DialogHeader>{latestPracticeId && <TutorPracticeCard courseId={courseId} practiceId={latestPracticeId} onAnswered={refreshAfterPractice} onLockChange={handlePracticeLockChange} />}</DialogContent></Dialog>
       <Dialog open={searchOpen} onOpenChange={setSearchOpen}>
         <DialogContent className="sm:max-w-[520px]">
           <DialogHeader>

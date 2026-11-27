@@ -28,6 +28,7 @@ export type TutorChatInputProps = {
   placement?: "floating" | "inline";
   sending: boolean;
   pendingPracticeReply?: boolean;
+  practiceLocked?: boolean;
   recording: boolean;
   transcribing: boolean;
   recordingLevels: number[];
@@ -81,6 +82,7 @@ export function TutorChatInput({
   placement = "floating",
   sending,
   pendingPracticeReply = false,
+  practiceLocked = false,
   recording,
   transcribing,
   recordingLevels,
@@ -91,7 +93,7 @@ export function TutorChatInput({
   handleConfirmRecording,
   textareaRef,
 }: TutorChatInputProps) {
-  const submitDisabled = (!input.trim() && !recording) || transcribing || pendingPracticeReply;
+  const submitDisabled = practiceLocked || (!input.trim() && !recording) || transcribing || pendingPracticeReply;
   const visualLevels =
     recordingLevels.length === RECORDING_BAR_COUNT ? recordingLevels : EMPTY_RECORDING_LEVELS;
 
@@ -156,7 +158,10 @@ export function TutorChatInput({
 
       {/* Input container */}
       <div className={cn("w-full", isFloating ? "bg-background px-5 pb-4 pt-0" : "px-0")}>
-        <div className="mx-auto flex w-full max-w-3xl flex-col gap-1.5 rounded-2xl border bg-card p-1.5 shadow-lg shadow-black/5">
+        <div className={cn(
+          "mx-auto flex w-full max-w-3xl flex-col gap-1.5 rounded-2xl border p-1.5 shadow-lg shadow-black/5",
+          practiceLocked ? "bg-muted/70" : "bg-card",
+        )}>
           <div className="min-h-11 w-full">
             {recording ? (
               <div className="flex h-11 min-w-0 items-center px-4">
@@ -180,13 +185,14 @@ export function TutorChatInput({
                 onKeyDown={(event) => {
                   if (event.key === "Enter" && !event.shiftKey) {
                     event.preventDefault();
-                    if (sending || pendingPracticeReply) return;
+                    if (sending || pendingPracticeReply || practiceLocked) return;
                     void handleSend();
                   }
                 }}
-                placeholder="Tulis pertanyaan..."
+                placeholder={practiceLocked ? "Selesaikan latihan atau minta petunjuk..." : "Tulis pertanyaan..."}
+                disabled={practiceLocked}
                 rows={1}
-                className="block box-border h-11 min-h-11 max-h-40 w-full resize-none overflow-y-auto bg-transparent px-4 pb-2 pt-3.5 text-sm leading-[22px] outline-none placeholder:text-muted-foreground"
+                className="block box-border h-11 min-h-11 max-h-40 w-full resize-none overflow-y-auto bg-transparent px-4 pb-2 pt-3.5 text-sm leading-[22px] outline-none placeholder:text-muted-foreground disabled:cursor-not-allowed"
               />
             )}
           </div>
@@ -243,7 +249,7 @@ export function TutorChatInput({
                 variant="ghost"
                 className="size-10 shrink-0 rounded-xl border-0 bg-transparent text-black shadow-none hover:bg-muted hover:text-black"
                 onClick={recording ? handleCancelRecording : () => void handleStartRecording()}
-                disabled={sending || pendingPracticeReply || transcribing}
+                disabled={practiceLocked || sending || pendingPracticeReply || transcribing}
                 aria-label={transcribing ? "Memproses rekaman" : recording ? "Cancel" : "Voice input"}
               >
                 {transcribing ? (
@@ -291,12 +297,17 @@ export function TutorChatInput({
           </div>
         </div>
 
-        {pendingPracticeReply && (
+        {practiceLocked && (
+          <p className="mt-2.5 text-center text-xs text-muted-foreground" role="status">
+            Kirim jawaban soal untuk kembali bertanya. Petunjuk tersedia pada kartu latihan.
+          </p>
+        )}
+        {!practiceLocked && pendingPracticeReply && (
           <p className="mt-2.5 text-center text-xs text-muted-foreground" role="status">
             Anda bisa menulis pesan berikutnya sambil menunggu pembahasan latihan.
           </p>
         )}
-        {isFloating && !pendingPracticeReply && (
+        {isFloating && !practiceLocked && !pendingPracticeReply && (
           <p className="mt-2.5 text-center text-xs text-muted-foreground">
             Tutor AI bisa saja melakukan kesalahan. Cek kembali materimu.
           </p>

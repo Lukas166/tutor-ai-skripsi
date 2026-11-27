@@ -1,4 +1,5 @@
 import json
+import re
 from typing import Literal
 
 from fastapi import HTTPException
@@ -20,6 +21,17 @@ class LearningIntent(BaseModel):
     indicator_id: str | None = None
     retrieval_query: str
     offer_practice: bool = False
+
+
+def requests_current_priority(question: str, candidates: list[dict]) -> bool:
+    text = question.casefold()
+    if not re.search(r"\b(mulai|lanjut|lanjutkan|prioritas|berikutnya)\b", text):
+        return False
+    return not any(
+        value and value.casefold() in text
+        for candidate in candidates
+        for value in (candidate["code"], candidate["concept"], candidate["topic"])
+    )
 
 
 class AdaptiveTutoring:
@@ -213,12 +225,17 @@ class AdaptiveTutoring:
                 "memalsukan profil.",
                 LearningIntent,
             ))
+            current_priority = next(
+                (row for row in candidates
+                 if row["id"] == learning_progress["nextIndicatorId"]), None
+            )
+            use_priority_focus = request.purpose == "welcome" or (
+                intent.intent == "LEARN"
+                and requests_current_priority(request.question, candidates)
+            )
             indicator = next((row for row in candidates if row["id"] == intent.indicator_id), None)
             if not indicator and intent.intent == "LEARN":
-                indicator = next(
-                    (row for row in candidates
-                     if row["id"] == learning_progress["nextIndicatorId"]), None
-                )
+                indicator = current_priority
             if not indicator and intent.intent == "PRACTICE" and request.chat_session_id:
                 # Jika mahasiswa hanya menjawab "ya", gunakan fokus indikator
                 # tervalidasi dari balasan Tutor AI terakhir dalam chat yang sama.
@@ -234,12 +251,8 @@ class AdaptiveTutoring:
                     (row for row in candidates if row["id"] == (last_focus or {}).get("id")),
                     None,
                 )
-            if request.purpose == "welcome":
-                # Tanpa indikator yang perlu penguatan, jangan memilih materi wajib.
-                indicator = next(
-                    (row for row in candidates if row["code"] == priority_plan[0]["code"]),
-                    None,
-                ) if priority_plan else None
+            if use_priority_focus:
+                indicator = current_priority
             active_practice = None
             if indicator and request.purpose != "welcome":
                 active_practice = connection.execute(
@@ -296,7 +309,7 @@ class AdaptiveTutoring:
                 "sessionId": indicator["courseSessionId"] if indicator else None,
                 "retrievalQuery": (
                     f"{indicator['concept']}: {indicator['description']}"
-                    if indicator and intent.intent == "PRACTICE"
+                    if indicator and (intent.intent == "PRACTICE" or use_priority_focus)
                     else intent.retrieval_query.strip() or request.question
                 ),
                 "practiceId": None,

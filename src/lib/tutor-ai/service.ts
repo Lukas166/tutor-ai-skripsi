@@ -936,6 +936,16 @@ export async function updateTutorSessionContext(input: {
   return getTutorChatSession(input);
 }
 
+async function requireNoUnassistedPractice(courseId: string, userId: string) {
+  const active = await prisma.practiceSession.findFirst({
+    where: { courseId, studentId: userId, status: "ACTIVE", answerCount: 0 },
+    select: { id: true },
+  });
+  if (active) throw new TutorAiServiceError(
+    "Kirim jawaban soal aktif sebelum bertanya kepada Tutor AI.", 409,
+  );
+}
+
 export async function askTutor(input: {
   courseId: string;
   userId: string;
@@ -953,6 +963,7 @@ export async function askTutor(input: {
   const { user, course } = await getTutorAccess(input.courseId, input.userId);
   if (await needsPretest(input.courseId, input.userId))
     throw new TutorAiServiceError("Selesaikan pre-test pada halaman mata kuliah sebelum belajar di tutor.", 409);
+  await requireNoUnassistedPractice(input.courseId, input.userId);
   const [session, readyMaterials] = await Promise.all([
     getSessionOrThrow(input),
     listReadyMaterialsForCourse(input.courseId),
@@ -1033,6 +1044,7 @@ export async function askTutorStream(input: {
   const { user, course } = await getTutorAccess(input.courseId, input.userId);
   if (await needsPretest(input.courseId, input.userId))
     throw new TutorAiServiceError("Selesaikan pre-test pada halaman mata kuliah sebelum belajar di tutor.", 409);
+  await requireNoUnassistedPractice(input.courseId, input.userId);
   const [session, readyMaterials] = await Promise.all([
     getSessionOrThrow(input),
     listReadyMaterialsForCourse(input.courseId),

@@ -2,6 +2,7 @@ from datetime import UTC, datetime, timedelta
 from unittest import TestCase
 
 from tutor_rag.learning.progress import learner_progress
+from tutor_rag.learning.tutoring import requests_current_priority
 
 
 class Result:
@@ -91,3 +92,18 @@ class LearningProgressTests(TestCase):
         self.assertEqual(result["indicators"][0]["stage"], "PRETEST_MET")
         self.assertFalse(result["indicators"][0]["reviewRequired"])
         self.assertTrue(result["posttestReady"])
+
+
+class PriorityRequestTests(TestCase):
+    candidates = [
+        {"code": "RPL-I01", "concept": "Dasar RPL", "topic": "Pengantar"},
+        {"code": "RPL-I11", "concept": "Kategori diagram UML",
+         "topic": "Unified Modeling Language"},
+    ]
+
+    def test_generic_start_uses_current_priority(self):
+        self.assertTrue(requests_current_priority("Mulai dari prioritas sekarang", self.candidates))
+
+    def test_explicit_indicator_keeps_student_choice(self):
+        self.assertFalse(requests_current_priority("Mulai dari RPL-I01", self.candidates))
+        self.assertFalse(requests_current_priority("Lanjutkan Dasar RPL", self.candidates))

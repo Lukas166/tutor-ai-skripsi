@@ -150,9 +150,10 @@ penguasaan penuh. Post-test tidak membuat ulang baseline dan tidak mengubah EMA.
 
 ## Bukti latihan, EMA, dan keputusan tutoring
 
-`PracticeSession` memiliki constraint unik mahasiswa/course/soal. Hanya jawaban
-pertama pada soal berbeda, ketika `answerCount=0` dan `hintCount=0` di database,
-menjadi bukti mandiri. Benar bernilai 1, salah bernilai 0. Rumus:
+`PracticeSession` memiliki constraint unik mahasiswa/course/soal. Jawaban pertama
+pada setiap soal berbeda memperbarui profil: benar tanpa petunjuk bernilai 1,
+benar dengan petunjuk bernilai 0,5, dan salah bernilai 0. Hanya jawaban pertama
+tanpa petunjuk yang ditandai sebagai bukti mandiri. Rumus:
 
 ```text
 EMA_baru = (1 - emaAlpha) * EMA_lama + emaAlpha * hasil
@@ -160,16 +161,17 @@ EMA_baru = (1 - emaAlpha) * EMA_lama + emaAlpha * hasil
 
 `PracticeEvent` menyimpan requestId, jawaban, benar/salah, kondisi bantuan, alpha,
 EMA sebelum/sesudah, feedback dan sumber. Lock sesi dan profil, constraint requestId
-serta satu event mandiri per sesi mencegah pembaruan ganda. Hint/ulang tetap dicatat
-tetapi tidak menaikkan jumlah bukti dan tidak mengubah EMA. Riwayat ini tetap ada
+serta hitungan `answerCount` mencegah pembaruan ganda. Hint sendiri tidak mengubah
+EMA; jawaban pertama setelah hint memperbarui EMA dan jumlah bukti dengan bobot
+setengah jika benar. Jawaban ulang tidak mengubah EMA. Riwayat ini tetap ada
 jika chat dihapus karena relasi chat memakai `SET NULL`, bukan cascade penilaian.
 Tawaran yang dilewati sebelum dibuka dapat ditawarkan kembali dan tidak dianggap
 bukti/soal yang telah dikerjakan. Setelah jawaban salah, Tutor AI membahasnya di
 chat dan mahasiswa dapat mencoba soal yang sama sampai benar. Jawaban ulang tidak
 mengubah EMA; riwayat tetap utuh.
 Ketika soal masih terbuka tanpa jawaban/hint, permintaan penjelasan untuk indikator
-yang sama diarahkan ke tombol hint. Ini mencegah bantuan lewat chat biasa dianggap
-sebagai jawaban mandiri; setelah hint tercatat, diskusi konsep dapat dilanjutkan.
+yang sama diarahkan ke tombol hint. Input chat dikunci sampai jawaban pertama
+terkirim, sehingga bantuan lewat chat tidak dianggap sebagai jawaban mandiri.
 
 Konfigurasi ada pada `course_learning_config` per course, tanpa tambahan env wajib:
 

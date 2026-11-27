@@ -52,9 +52,6 @@ function IndicatorRow({ indicator, isNext, onRequestReview }: {
       </summary>
       <div className="pb-4">
         <p className="text-sm leading-relaxed text-muted-foreground">{indicator.description}</p>
-        {pretestMet && (
-          <p className="mt-2 text-xs text-muted-foreground">Syarat indikator terpenuhi dari pre-test. Latihan dan pembahasan materi tetap tersedia jika dibutuhkan.</p>
-        )}
         <dl className="mt-3 grid grid-cols-2 gap-x-5 gap-y-3 rounded-lg bg-muted/45 p-3 text-xs sm:grid-cols-4">
           <div>
             <dt className="text-muted-foreground">Pre-test</dt>
@@ -163,7 +160,7 @@ export function TutorLearningProgressDialog({ courseId, open, onOpenChange, onRe
                 </button>
               </TooltipTrigger>
               <TooltipContent className="max-w-64">
-                Indikator terpenuhi jika pre-test benar atau latihan selesai. Kartu selesai menunjukkan latihan yang dikerjakan; EMA (0–1) dihitung dari jawaban pertama tanpa petunjuk.
+                Indikator terpenuhi jika pre-test benar atau latihan selesai. EMA (0–1) diperbarui dari jawaban pertama tiap soal: benar tanpa petunjuk bernilai 1, benar dengan petunjuk 0,5, dan salah 0.
               </TooltipContent>
             </Tooltip>
           </div>

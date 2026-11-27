@@ -92,6 +92,10 @@ class RagPipeline:
                 instruction += (
                     "\nKode indikator yang wajib muncul seluruhnya pada peta awal: "
                     + ", ".join(adaptive["requiredWelcomeCodes"])
+                    + "\nLangkah pertama rencana belajar wajib mengikuti prioritas aktif "
+                    "dari server: "
+                    + str(adaptive["learningProgress"]["nextIndicatorCode"] or "tidak ada")
+                    + ". Urutan kelompok status pada peta profil bukan urutan mengajar."
                 )
             if adaptive.get("practiceId"):
                 instruction += (

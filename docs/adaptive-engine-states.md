@@ -200,11 +200,11 @@ Untuk event jawaban, syarat bukti mandiri tepatnya:
 independent = row["answerCount"] == 0 and hints == 0
 ```
 
-Jika mandiri, backend mengunci profil indikator dan menghitung:
+Pada jawaban pertama setiap soal, backend mengunci profil indikator dan menghitung:
 
 ```text
 EMA_baru = (1 - alpha) × EMA_lama + alpha × hasil
-hasil = 1 jika benar, 0 jika salah
+hasil = 1 jika benar tanpa hint, 0,5 jika benar dengan hint, 0 jika salah
 ```
 
 | Skenario | Mandiri? | Sesi setelahnya | Profil |
@@ -213,16 +213,16 @@ hasil = 1 jika benar, 0 jika salah
 | Jawaban pertama salah, tanpa hint | Ya | `ACTIVE` | Hitung EMA, tambah bukti, hitung status |
 | Jawaban pertama salah saat EMA 0 | Ya | `ACTIVE` | EMA tetap 0 secara matematis; bukti tetap naik |
 | Jawaban pertama benar saat EMA 1 | Ya | `COMPLETED` | EMA tetap 1; bukti tetap naik |
-| Hint sebelum jawaban pertama, lalu benar | Tidak | `COMPLETED` | Tidak memperbarui profil |
-| Hint sebelum jawaban pertama, lalu salah | Tidak | `ACTIVE` | Tidak memperbarui profil |
+| Hint sebelum jawaban pertama, lalu benar | Tidak | `COMPLETED` | EMA memakai hasil 0,5; bukti bertambah |
+| Hint sebelum jawaban pertama, lalu salah | Tidak | `ACTIVE` | EMA memakai hasil 0; bukti bertambah |
 | Salah mandiri lalu benar pada soal sama | Hanya jawaban pertama | `COMPLETED` | Tidak ada pembaruan kedua; pengurangan dari jawaban pertama tetap |
 | Salah mandiri lalu salah lagi | Hanya jawaban pertama | `ACTIVE` | Tidak mengurangi berkali-kali pada soal sama |
 | Salah mandiri lalu hint | Hint bukan bukti mandiri | `ACTIVE` | Pembaruan pertama tetap; hint tidak mengubah EMA |
-| Soal berbeda untuk indikator sama | Bisa mandiri lagi jika belum hint | Tergantung hasil | Memperbarui profil indikator yang sama |
+| Soal berbeda untuk indikator sama | Bisa mandiri jika belum hint | Tergantung hasil | Jawaban pertamanya memperbarui profil indikator yang sama |
 | Soal untuk indikator lain | Bisa mandiri | Tergantung hasil | Hanya profil indikator soal itu yang diperbarui |
 | Hanya chat, baca materi, atau bilang sudah paham | Bukan bukti jawaban latihan | Tidak terkait | Tidak mengubah EMA |
 
-Pada update mandiri, field yang berubah: `currentScore`, `currentStatus`, `evidenceCount`, `updatedAt`. Field baseline dan identitas tetap.
+Pada update jawaban pertama, field yang berubah: `currentScore`, `currentStatus`, `evidenceCount`, `updatedAt`. Field baseline dan identitas tetap.
 
 Setiap event jawaban sukses menambah `answerCount`, termasuk jawaban ulang dan berbantuan. `firstAnsweredAt` hanya diisi pertama kali. Jawaban benar menutup sesi, bukan membuktikan indikator sepenuhnya dikuasai.
 
@@ -254,7 +254,7 @@ Asumsi: dua soal latihan berbeda, keduanya dijawab pertama kali tanpa hint; alph
 | 1 | Benar | Salah | 1 | 0,70 | Berkembang |
 | 1 | Benar | Benar | 1 | 1 | Siap lanjut |
 
-Dengan dua soal latihan per indikator pada dataset RPL sekarang, jumlah bukti maksimum melalui jalur normal adalah tiga: satu pretest dan dua latihan mandiri. Jika soal memakai hint sebelum jawaban pertama, soal itu tidak menambah bukti mandiri. Mahasiswa dengan baseline 0 tidak dapat mencapai 0,8 hanya dengan dua soal yang tersedia pada alpha default; action `REVIEW` karena soal habis tidak memperbaiki keterbatasan ini.
+Dengan dua soal latihan per indikator pada dataset RPL sekarang, jumlah bukti yang dihitung maksimum melalui jalur normal adalah tiga: satu pretest dan dua jawaban pertama latihan. Jawaban berbantuan dicatat terpisah dari bukti mandiri dan memakai hasil 0,5 jika benar. Soal tambahan di bank tetap dapat dikerjakan atas permintaan mahasiswa; soal yang belum pernah dipakai dipilih terlebih dahulu. Mahasiswa dengan baseline 0 tidak dapat mencapai 0,8 hanya dengan dua soal yang tersedia pada alpha default.
 
 ## 7. Request ganda, concurrency, dan kegagalan
 

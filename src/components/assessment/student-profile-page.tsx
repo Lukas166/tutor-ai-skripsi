@@ -344,11 +344,11 @@ export function StudentProfilePage({ courseId }: { courseId: string }) {
                   </div>
                   <div>
                     <dt className="font-semibold">Performa belajar terkini</dt>
-                    <dd>Perkiraan kemampuan terbaru, dari 0 sampai 1. Nilainya diperbarui oleh latihan mandiri.</dd>
+                    <dd>Perkiraan performa terbaru, dari 0 sampai 1. Jawaban pertama tiap soal dihitung: benar tanpa petunjuk 1, benar dengan petunjuk 0,5, dan salah 0.</dd>
                   </div>
                   <div>
                     <dt className="font-semibold">Bukti penilaian</dt>
-                    <dd>Jumlah jawaban yang dihitung: satu dari pre-test, lalu bertambah dari jawaban pertama latihan tanpa petunjuk.</dd>
+                    <dd>Jumlah jawaban yang dihitung: satu dari pre-test, lalu bertambah dari jawaban pertama setiap soal latihan, termasuk jika memakai petunjuk.</dd>
                   </div>
                   <div>
                     <dt className="font-semibold">Pemenuhan indikator</dt>

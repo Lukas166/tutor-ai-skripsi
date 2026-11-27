@@ -47,10 +47,11 @@ function learningFeedback(feedback: string) {
     .trim();
 }
 
-export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
+export function TutorPracticeCard({ courseId, practiceId, onAnswered, onLockChange }: {
   courseId: string;
   practiceId: string;
   onAnswered?: () => void;
+  onLockChange?: (practiceId: string, locked: boolean) => void;
 }) {
   const [practice, setPractice] = useState<Practice | null>(null);
   const [option, setOption] = useState<Option | null>(null);
@@ -65,10 +66,14 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
   useEffect(() => {
     let active = true;
     assessmentRequest<Practice>(url, "POST", { operation: "practice-current", practiceId })
-      .then((data) => { if (active) setPractice(data); })
+      .then((data) => {
+        if (!active) return;
+        setPractice(data);
+        onLockChange?.(practiceId, data.status === "ACTIVE" && data.answerCount === 0);
+      })
       .catch((cause) => { if (active) setError(cause.message); });
     return () => { active = false; };
-  }, [url, practiceId]);
+  }, [url, practiceId, onLockChange]);
 
   async function act(operation: string) {
     if (locked.current) return;
@@ -84,6 +89,7 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
         ...(operation === "practice-answer" ? { selectedOption } : {}),
       });
       setPractice(data);
+      onLockChange?.(practiceId, data.status === "ACTIVE" && data.answerCount === 0);
       if (operation === "practice-answer") {
         // Biarkan pilihan tetap tampak saat chat memproses pembahasan.
         onAnswered?.();
@@ -149,8 +155,8 @@ export function TutorPracticeCard({ courseId, practiceId, onAnswered }: {
             {practice.answerCount === 0 && (
               <p className="mt-4 text-sm text-muted-foreground">
                 {practice.hintCount > 0
-                  ? "Petunjuk sudah digunakan. Jawaban soal ini tidak menambah Bukti penilaian."
-                  : "Jawaban pertama tanpa petunjuk akan menambah Bukti penilaian dan memperbarui Performa belajar terkini di Student Profile."}
+                  ? "Jawaban pertama akan memperbarui Performa belajar. Benar dengan petunjuk bernilai 0,5; salah bernilai 0."
+                  : "Jawaban pertama akan memperbarui Performa belajar. Benar tanpa petunjuk bernilai 1; salah bernilai 0."}
               </p>
             )}
           </div>

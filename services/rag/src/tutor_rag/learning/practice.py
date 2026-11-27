@@ -43,6 +43,13 @@ def record_study(connection: Connection[dict[str, Any]], student_id: str, course
 
 class HintSafety(BaseModel):
     reveals_answer: bool
+    has_direct_help: bool
+
+
+def practice_result(correct: bool, hinted: bool) -> float:
+    if not correct:
+        return 0.0
+    return 0.5 if hinted else 1.0
 
 
 class PracticeService:
@@ -102,7 +109,8 @@ class PracticeService:
                     'SELECT id,"answerCount","hintCount" FROM practice_session '
                     'WHERE "studentId"=%s AND "courseId"=%s '
                     'AND "indicatorId"=%s AND status=\'DISMISSED\' '
-                    'ORDER BY "createdAt" LIMIT 1 FOR UPDATE',
+                    'ORDER BY CASE WHEN "firstAnsweredAt" IS NULL THEN 0 ELSE 1 END,'
+                    '"createdAt" LIMIT 1 FOR UPDATE',
                     (self.student_id, self.course_id, indicator_id),
                 ).fetchone()
                 if not ignored:
@@ -222,9 +230,11 @@ class PracticeService:
             raise HTTPException(409, "PDF terkait belum menyediakan petunjuk untuk soal ini.")
         instruction = (
             "Anda pembimbing latihan berbasis PDF. Beri SATU petunjuk pendek, "
-            "spesifik terhadap pertanyaan yang sedang dikerjakan. Arahkan satu langkah "
-            "berpikir atau bagian sumber yang perlu diperiksa. Jangan mengulang materi "
-            "secara umum. Jangan sebut jawaban akhir, daftar/urutan yang diminta soal, "
+            "spesifik terhadap pertanyaan yang sedang dikerjakan. Sampaikan langsung "
+            "satu ciri atau konsep dari potongan PDF yang membantu mahasiswa berpikir. "
+            "Jangan mengganti isi petunjuk dengan perintah membuka sumber, nomor halaman, "
+            "atau pengulangan soal; sumber PDF dan halaman ditampilkan terpisah oleh aplikasi. "
+            "Jangan sebut jawaban akhir, daftar/urutan yang diminta soal, "
             "isi opsi, huruf opsi, atau kunci. Maksimal 45 kata. "
             "Jika PDF tidak cukup, akui keterbatasan sumber."
         )
@@ -239,19 +249,21 @@ class PracticeService:
             # Pemeriksa terpisah melihat kunci hanya untuk menolak petunjuk yang bocor.
             review = HintSafety.model_validate_json(provider.generate_structured(
                 f"Soal: {question}\nJawaban benar: {correct_text}\nPetunjuk: {feedback}",
-                "Nilai apakah petunjuk menyebut jawaban benar, sinonim tepatnya, "
-                "atau komponen/urutan lengkap yang diminta soal. Jika ya, "
-                "reveals_answer=true. Hanya kembalikan penilaian keamanan.",
+                "Nilai dua hal: reveals_answer=true jika petunjuk menyebut jawaban "
+                "benar, sinonim tepatnya, atau komponen/urutan lengkap yang diminta. "
+                "has_direct_help=true hanya jika petunjuk memberi satu ciri atau "
+                "konsep yang membantu, bukan sekadar mengulang soal atau menyuruh "
+                "mahasiswa membaca PDF/halaman tertentu.",
                 HintSafety,
             ))
-            if not review.reveals_answer:
+            if not review.reveals_answer and review.has_direct_help:
                 return feedback, [
                     chunk.model_dump(by_alias=True, exclude={"content"})
                     for chunk in chunks
                 ]
             instruction += (
-                " Petunjuk sebelumnya terlalu membocorkan jawaban; "
-                "buat lebih tidak langsung."
+                " Petunjuk sebelumnya membocorkan jawaban atau belum memberi "
+                "bantuan konsep secara langsung; perbaiki tanpa menyebut jawabannya."
             )
         raise HTTPException(502, "Petunjuk aman belum dapat dibuat. Coba lagi nanti.")
 
@@ -294,10 +306,10 @@ class PracticeService:
             else:
                 if selected_option not in row["questionSnapshot"]["options"]:
                     raise HTTPException(422, "Pilihan tidak tersedia pada soal ini.")
-                # Hanya jawaban pertama tanpa bantuan pada soal berbeda yang menjadi bukti.
+                # Satu soal memberi satu bukti: benar dengan petunjuk bernilai setengah.
                 independent = row["answerCount"] == 0 and hints == 0
                 correct = selected_option == row["questionSnapshot"]["correctOption"]
-                if independent:
+                if row["answerCount"] == 0:
                     config = self.assessment.configuration()
                     assert config is not None
                     profile = self.connection.execute(
@@ -308,7 +320,8 @@ class PracticeService:
                     if not profile:
                         raise HTTPException(409, "Profil awal belum terbentuk.")
                     before, alpha = profile["currentScore"], config["emaAlpha"]
-                    after = (1 - alpha) * before + alpha * int(correct)
+                    result = practice_result(correct, hints > 0)
+                    after = (1 - alpha) * before + alpha * result
                     status = operational_status(
                         {
                             **profile,
