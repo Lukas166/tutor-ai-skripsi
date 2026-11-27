@@ -36,7 +36,9 @@ def build_system_instruction(request: PrepareRequest) -> str:
     return instruction
 
 
-def build_context(chunks: list[RetrievedChunk]) -> str:
+def build_context(
+    chunks: list[RetrievedChunk], *, max_content_chars: int = MAX_CONTEXT_CHARS
+) -> str:
     # Setiap potongan menyertakan sumber dan nomor halaman agar jawaban dapat ditelusuri.
     blocks = []
     for index, chunk in enumerate(chunks, start=1):
@@ -48,7 +50,7 @@ def build_context(chunks: list[RetrievedChunk]) -> str:
                     f"File: {chunk.file_name}",
                     f"Sesi: {chunk.session_title}",
                     f"Halaman: {chunk.page_number}",
-                    f"Konten: {truncate_text(chunk.content, MAX_CONTEXT_CHARS)}",
+                    f"Konten: {truncate_text(chunk.content, max_content_chars)}",
                 ]
             )
         )

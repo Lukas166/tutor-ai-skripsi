@@ -116,3 +116,97 @@ class PracticeScoringTests(TestCase):
         self.assertIsNotNone(practice_id)
         self.assertIn("NOT EXISTS", question_queries[0])
         self.assertIn('ORDER BY q."practiceNumber",q.code', question_queries[0])
+
+
+class HintGuidanceTests(TestCase):
+    def generate_hint(self, generated, reviews, chunk_count=1):
+        connection = Mock()
+        connection.execute.side_effect = [
+            Mock(fetchone=Mock(return_value={
+                "description": "Mengenali proses pengembangan",
+                "courseSessionId": "session",
+            })),
+            Mock(fetchall=Mock(return_value=[{"id": "material"}])),
+        ]
+        service = PracticeService(connection, "student", "course", Mock())
+        row = {
+            "indicatorId": "indicator",
+            "concept": "Pengembangan perangkat lunak",
+            "questionSnapshot": {
+                "question": "Pendekatan mana yang digunakan?",
+                "options": {"A": "Incremental", "B": "Waterfall"},
+                "correctOption": "A",
+            },
+        }
+        chunks = []
+        for index in range(chunk_count):
+            chunk = Mock()
+            chunk.material_title = "Materi RPL"
+            chunk.file_name = "materi.pdf"
+            chunk.session_title = "Minggu 2"
+            chunk.page_number = index + 2
+            chunk.content = (
+                "Awal potongan. " + "x" * 1600 + " Ciri penting di akhir potongan PDF."
+                if index == 0 else f"Detail dari potongan ke-{index + 1}."
+            )
+            chunk.model_dump.return_value = {
+                "fileName": "materi.pdf", "pageNumber": index + 2,
+            }
+            chunks.append(chunk)
+        with (
+            patch("tutor_rag.learning.practice.GeminiProvider") as provider_class,
+            patch("tutor_rag.learning.practice.ChunkRepository") as repository_class,
+        ):
+            provider = provider_class.return_value
+            provider.generate.side_effect = generated
+            provider.generate_structured.side_effect = reviews
+            repository_class.return_value.retrieve.return_value = chunks
+            hint, sources = service.guidance(row)
+            prompts = [call.args[0].prompt for call in provider.generate.call_args_list]
+        return hint, sources, prompts
+
+    def test_rejected_hint_is_revised_with_specific_feedback(self):
+        hint, sources, prompts = self.generate_hint(
+            ["Incremental adalah jawabannya.", "Perhatikan cara kerja bertahap."],
+            [
+                '{"reveals_answer": true, "has_direct_help": true}',
+                '{"reveals_answer": false, "has_direct_help": true}',
+            ],
+        )
+        self.assertEqual(hint, "Perhatikan cara kerja bertahap.")
+        self.assertEqual(sources, [{"fileName": "materi.pdf", "pageNumber": 2}])
+        self.assertIn("Ciri penting di akhir potongan PDF.", prompts[0])
+        self.assertNotIn("Incremental adalah jawabannya.", prompts[1])
+        self.assertIn("berpotensi membocorkan jawaban", prompts[1])
+
+    def test_unhelpful_hint_is_shown_to_generator_for_revision(self):
+        hint, _, prompts = self.generate_hint(
+            ["Baca PDF dulu.", "Perhatikan cara kerja bertahap."],
+            [
+                '{"reveals_answer": false, "has_direct_help": false}',
+                '{"reveals_answer": false, "has_direct_help": true}',
+            ],
+        )
+        self.assertEqual(hint, "Perhatikan cara kerja bertahap.")
+        self.assertIn("Baca PDF dulu.", prompts[1])
+        self.assertIn("belum memberi bantuan konsep", prompts[1])
+
+    def test_two_rejections_return_safe_reasoning_hint(self):
+        hint, sources, prompts = self.generate_hint(
+            ["Incremental adalah jawabannya.", "Jawab Incremental."],
+            ['{"reveals_answer": true, "has_direct_help": true}'] * 2,
+        )
+        self.assertEqual(len(prompts), 2)
+        self.assertIn("bandingkan ciri setiap pilihan", hint)
+        self.assertNotIn("Incremental", hint)
+        self.assertEqual(sources, [{"fileName": "materi.pdf", "pageNumber": 2}])
+
+    def test_hint_receives_relevant_chunk_after_the_first_three(self):
+        hint, sources, prompts = self.generate_hint(
+            ["Ciri apa yang membedakan proses ini?"],
+            ['{"reveals_answer": false, "has_direct_help": true}'],
+            chunk_count=4,
+        )
+        self.assertEqual(hint, "Ciri apa yang membedakan proses ini?")
+        self.assertIn("Detail dari potongan ke-4.", prompts[0])
+        self.assertEqual(len(sources), 4)

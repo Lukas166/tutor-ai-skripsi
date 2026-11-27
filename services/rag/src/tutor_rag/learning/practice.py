@@ -9,7 +9,7 @@ from pydantic import BaseModel
 from tutor_rag.assessment.scoring import has_four_options
 from tutor_rag.assessment.service import AssessmentService
 from tutor_rag.contracts.rag import GenerateRequest
-from tutor_rag.core.config import Settings
+from tutor_rag.core.config import CHUNK_SIZE, Settings
 from tutor_rag.infrastructure.gemini import GeminiProvider
 from tutor_rag.learning.profile import operational_status
 from tutor_rag.learning.progress import learner_progress
@@ -224,48 +224,67 @@ class PracticeService:
             )
             if materials else []
         )
-        chunks = chunks[:3]
         if not chunks:
             # Ketiadaan rujukan tidak boleh diganti dengan tebakan atau hint generik.
             raise HTTPException(409, "PDF terkait belum menyediakan petunjuk untuk soal ini.")
         instruction = (
-            "Anda pembimbing latihan berbasis PDF. Beri SATU petunjuk pendek, "
-            "spesifik terhadap pertanyaan yang sedang dikerjakan. Sampaikan langsung "
-            "satu ciri atau konsep dari potongan PDF yang membantu mahasiswa berpikir. "
-            "Jangan mengganti isi petunjuk dengan perintah membuka sumber, nomor halaman, "
-            "atau pengulangan soal; sumber PDF dan halaman ditampilkan terpisah oleh aplikasi. "
-            "Jangan sebut jawaban akhir, daftar/urutan yang diminta soal, "
-            "isi opsi, huruf opsi, atau kunci. Maksimal 45 kata. "
-            "Jika PDF tidak cukup, akui keterbatasan sumber."
+            "Anda pembimbing latihan berbasis PDF. Beri SATU pertanyaan penuntun "
+            "singkat yang membantu mahasiswa memilih jawaban sendiri. Tanyakan "
+            "satu ciri pembeda, langkah, atau hubungan dari potongan PDF yang belum "
+            "dijelaskan langsung oleh soal. Petunjuk harus spesifik untuk soal ini "
+            "dan dapat dijawab dengan membaca potongan PDF. Jangan menyimpulkan "
+            "pilihan yang benar, menyebut kunci, atau memberikan daftar/urutan lengkap "
+            "yang diminta soal. Jangan hanya mengulang soal atau menyuruh mahasiswa "
+            "membuka PDF; sumber ditampilkan terpisah. Maksimal 45 kata."
         )
-        source_context = build_context(chunks)
+        source_context = build_context(chunks, max_content_chars=CHUNK_SIZE)
         correct_text = row["questionSnapshot"]["options"][row["questionSnapshot"]["correctOption"]]
+        sources = [chunk.model_dump(by_alias=True, exclude={"content"}) for chunk in chunks]
+        rejected_hint = ""
+        rejection_reason = ""
         for _ in range(2):
+            retry_context = (
+                f"\n\nAlasan petunjuk sebelumnya ditolak: {rejection_reason}. "
+                + (f"Petunjuk sebelumnya: {rejected_hint}. " if rejected_hint else "")
+                + "Tanyakan ciri pembeda lain dari PDF tanpa menyimpulkan jawabannya."
+                if rejection_reason else ""
+            )
             feedback = provider.generate(GenerateRequest(
                 system_instruction=instruction,
                 prompt=f"Soal latihan: {question}\nIndikator: {context['description']}\n"
-                f"Konsep: {row['concept']}\n\nPotongan PDF:\n{source_context}",
+                f"Konsep: {row['concept']}\n\nPotongan PDF:\n{source_context}"
+                f"{retry_context}",
             )).strip()
             # Pemeriksa terpisah melihat kunci hanya untuk menolak petunjuk yang bocor.
             review = HintSafety.model_validate_json(provider.generate_structured(
                 f"Soal: {question}\nJawaban benar: {correct_text}\nPetunjuk: {feedback}",
-                "Nilai dua hal: reveals_answer=true jika petunjuk menyebut jawaban "
-                "benar, sinonim tepatnya, atau komponen/urutan lengkap yang diminta. "
-                "has_direct_help=true hanya jika petunjuk memberi satu ciri atau "
-                "konsep yang membantu, bukan sekadar mengulang soal atau menyuruh "
-                "mahasiswa membaca PDF/halaman tertentu.",
+                "Nilai dua hal. reveals_answer=true hanya jika petunjuk langsung "
+                "mengidentifikasi jawaban benar, sinonim lengkapnya, atau seluruh "
+                "daftar/urutan yang diminta. Pertanyaan tentang satu ciri pembeda "
+                "yang masih perlu dipikirkan mahasiswa bukan kebocoran, meskipun "
+                "ciri itu berkaitan dengan jawaban. Istilah yang sudah ada pada soal "
+                "juga bukan kebocoran. has_direct_help=true jika petunjuk menunjuk "
+                "detail konsep dari PDF yang relevan untuk memilih jawaban, termasuk "
+                "dalam bentuk pertanyaan penuntun. Mengulang soal atau hanya menyuruh "
+                "membaca PDF bukan bantuan langsung.",
                 HintSafety,
             ))
             if not review.reveals_answer and review.has_direct_help:
-                return feedback, [
-                    chunk.model_dump(by_alias=True, exclude={"content"})
-                    for chunk in chunks
-                ]
-            instruction += (
-                " Petunjuk sebelumnya membocorkan jawaban atau belum memberi "
-                "bantuan konsep secara langsung; perbaiki tanpa menyebut jawabannya."
+                return feedback, sources
+            # Petunjuk yang berpotensi memuat kunci tidak dikirim kembali ke generator.
+            rejected_hint = feedback if not review.reveals_answer else ""
+            rejection_reason = (
+                "berpotensi membocorkan jawaban" if review.reveals_answer
+                else "belum memberi bantuan konsep secara langsung"
             )
-        raise HTTPException(502, "Petunjuk aman belum dapat dibuat. Coba lagi nanti.")
+        # Saat dua hasil model tidak aman, tetap bantu cara berpikir tanpa menyebut
+        # kunci, opsi, atau isi PDF yang belum berhasil divalidasi.
+        return (
+            "Tentukan konsep yang ditanyakan, lalu bandingkan ciri setiap pilihan "
+            "dengan penjelasan pada materi PDF. Singkirkan pilihan yang bertentangan "
+            "dengan penjelasan tersebut.",
+            sources,
+        )
 
     def interact(
         self, practice_id: str, request_id: str, kind: str, selected_option: str | None = None
